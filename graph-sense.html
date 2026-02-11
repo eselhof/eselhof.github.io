@@ -2,17 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Graph Sense — Intuition Trainer</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Graph Sense">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0f0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     background: #0a0f0a;
     color: #c0d8c0;
     font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
     padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
   }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: #0a0f0a; }
@@ -231,10 +245,9 @@ const CATEGORIES = {
       const a=as[Math.floor(Math.random()*as.length)];
       const h=hs[Math.floor(Math.random()*hs.length)];
       const k=ks[Math.floor(Math.random()*ks.length)];
-      const aS=a===1?"":a===-1?"-":a;
       const denom=h===0?"x":h>0?`(x - ${h})`:`(x + ${Math.abs(h)})`;
       const kS=k===0?"":k>0?` + ${k}`:` - ${Math.abs(k)}`;
-      return { equation:`f(x) = ${aS}/${denom}${kS}`, fn:x=>(Math.abs(x-h)<0.01?NaN:a/(x-h)+k), domain:[-8,8], range:[-8,8] };
+      return { equation:`f(x) = ${a}/${denom}${kS}`, fn:x=>(Math.abs(x-h)<0.01?NaN:a/(x-h)+k), domain:[-8,8], range:[-8,8] };
     }
   },
   exponential: {
@@ -513,6 +526,11 @@ document.addEventListener('keydown', e => {
 
 // Init
 generateProblem();
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
