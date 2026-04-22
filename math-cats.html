@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Math Cats">
+<title>🐱 Math Cats!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; user-select: none;
+}
+body {
+  font-family: 'Fredoka', sans-serif;
+  background: linear-gradient(160deg, #fef9ef 0%, #fdf2e0 40%, #fce8cc 100%);
+  display: flex; justify-content: center;
+}
+#app {
+  width: 100%; max-width: 440px;
+  height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column;
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+/* === NAV TABS === */
+.nav { display: flex; gap: 4px; margin-bottom: 8px; flex-shrink: 0; }
+.nav-btn {
+  flex: 1; padding: 8px 4px; border: none; border-radius: 12px;
+  font-family: 'Fredoka', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; background: transparent; color: #b8a88a;
+  transition: all 0.2s;
+}
+.nav-btn.active { background: white; color: #e67e22; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+/* === SCROLLABLE PAGE CONTENT === */
+.page { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; }
+.page.active { display: flex; }
+.page::-webkit-scrollbar { display: none; }
+
+/* === PLAY PAGE === */
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; flex-shrink: 0; gap: 6px;
+}
+.streak-badge {
+  display: none; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #ff6b35, #ff9a56);
+  border-radius: 16px; padding: 4px 10px;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+}
+.streak-badge.visible { display: flex; }
+.streak-badge span { font-weight: 700; color: white; font-size: 13px; }
+.stats-row { display: flex; gap: 8px; font-size: 11px; color: #8b7e6a; align-items: center; }
+.gear-btn {
+  background: white; border: 2px solid #e0d4c0; border-radius: 10px;
+  padding: 4px 10px; cursor: pointer; font-family: 'Fredoka', sans-serif;
+  font-size: 13px; color: #8b7e6a;
+}
+
+.settings {
+  display: none; background: white; border-radius: 14px; padding: 12px;
+  margin-bottom: 8px; border: 2px solid #e0d4c0; flex-shrink: 0;
+  animation: slideDown 0.25s ease-out;
+}
+.settings.open { display: block; }
+.settings-label { font-size: 12px; font-weight: 600; color: #5a4e3a; margin-bottom: 6px; }
+.table-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.table-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 2px solid #e0d4c0; background: white;
+  font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700;
+  color: #8b7e6a; cursor: pointer;
+}
+.table-btn.active { border-color: #e67e22; background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #c0392b; }
+.settings-sub { font-size: 10px; color: #b8a88a; margin-top: 5px; }
+
+.mode-toggle {
+  display: flex; gap: 4px; margin-bottom: 8px; flex-shrink: 0;
+}
+.mode-btn {
+  flex: 1; padding: 8px; border: 2px solid #e0d4c0; border-radius: 12px;
+  background: white; font-family: 'Fredoka', sans-serif; font-size: 13px;
+  font-weight: 600; color: #8b7e6a; cursor: pointer; text-align: center;
+}
+.mode-btn.active { border-color: #e67e22; background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #c0392b; }
+
+.progress-wrap { margin-bottom: 8px; flex-shrink: 0; }
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: #8b7e6a; margin-bottom: 2px;
+}
+.progress-track {
+  height: 8px; border-radius: 4px; background: #f0e6d3;
+  overflow: hidden; border: 1px solid #e0d4c0;
+}
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.5s ease, background 0.5s ease;
+}
+
+.card {
+  background: white; border-radius: 20px; padding: 16px;
+  margin-bottom: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border: 2px solid #f0e6d3; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 160px; flex: 1 1 auto;
+}
+.card.shake { animation: shake 0.4s ease; }
+
+.equation {
+  font-size: 44px; font-weight: 700; color: #5a4e3a;
+  display: flex; align-items: center; gap: 8px;
+  animation: float 3s ease-in-out infinite;
+}
+.equation .op { color: #e67e22; font-size: 32px; }
+.equation .eq { color: #b8a88a; font-size: 32px; }
+.equation .q { color: #e67e22; font-size: 32px; }
+
+.answer-display {
+  margin-top: 10px; font-size: 36px; font-weight: 700; color: #5a4e3a;
+  min-height: 44px; text-align: center;
+  border-bottom: 3px solid #e0d4c0; min-width: 90px; padding: 0 8px;
+  transition: border-color 0.3s, color 0.3s;
+}
+.answer-display.wrong { color: #e74c3c; border-color: #e74c3c; }
+.answer-placeholder { color: #ddd; }
+
+.feedback { margin-top: 6px; font-size: 13px; font-weight: 500; animation: popIn 0.3s ease; }
+.feedback.wrong-msg { color: #e74c3c; }
+
+.reward { position: relative; z-index: 1; text-align: center; }
+.reward-container { animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.reward-msg { margin-top: 6px; font-size: 16px; font-weight: 600; color: #e67e22; }
+.reward-equation { margin-top: 6px; font-size: 14px; color: #8b7e6a; }
+.reward-hint { margin-top: 4px; font-size: 10px; color: #b8a88a; }
+
+.star {
+  position: absolute; left: 50%; top: 50%;
+  opacity: 0; animation: starBurst 0.8s ease-out forwards;
+}
+
+.numpad {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px; max-width: 280px; margin: 0 auto; flex-shrink: 0;
+}
+.num-btn {
+  font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 600;
+  padding: 12px 0; border-radius: 12px; border: none; cursor: pointer;
+  background: white; color: #5a4e3a;
+  box-shadow: 0 3px 0 #e0d4c0;
+  transition: transform 0.08s, box-shadow 0.08s;
+  -webkit-appearance: none;
+}
+.num-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #e0d4c0; }
+.num-btn.backspace { font-size: 18px; background: #f0e6d3; color: #8b7e6a; }
+.num-btn.submit {
+  font-size: 18px; background: linear-gradient(135deg, #4ecdc4, #44bd60);
+  color: white; box-shadow: 0 3px 0 #2d9e5a, 0 4px 12px rgba(68,189,96,0.3);
+}
+.num-btn.submit:active { box-shadow: 0 1px 0 #2d9e5a; }
+
+.next-btn {
+  width: 100%; max-width: 280px; margin: 0 auto; display: block;
+  font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600;
+  padding: 14px; border-radius: 14px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, #f39c12, #e67e22); color: white;
+  box-shadow: 0 4px 0 #c0771a, 0 6px 16px rgba(230,126,34,0.3);
+  flex-shrink: 0;
+}
+.next-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c0771a; }
+
+/* === CAT CANVAS === */
+.cat-canvas { display: block; margin: 0 auto; }
+
+/* === COLLECTION PAGE === */
+.collection-page { padding: 4px 0; gap: 12px; }
+.collection-header { text-align: center; }
+.collection-header h2 {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, #e67e22, #f39c12);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.collection-header .sub { font-size: 12px; color: #8b7e6a; margin-top: 2px; }
+.badge-shelf {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  padding: 10px; background: white; border-radius: 14px; border: 2px solid #f0e6d3;
+}
+.badge-slot {
+  width: 64px; height: 64px; border-radius: 12px;
+  background: #f8f0e3; border: 2px dashed #e0d4c0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #c0b89a; overflow: hidden; position: relative;
+}
+.badge-slot.earned { border-style: solid; border-color: #f0d890; background: #fff8e7; }
+.badge-label {
+  position: absolute; bottom: 2px; left: 0; right: 0;
+  font-size: 7px; color: #8b7e6a; text-align: center;
+  background: rgba(255,255,255,0.8); padding: 1px;
+}
+.cat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px; padding-bottom: 20px;
+}
+.cat-cell {
+  aspect-ratio: 1; background: white; border-radius: 12px;
+  border: 2px solid #f0e6d3; display: flex; align-items: center;
+  justify-content: center; overflow: hidden; position: relative;
+}
+.cat-cell.empty { background: #f8f0e3; border-style: dashed; border-color: #e0d4c0; }
+.cat-cell .cat-id { position: absolute; bottom: 2px; font-size: 7px; color: #b8a88a; }
+
+/* === STATS PAGE === */
+.stats-page { padding: 4px 0; gap: 10px; }
+.stats-page h2 {
+  font-size: 22px; font-weight: 700; text-align: center;
+  background: linear-gradient(135deg, #e67e22, #f39c12);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-card {
+  background: white; border-radius: 14px; padding: 14px;
+  border: 2px solid #f0e6d3;
+}
+.stat-card h3 { font-size: 14px; color: #5a4e3a; margin-bottom: 8px; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0; font-size: 13px; color: #8b7e6a;
+}
+.stat-val { font-weight: 700; color: #5a4e3a; }
+.stat-bar-track {
+  height: 6px; border-radius: 3px; background: #f0e6d3; margin-top: 4px;
+  overflow: hidden;
+}
+.stat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.reset-all-btn {
+  margin-top: 8px; background: #fce4e4; border: 2px solid #f5c6c6; border-radius: 12px;
+  padding: 10px; width: 100%; cursor: pointer; font-family: 'Fredoka', sans-serif;
+  font-size: 13px; font-weight: 600; color: #c0392b;
+}
+
+/* === ANIMATIONS === */
+@keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-12deg); } 40% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(4deg); } }
+@keyframes starBurst {
+  0% { transform: translate(-50%,-50%) translate(0,0) scale(0); opacity: 1; }
+  100% { transform: translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(1); opacity: 0; }
+}
+@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes slideDown { 0% { max-height: 0; opacity: 0; } 100% { max-height: 500px; opacity: 1; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="nav-btn active" data-page="play">🎮 Play</button>
+    <button class="nav-btn" data-page="collection">🐱 Cats</button>
+    <button class="nav-btn" data-page="stats">📊 Stats</button>
+  </div>
+
+  <!-- PLAY PAGE -->
+  <div class="page active" id="pagePlay">
+    <div class="top-bar">
+      <div id="streakBadge" class="streak-badge">
+        <span id="streakFire"></span><span id="streakText"></span>
+      </div>
+      <div class="stats-row">
+        <span>🐱 <span id="catCount">0</span></span>
+        <span>⭐ <span id="bestStreak">0</span></span>
+      </div>
+      <button class="gear-btn" id="gearBtn">⚙️</button>
+    </div>
+
+    <div id="settingsPanel" class="settings">
+      <div class="settings-label">Tables up to:</div>
+      <div class="table-grid" id="tableGrid"></div>
+      <div class="settings-sub" id="settingsSub"></div>
+    </div>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="multiply">✕ Multiply</button>
+      <button class="mode-btn" data-mode="divide">÷ Divide</button>
+      <button class="mode-btn" data-mode="mixed">🔀 Mixed</button>
+    </div>
+
+    <div id="progressWrap" class="progress-wrap" style="display:none;">
+      <div class="progress-labels">
+        <span id="progCount"></span><span id="progPct"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progBar"></div></div>
+    </div>
+
+    <div class="card" id="card">
+      <div id="starContainer"></div>
+      <div id="playView" style="display:flex;flex-direction:column;align-items:center;">
+        <div class="equation">
+          <span id="numA">3</span>
+          <span class="op" id="opSymbol">×</span>
+          <span id="numB">7</span>
+          <span class="eq">=</span>
+          <span class="q">?</span>
+        </div>
+        <div class="answer-display" id="answerDisplay"><span class="answer-placeholder">...</span></div>
+        <div class="feedback wrong-msg" id="wrongFeedback" style="display:none;"></div>
+      </div>
+      <div id="rewardView" style="display:none;" class="reward"></div>
+    </div>
+
+    <div id="numpadArea">
+      <div class="numpad" id="numpad"></div>
+    </div>
+    <button class="next-btn" id="nextBtn" style="display:none;">Next Problem! →</button>
+  </div>
+
+  <!-- COLLECTION PAGE -->
+  <div class="page" id="pageCollection">
+    <div class="collection-page"></div>
+  </div>
+
+  <!-- STATS PAGE -->
+  <div class="page" id="pageStats">
+    <div class="stats-page"></div>
+  </div>
+</div>
+
+<script>
+// ===================== CAT GENERATION SYSTEM =====================
+const CAT_PROPS = {
+  fur: ['orange','gray','black','white','calico'],
+  eyes: ['green','blue','amber','brown','heterochromia'],
+  pattern: ['solid','striped','spotted','tuxedo','siamese'],
+  ears: ['pointed','rounded','folded','tufted','tall'],
+  mouth: ['smile','tongue','fangs','blep','smirk']
+};
+const PROP_KEYS = Object.keys(CAT_PROPS); // 5 props, 5 vals each = 3125 combos
+
+function catIdToTraits(id) {
+  let n = id;
+  const traits = {};
+  for (let i = PROP_KEYS.length - 1; i >= 0; i--) {
+    const key = PROP_KEYS[i];
+    const vals = CAT_PROPS[key];
+    traits[key] = vals[n % vals.length];
+    n = Math.floor(n / vals.length);
+  }
+  return traits;
+}
+
+const FUR_COLORS = {
+  orange: '#F4A460', gray: '#A9A9A9', black: '#3a3a3a',
+  white: '#F5F5F0', calico: '#E8B87A'
+};
+const FUR_PATCH = { calico: ['#3a3a3a','#F4A460'], siamese: ['#8B7355'] };
+const EYE_COLORS = {
+  green: '#4CAF50', blue: '#42A5F5', amber: '#FFB300',
+  brown: '#8D6E63', heterochromia: ['#42A5F5','#4CAF50']
+};
+
+function drawCat(canvas, id, size) {
+  const s = size || 64;
+  canvas.width = s; canvas.height = s;
+  const ctx = canvas.getContext('2d');
+  const t = catIdToTraits(id);
+  const cx = s/2, cy = s*0.55, r = s*0.32;
+
+  ctx.clearRect(0,0,s,s);
+
+  // Ears
+  const earW = r*0.5, earH = r*0.7;
+  const earLx = cx - r*0.7, earRx = cx + r*0.7, earY = cy - r*0.65;
+  const earMods = {
+    pointed: 0, rounded: 0.3, folded: -0.15, tufted: 0, tall: 0
+  };
+  const earHeightMult = t.ears === 'tall' ? 1.3 : t.ears === 'folded' ? 0.6 : 1;
+
+  ctx.fillStyle = FUR_COLORS[t.fur];
+  // left ear
+  ctx.beginPath();
+  if (t.ears === 'rounded') {
+    ctx.ellipse(earLx, earY, earW*0.6, earH*earHeightMult*0.6, -0.2, 0, Math.PI*2);
+  } else {
+    ctx.moveTo(earLx - earW*0.5, earY + earH*0.3);
+    ctx.lineTo(earLx, earY - earH*earHeightMult);
+    ctx.lineTo(earLx + earW*0.5, earY + earH*0.3);
+  }
+  ctx.fill();
+  // right ear
+  ctx.beginPath();
+  if (t.ears === 'rounded') {
+    ctx.ellipse(earRx, earY, earW*0.6, earH*earHeightMult*0.6, 0.2, 0, Math.PI*2);
+  } else {
+    ctx.moveTo(earRx - earW*0.5, earY + earH*0.3);
+    ctx.lineTo(earRx, earY - earH*earHeightMult);
+    ctx.lineTo(earRx + earW*0.5, earY + earH*0.3);
+  }
+  ctx.fill();
+
+  // Inner ear
+  ctx.fillStyle = '#F8BBD0';
+  const ie = 0.55;
+  if (t.ears === 'rounded') {
+    ctx.beginPath(); ctx.ellipse(earLx, earY, earW*0.35, earH*earHeightMult*0.35, -0.2, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(earRx, earY, earW*0.35, earH*earHeightMult*0.35, 0.2, 0, Math.PI*2); ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(earLx - earW*0.5*ie, earY + earH*0.3*ie);
+    ctx.lineTo(earLx, earY - earH*earHeightMult*ie);
+    ctx.lineTo(earLx + earW*0.5*ie, earY + earH*0.3*ie);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(earRx - earW*0.5*ie, earY + earH*0.3*ie);
+    ctx.lineTo(earRx, earY - earH*earHeightMult*ie);
+    ctx.lineTo(earRx + earW*0.5*ie, earY + earH*0.3*ie);
+    ctx.fill();
+  }
+
+  // Ear tufts
+  if (t.ears === 'tufted') {
+    ctx.strokeStyle = FUR_COLORS[t.fur] === '#F5F5F0' ? '#ccc' : '#ddd';
+    ctx.lineWidth = s*0.015;
+    for (let side of [-1,1]) {
+      const ex = side === -1 ? earLx : earRx;
+      for (let j = -1; j <= 1; j++) {
+        ctx.beginPath();
+        ctx.moveTo(ex + j*s*0.02, earY - earH*earHeightMult);
+        ctx.lineTo(ex + j*s*0.04, earY - earH*earHeightMult - s*0.06);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Head
+  ctx.fillStyle = FUR_COLORS[t.fur];
+  ctx.beginPath(); ctx.ellipse(cx, cy, r, r*0.9, 0, 0, Math.PI*2); ctx.fill();
+
+  // Pattern overlays
+  if (t.pattern === 'striped') {
+    ctx.save(); ctx.globalAlpha = 0.2;
+    ctx.strokeStyle = t.fur === 'white' ? '#999' : '#333';
+    ctx.lineWidth = s*0.025;
+    for (let i = -2; i <= 2; i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + i*r*0.3 - r*0.15, cy - r*0.5);
+      ctx.lineTo(cx + i*r*0.3 + r*0.15, cy + r*0.5);
+      ctx.stroke();
+    }
+    ctx.restore();
+  } else if (t.pattern === 'spotted') {
+    ctx.save(); ctx.globalAlpha = 0.2;
+    ctx.fillStyle = t.fur === 'black' ? '#666' : '#333';
+    const spots = [[0.3,0.3],[-.3,0.4],[0.1,-0.2],[-.2,-.1],[0.35,0.0]];
+    spots.forEach(([dx,dy]) => {
+      ctx.beginPath(); ctx.arc(cx+r*dx, cy+r*dy, s*0.03, 0, Math.PI*2); ctx.fill();
+    });
+    ctx.restore();
+  } else if (t.pattern === 'tuxedo') {
+    ctx.save();
+    ctx.fillStyle = t.fur === 'white' ? '#3a3a3a' : '#F5F5F0';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + r*0.35, r*0.5, r*0.45, 0, 0, Math.PI);
+    ctx.fill();
+    ctx.restore();
+  } else if (t.pattern === 'siamese') {
+    ctx.save(); ctx.globalAlpha = 0.3;
+    ctx.fillStyle = '#6D4C41';
+    // darker face mask
+    ctx.beginPath(); ctx.ellipse(cx, cy+r*0.15, r*0.4, r*0.35, 0, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  } else if (t.pattern === 'calico' || t.fur === 'calico') {
+    ctx.save(); ctx.globalAlpha = 0.35;
+    ctx.fillStyle = '#3a3a3a';
+    ctx.beginPath(); ctx.ellipse(cx - r*0.3, cy - r*0.1, r*0.35, r*0.3, -0.3, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#C0392B';
+    ctx.beginPath(); ctx.ellipse(cx + r*0.25, cy + r*0.15, r*0.25, r*0.2, 0.4, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Eyes
+  const eyeY = cy - r*0.05;
+  const eyeSpacing = r*0.38;
+  const eyeR = s*0.055;
+  const eyeColors = t.eyes === 'heterochromia' ? EYE_COLORS.heterochromia : [EYE_COLORS[t.eyes], EYE_COLORS[t.eyes]];
+
+  for (let i = 0; i < 2; i++) {
+    const ex = cx + (i === 0 ? -1 : 1) * eyeSpacing;
+    // white
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.ellipse(ex, eyeY, eyeR*1.3, eyeR*1.4, 0, 0, Math.PI*2); ctx.fill();
+    // iris
+    ctx.fillStyle = eyeColors[i];
+    ctx.beginPath(); ctx.arc(ex, eyeY, eyeR, 0, Math.PI*2); ctx.fill();
+    // pupil
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(ex, eyeY, eyeR*0.5, 0, Math.PI*2); ctx.fill();
+    // highlight
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.arc(ex - eyeR*0.25, eyeY - eyeR*0.3, eyeR*0.25, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Nose
+  const noseY = cy + r*0.25;
+  ctx.fillStyle = '#F8BBD0';
+  ctx.beginPath();
+  ctx.moveTo(cx, noseY - s*0.02);
+  ctx.lineTo(cx - s*0.03, noseY + s*0.02);
+  ctx.lineTo(cx + s*0.03, noseY + s*0.02);
+  ctx.fill();
+
+  // Mouth
+  ctx.strokeStyle = '#5D4037';
+  ctx.lineWidth = s*0.015;
+  ctx.lineCap = 'round';
+  const my = noseY + s*0.025;
+
+  if (t.mouth === 'smile') {
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.06, my); ctx.quadraticCurveTo(cx - s*0.02, my + s*0.04, cx, my);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, my); ctx.quadraticCurveTo(cx + s*0.02, my + s*0.04, cx + s*0.06, my);
+    ctx.stroke();
+  } else if (t.mouth === 'tongue') {
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.05, my); ctx.quadraticCurveTo(cx, my + s*0.03, cx + s*0.05, my);
+    ctx.stroke();
+    ctx.fillStyle = '#E57373';
+    ctx.beginPath(); ctx.ellipse(cx, my + s*0.04, s*0.02, s*0.025, 0, 0, Math.PI*2); ctx.fill();
+  } else if (t.mouth === 'fangs') {
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.05, my); ctx.lineTo(cx, my + s*0.02); ctx.lineTo(cx + s*0.05, my);
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.moveTo(cx - s*0.025, my); ctx.lineTo(cx - s*0.03, my + s*0.03); ctx.lineTo(cx - s*0.02, my); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + s*0.02, my); ctx.lineTo(cx + s*0.03, my + s*0.03); ctx.lineTo(cx + s*0.025, my); ctx.fill();
+  } else if (t.mouth === 'blep') {
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.04, my); ctx.lineTo(cx + s*0.04, my);
+    ctx.stroke();
+    ctx.fillStyle = '#E57373';
+    ctx.beginPath(); ctx.ellipse(cx + s*0.01, my + s*0.015, s*0.012, s*0.018, 0.2, 0, Math.PI*2); ctx.fill();
+  } else { // smirk
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.04, my);
+    ctx.quadraticCurveTo(cx + s*0.02, my + s*0.04, cx + s*0.06, my - s*0.01);
+    ctx.stroke();
+  }
+
+  // Whiskers
+  ctx.strokeStyle = t.fur === 'white' ? '#bbb' : '#aaa';
+  ctx.lineWidth = s*0.01;
+  for (let side of [-1, 1]) {
+    for (let j = -1; j <= 1; j++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + side * r*0.35, cy + r*0.2 + j*s*0.04);
+      ctx.lineTo(cx + side * (r*0.35 + s*0.15), cy + r*0.15 + j*s*0.06);
+      ctx.stroke();
+    }
+  }
+}
+
+// ===================== SPECIAL BADGE DRAWINGS =====================
+const BADGES = [
+  { name: 'Cat Loaf', need: 10 },
+  { name: 'Cat Butt', need: 25 },
+  { name: 'Bread Cat', need: 50 },
+  { name: 'Box Cat', need: 100 },
+  { name: 'Wizard Cat', need: 200 },
+  { name: 'Space Cat', need: 500 },
+];
+
+function drawBadge(canvas, index, size) {
+  const s = size || 56;
+  canvas.width = s; canvas.height = s;
+  const ctx = canvas.getContext('2d');
+  const cx = s/2, cy = s/2;
+  ctx.clearRect(0,0,s,s);
+
+  if (index === 0) { // Cat Loaf
+    ctx.fillStyle = '#F4A460';
+    // body loaf
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.35, cy + s*0.15);
+    ctx.quadraticCurveTo(cx - s*0.35, cy - s*0.2, cx, cy - s*0.25);
+    ctx.quadraticCurveTo(cx + s*0.35, cy - s*0.2, cx + s*0.35, cy + s*0.15);
+    ctx.lineTo(cx - s*0.35, cy + s*0.15);
+    ctx.fill();
+    // head bump
+    ctx.beginPath(); ctx.ellipse(cx, cy - s*0.15, s*0.18, s*0.16, 0, 0, Math.PI*2); ctx.fill();
+    // ears
+    ctx.beginPath(); ctx.moveTo(cx-s*0.15, cy-s*0.2); ctx.lineTo(cx-s*0.1, cy-s*0.38); ctx.lineTo(cx-s*0.03, cy-s*0.2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx+s*0.03, cy-s*0.2); ctx.lineTo(cx+s*0.1, cy-s*0.38); ctx.lineTo(cx+s*0.15, cy-s*0.2); ctx.fill();
+    // eyes
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(cx - s*0.07, cy - s*0.15, s*0.02, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.07, cy - s*0.15, s*0.02, 0, Math.PI*2); ctx.fill();
+    // paws tucked
+    ctx.fillStyle = '#DEB887';
+    ctx.beginPath(); ctx.ellipse(cx - s*0.12, cy + s*0.13, s*0.06, s*0.035, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + s*0.12, cy + s*0.13, s*0.06, s*0.035, 0, 0, Math.PI*2); ctx.fill();
+  } else if (index === 1) { // Cat Butt
+    ctx.fillStyle = '#A9A9A9';
+    ctx.beginPath(); ctx.ellipse(cx, cy + s*0.05, s*0.3, s*0.28, 0, 0, Math.PI*2); ctx.fill();
+    // tail
+    ctx.strokeStyle = '#A9A9A9'; ctx.lineWidth = s*0.06; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx + s*0.15, cy - s*0.1);
+    ctx.quadraticCurveTo(cx + s*0.35, cy - s*0.35, cx + s*0.15, cy - s*0.4);
+    ctx.stroke();
+    // butt detail
+    ctx.strokeStyle = '#888'; ctx.lineWidth = s*0.015;
+    ctx.beginPath(); ctx.moveTo(cx, cy - s*0.05); ctx.lineTo(cx, cy + s*0.08); ctx.stroke();
+    // back paws
+    ctx.fillStyle = '#888';
+    ctx.beginPath(); ctx.ellipse(cx - s*0.2, cy + s*0.25, s*0.08, s*0.04, -0.3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + s*0.2, cy + s*0.25, s*0.08, s*0.04, 0.3, 0, Math.PI*2); ctx.fill();
+  } else if (index === 2) { // Bread Cat
+    // bread slice
+    ctx.fillStyle = '#DEB887';
+    ctx.beginPath();
+    ctx.moveTo(cx - s*0.28, cy + s*0.2);
+    ctx.quadraticCurveTo(cx - s*0.32, cy - s*0.15, cx, cy - s*0.3);
+    ctx.quadraticCurveTo(cx + s*0.32, cy - s*0.15, cx + s*0.28, cy + s*0.2);
+    ctx.lineTo(cx - s*0.28, cy + s*0.2);
+    ctx.fill();
+    ctx.strokeStyle = '#C9A96E'; ctx.lineWidth = s*0.02; ctx.stroke();
+    // face hole
+    ctx.fillStyle = '#F4A460';
+    ctx.beginPath(); ctx.ellipse(cx, cy, s*0.16, s*0.15, 0, 0, Math.PI*2); ctx.fill();
+    // eyes
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(cx - s*0.06, cy - s*0.03, s*0.02, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.06, cy - s*0.03, s*0.02, 0, Math.PI*2); ctx.fill();
+    // nose + mouth
+    ctx.fillStyle = '#F8BBD0';
+    ctx.beginPath(); ctx.moveTo(cx, cy + s*0.03); ctx.lineTo(cx-s*0.02, cy+s*0.06); ctx.lineTo(cx+s*0.02, cy+s*0.06); ctx.fill();
+    ctx.strokeStyle = '#5D4037'; ctx.lineWidth = s*0.012; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-s*0.04, cy+s*0.09); ctx.quadraticCurveTo(cx, cy+s*0.12, cx+s*0.04, cy+s*0.09); ctx.stroke();
+  } else if (index === 3) { // Box Cat
+    // box
+    ctx.fillStyle = '#C9A96E';
+    ctx.fillRect(cx - s*0.3, cy - s*0.1, s*0.6, s*0.42);
+    ctx.strokeStyle = '#8B7355'; ctx.lineWidth = s*0.02;
+    ctx.strokeRect(cx - s*0.3, cy - s*0.1, s*0.6, s*0.42);
+    // flaps
+    ctx.beginPath(); ctx.moveTo(cx - s*0.3, cy - s*0.1); ctx.lineTo(cx - s*0.15, cy - s*0.2); ctx.lineTo(cx - s*0.05, cy - s*0.1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + s*0.05, cy - s*0.1); ctx.lineTo(cx + s*0.15, cy - s*0.2); ctx.lineTo(cx + s*0.3, cy - s*0.1); ctx.stroke();
+    // cat head poking out
+    ctx.fillStyle = '#3a3a3a';
+    ctx.beginPath(); ctx.ellipse(cx, cy - s*0.15, s*0.14, s*0.12, 0, Math.PI, Math.PI*2); ctx.fill();
+    // ears
+    ctx.beginPath(); ctx.moveTo(cx-s*0.12, cy-s*0.2); ctx.lineTo(cx-s*0.08, cy-s*0.35); ctx.lineTo(cx-s*0.03, cy-s*0.2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx+s*0.03, cy-s*0.2); ctx.lineTo(cx+s*0.08, cy-s*0.35); ctx.lineTo(cx+s*0.12, cy-s*0.2); ctx.fill();
+    // eyes
+    ctx.fillStyle = '#4CAF50';
+    ctx.beginPath(); ctx.arc(cx - s*0.05, cy - s*0.18, s*0.025, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.05, cy - s*0.18, s*0.025, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(cx - s*0.05, cy - s*0.18, s*0.012, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.05, cy - s*0.18, s*0.012, 0, Math.PI*2); ctx.fill();
+  } else if (index === 4) { // Wizard Cat
+    ctx.fillStyle = '#A9A9A9';
+    ctx.beginPath(); ctx.ellipse(cx, cy + s*0.08, s*0.2, s*0.18, 0, 0, Math.PI*2); ctx.fill();
+    // hat
+    ctx.fillStyle = '#5C3B9E';
+    ctx.beginPath(); ctx.moveTo(cx - s*0.2, cy - s*0.07); ctx.lineTo(cx, cy - s*0.42); ctx.lineTo(cx + s*0.2, cy - s*0.07); ctx.fill();
+    // hat brim
+    ctx.beginPath(); ctx.ellipse(cx, cy - s*0.07, s*0.25, s*0.06, 0, 0, Math.PI*2); ctx.fill();
+    // hat star
+    ctx.fillStyle = '#FFD700'; ctx.font = `${s*0.1}px serif`;
+    ctx.fillText('★', cx - s*0.04, cy - s*0.18);
+    // eyes
+    ctx.fillStyle = '#FFB300';
+    ctx.beginPath(); ctx.arc(cx - s*0.07, cy + s*0.04, s*0.025, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.07, cy + s*0.04, s*0.025, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(cx - s*0.07, cy + s*0.04, s*0.012, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.07, cy + s*0.04, s*0.012, 0, Math.PI*2); ctx.fill();
+    // beard
+    ctx.fillStyle = '#ddd';
+    ctx.beginPath(); ctx.moveTo(cx - s*0.08, cy + s*0.15); ctx.quadraticCurveTo(cx, cy + s*0.35, cx + s*0.08, cy + s*0.15); ctx.fill();
+  } else { // Space Cat
+    // helmet
+    ctx.strokeStyle = '#B0BEC5'; ctx.lineWidth = s*0.03;
+    ctx.beginPath(); ctx.arc(cx, cy, s*0.32, 0, Math.PI*2); ctx.stroke();
+    // visor
+    ctx.fillStyle = 'rgba(100,181,246,0.3)';
+    ctx.beginPath(); ctx.arc(cx, cy, s*0.29, 0, Math.PI*2); ctx.fill();
+    // cat face
+    ctx.fillStyle = '#F4A460';
+    ctx.beginPath(); ctx.ellipse(cx, cy + s*0.02, s*0.2, s*0.18, 0, 0, Math.PI*2); ctx.fill();
+    // ears inside helmet
+    ctx.beginPath(); ctx.moveTo(cx-s*0.15, cy-s*0.1); ctx.lineTo(cx-s*0.1, cy-s*0.25); ctx.lineTo(cx-s*0.04, cy-s*0.1); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx+s*0.04, cy-s*0.1); ctx.lineTo(cx+s*0.1, cy-s*0.25); ctx.lineTo(cx+s*0.15, cy-s*0.1); ctx.fill();
+    // eyes
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath(); ctx.arc(cx - s*0.07, cy, s*0.02, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s*0.07, cy, s*0.02, 0, Math.PI*2); ctx.fill();
+    // stars around
+    ctx.fillStyle = '#FFD700'; ctx.font = `${s*0.08}px serif`;
+    ctx.fillText('✦', s*0.08, s*0.15); ctx.fillText('✦', s*0.78, s*0.25);
+    ctx.fillText('✦', s*0.12, s*0.85); ctx.fillText('✦', s*0.82, s*0.8);
+  }
+}
+
+// ===================== DATA / PERSISTENCE =====================
+const SAVE_KEY = 'mathcats_v2';
+let state = loadState();
+
+function defaultState() {
+  return {
+    maxTable: 5, mode: 'multiply',
+    streak: 0, bestStreak: 0,
+    correctMul: 0, totalMul: 0,
+    correctDiv: 0, totalDiv: 0,
+    catsCollected: [], // array of cat IDs
+    version: 2
+  };
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return defaultState();
+    const s = JSON.parse(raw);
+    if (!s.version || s.version < 2) return defaultState();
+    return s;
+  } catch(e) { return defaultState(); }
+}
+function saveState() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e){} }
+
+// ===================== PROBLEM GENERATION =====================
+const REWARDS = [
+  "Purrfect! 🎉","Math cat-genius!","Meow-velous!","Claw-some!",
+  "Fur-tastic!","Nailed it, kitty!","Un-fur-gettable!","Cat-culating master!",
+  "Whisker-sharp!","Cat's meow!","Hiss-torically great!","Feline fine! 🌟",
+];
+const WRONGS = ["Almost! Try again 💪","So close!","Not quite — you got this!","Oops! One more try!","Keep going!"];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+let a=1, b=1, correctAnswer=0, currentOp='×', input='', phase='playing';
+let sessionCorrect=0, sessionTotal=0;
+
+function generateProblem() {
+  const mode = state.mode;
+  const doDiv = mode === 'divide' || (mode === 'mixed' && Math.random() < 0.5);
+
+  if (doDiv) {
+    // Generate a÷b=c where a=b*c, b and c are ≤ maxTable, c ≤ 10
+    const divisor = Math.floor(Math.random() * state.maxTable) + 1;
+    const quotient = Math.floor(Math.random() * 10) + 1;
+    a = divisor * quotient;
+    b = divisor;
+    correctAnswer = quotient;
+    currentOp = '÷';
+  } else {
+    a = Math.floor(Math.random() * state.maxTable) + 1;
+    b = Math.floor(Math.random() * 10) + 1;
+    correctAnswer = a * b;
+    currentOp = '×';
+  }
+}
+
+// ===================== RANDOM CAT ID =====================
+function getNewCatId() {
+  // Pick a random cat not yet collected (or random if all 3125 collected)
+  const total = 3125;
+  if (state.catsCollected.length >= total) return Math.floor(Math.random() * total);
+  let id;
+  const set = new Set(state.catsCollected);
+  do { id = Math.floor(Math.random() * total); } while (set.has(id));
+  return id;
+}
+
+// ===================== DOM HELPERS =====================
+const $ = id => document.getElementById(id);
+const card = $('card'), playView = $('playView'), rewardView = $('rewardView');
+const numA = $('numA'), numB = $('numB'), opSymbol = $('opSymbol');
+const answerDisplay = $('answerDisplay'), wrongFeedback = $('wrongFeedback');
+const nextBtn = $('nextBtn'), numpadArea = $('numpadArea');
+const streakBadge = $('streakBadge'), streakFire = $('streakFire'), streakText = $('streakText');
+const starContainer = $('starContainer');
+
+// Build numpad
+const numpad = $('numpad');
+[1,2,3,4,5,6,7,8,9,'⌫',0,'✓'].forEach(k => {
+  const btn = document.createElement('button');
+  btn.className = 'num-btn' + (k==='⌫'?' backspace':k==='✓'?' submit':'');
+  btn.textContent = k;
+  btn.addEventListener('touchend', e => { e.preventDefault(); handlePress(k); });
+  btn.addEventListener('click', e => { if(!e.isTrusted || e.detail===0) return; handlePress(k); });
+  numpad.appendChild(btn);
+});
+
+// Table grid
+const tableGrid = $('tableGrid');
+for (let i = 1; i <= 10; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'table-btn' + (i===state.maxTable?' active':'');
+  btn.textContent = i;
+  btn.dataset.n = i;
+  btn.addEventListener('click', () => {
+    state.maxTable = i;
+    tableGrid.querySelectorAll('.table-btn').forEach(b => b.classList.toggle('active', +b.dataset.n===i));
+    $('settingsSub').textContent = `Tables 1–${i} × 1–10`;
+    $('settingsPanel').classList.remove('open');
+    saveState(); newProblem();
+  });
+  tableGrid.appendChild(btn);
+}
+$('settingsSub').textContent = `Tables 1–${state.maxTable} × 1–10`;
+
+// Mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  if (btn.dataset.mode === state.mode) btn.classList.add('active');
+  else btn.classList.remove('active');
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+    saveState(); newProblem();
+  });
+});
+
+// Settings toggle
+$('gearBtn').addEventListener('click', () => $('settingsPanel').classList.toggle('open'));
+
+// Nav
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const page = $('page' + btn.dataset.page.charAt(0).toUpperCase() + btn.dataset.page.slice(1));
+    page.classList.add('active');
+    if (btn.dataset.page === 'collection') renderCollection();
+    if (btn.dataset.page === 'stats') renderStats();
+  });
+});
+
+// ===================== GAME LOGIC =====================
+function newProblem() {
+  generateProblem();
+  input = ''; phase = 'playing';
+  numA.textContent = a; numB.textContent = b; opSymbol.textContent = currentOp;
+  answerDisplay.innerHTML = '<span class="answer-placeholder">...</span>';
+  answerDisplay.classList.remove('wrong');
+  wrongFeedback.style.display = 'none';
+  playView.style.display = 'flex';
+  rewardView.style.display = 'none';
+  nextBtn.style.display = 'none';
+  numpadArea.style.display = 'block';
+  starContainer.innerHTML = '';
+  card.classList.remove('shake');
+  updateTopBar();
+}
+
+function spawnStars() {
+  starContainer.innerHTML = '';
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('span');
+    s.className = 'star';
+    const angle = (360/12)*i, dist = 40+Math.random()*50, sz = 10+Math.random()*14;
+    s.style.fontSize = sz+'px';
+    s.style.animationDelay = (Math.random()*0.3)+'s';
+    s.style.setProperty('--tx', Math.cos(angle*Math.PI/180)*dist+'px');
+    s.style.setProperty('--ty', Math.sin(angle*Math.PI/180)*dist+'px');
+    s.textContent = ['⭐','✨','🌟','💫'][i%4];
+    starContainer.appendChild(s);
+  }
+}
+
+function showCorrect() {
+  const catId = getNewCatId();
+  state.catsCollected.push(catId);
+  state.streak++;
+  if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+  if (currentOp === '×') { state.correctMul++; state.totalMul++; }
+  else { state.correctDiv++; state.totalDiv++; }
+  sessionCorrect++; sessionTotal++;
+  saveState();
+
+  phase = 'correct';
+  playView.style.display = 'none';
+  rewardView.style.display = 'block';
+
+  // Draw the earned cat
+  const catCanvas = document.createElement('canvas');
+  catCanvas.className = 'cat-canvas';
+  drawCat(catCanvas, catId, 80);
+  catCanvas.style.animation = 'wiggle 0.6s ease-in-out 0.3s';
+
+  const traits = catIdToTraits(catId);
+  const traitStr = `${traits.fur} • ${traits.eyes} eyes • ${traits.pattern} • ${traits.ears} ears • ${traits.mouth}`;
+
+  rewardView.innerHTML = '';
+  const container = document.createElement('div');
+  container.className = 'reward-container';
+  container.appendChild(catCanvas);
+
+  const desc = document.createElement('div');
+  desc.style.cssText = 'font-size:9px;color:#b8a88a;margin-top:4px;';
+  desc.textContent = traitStr;
+  container.appendChild(desc);
+
+  const msg = document.createElement('div');
+  msg.className = 'reward-msg';
+  msg.textContent = pick(REWARDS);
+  container.appendChild(msg);
+
+  const eq = document.createElement('div');
+  eq.className = 'reward-equation';
+  eq.textContent = `${a} ${currentOp} ${b} = ${correctAnswer}`;
+  container.appendChild(eq);
+
+  const hint = document.createElement('div');
+  hint.className = 'reward-hint';
+  hint.textContent = 'Tap Next or press Enter';
+  container.appendChild(hint);
+
+  rewardView.appendChild(container);
+  spawnStars();
+  nextBtn.style.display = 'block';
+  numpadArea.style.display = 'none';
+  updateTopBar();
+  updateProgress();
+}
+
+function showWrong() {
+  state.streak = 0;
+  if (currentOp === '×') state.totalMul++;
+  else state.totalDiv++;
+  sessionTotal++;
+  saveState();
+  phase = 'wrong';
+  answerDisplay.classList.add('wrong');
+  wrongFeedback.textContent = pick(WRONGS);
+  wrongFeedback.style.display = 'block';
+  card.classList.remove('shake');
+  void card.offsetWidth;
+  card.classList.add('shake');
+  updateTopBar();
+  updateProgress();
+}
+
+function handlePress(key) {
+  if (phase === 'correct') { newProblem(); return; }
+  if (phase === 'wrong' && key === '✓') {
+    phase = 'playing'; input = '';
+    answerDisplay.innerHTML = '<span class="answer-placeholder">...</span>';
+    answerDisplay.classList.remove('wrong');
+    wrongFeedback.style.display = 'none';
+    card.classList.remove('shake');
+    return;
+  }
+  if (phase === 'wrong' && key !== '⌫') {
+    phase = 'playing'; input = String(key);
+    answerDisplay.textContent = input;
+    answerDisplay.classList.remove('wrong');
+    wrongFeedback.style.display = 'none';
+    card.classList.remove('shake');
+    return;
+  }
+  if (key === '⌫') {
+    input = input.slice(0,-1);
+    answerDisplay.innerHTML = input || '<span class="answer-placeholder">...</span>';
+  } else if (key === '✓') {
+    if (!input) return;
+    if (parseInt(input,10) === correctAnswer) showCorrect();
+    else showWrong();
+  } else {
+    if (input.length < 3) { input += String(key); answerDisplay.textContent = input; }
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (document.querySelector('.nav-btn[data-page="play"]').classList.contains('active')) {
+    if (e.key >= '0' && e.key <= '9') handlePress(parseInt(e.key));
+    else if (e.key === 'Backspace') { e.preventDefault(); handlePress('⌫'); }
+    else if (e.key === 'Enter') handlePress('✓');
+  }
+});
+
+nextBtn.addEventListener('click', () => newProblem());
+
+function updateTopBar() {
+  $('catCount').textContent = state.catsCollected.length;
+  $('bestStreak').textContent = state.bestStreak;
+  if (state.streak >= 3) {
+    streakBadge.classList.add('visible');
+    streakFire.textContent = state.streak >= 10 ? '🔥🔥🔥' : state.streak >= 5 ? '🔥🔥' : '🔥';
+    streakText.textContent = state.streak + ' streak!';
+  } else {
+    streakBadge.classList.remove('visible');
+  }
+}
+
+function updateProgress() {
+  if (sessionTotal === 0) { $('progressWrap').style.display = 'none'; return; }
+  $('progressWrap').style.display = 'block';
+  const pct = Math.round((sessionCorrect/sessionTotal)*100);
+  $('progCount').textContent = `${sessionCorrect}/${sessionTotal} correct`;
+  $('progPct').textContent = pct+'%';
+  const bar = $('progBar');
+  bar.style.width = pct+'%';
+  bar.style.background = pct>=80 ? 'linear-gradient(90deg,#4ecdc4,#44bd60)'
+    : pct>=50 ? 'linear-gradient(90deg,#f7b731,#f5a623)'
+    : 'linear-gradient(90deg,#fc5c65,#eb3b5a)';
+}
+
+// ===================== COLLECTION PAGE =====================
+function renderCollection() {
+  const container = document.querySelector('.collection-page');
+  container.innerHTML = '';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'collection-header';
+  header.innerHTML = `<h2>🐱 Cat Collection</h2>
+    <div class="sub">${state.catsCollected.length} cats collected • ${3125 - state.catsCollected.length} remaining</div>`;
+  container.appendChild(header);
+
+  // Badges
+  const badgeSection = document.createElement('div');
+  badgeSection.innerHTML = '<div style="font-size:13px;font-weight:600;color:#5a4e3a;margin-bottom:6px;">Special Badges</div>';
+  const shelf = document.createElement('div');
+  shelf.className = 'badge-shelf';
+  BADGES.forEach((badge, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'badge-slot' + (state.catsCollected.length >= badge.need ? ' earned' : '');
+    if (state.catsCollected.length >= badge.need) {
+      const c = document.createElement('canvas');
+      drawBadge(c, i, 56);
+      slot.appendChild(c);
+    } else {
+      slot.textContent = '🔒';
+    }
+    const label = document.createElement('div');
+    label.className = 'badge-label';
+    label.textContent = state.catsCollected.length >= badge.need ? badge.name : `${badge.need} cats`;
+    slot.appendChild(label);
+    shelf.appendChild(slot);
+  });
+  badgeSection.appendChild(shelf);
+  container.appendChild(badgeSection);
+
+  // Cat grid - show last 50 collected (most recent first)
+  const catSection = document.createElement('div');
+  const shown = state.catsCollected.slice(-60).reverse();
+  catSection.innerHTML = `<div style="font-size:13px;font-weight:600;color:#5a4e3a;margin-bottom:6px;">Recent Cats (${Math.min(shown.length, 60)} of ${state.catsCollected.length})</div>`;
+  const grid = document.createElement('div');
+  grid.className = 'cat-grid';
+  shown.forEach(id => {
+    const cell = document.createElement('div');
+    cell.className = 'cat-cell';
+    const c = document.createElement('canvas');
+    drawCat(c, id, 64);
+    cell.appendChild(c);
+    const idLabel = document.createElement('div');
+    idLabel.className = 'cat-id';
+    idLabel.textContent = '#' + id;
+    cell.appendChild(idLabel);
+    grid.appendChild(cell);
+  });
+  catSection.appendChild(grid);
+  container.appendChild(catSection);
+}
+
+// ===================== STATS PAGE =====================
+function renderStats() {
+  const container = document.querySelector('.stats-page');
+  const totalAll = state.totalMul + state.totalDiv;
+  const correctAll = state.correctMul + state.correctDiv;
+  const pctAll = totalAll ? Math.round((correctAll/totalAll)*100) : 0;
+  const pctMul = state.totalMul ? Math.round((state.correctMul/state.totalMul)*100) : 0;
+  const pctDiv = state.totalDiv ? Math.round((state.correctDiv/state.totalDiv)*100) : 0;
+
+  container.innerHTML = `
+    <h2>📊 Stats</h2>
+    <div class="stat-card">
+      <h3>Overall</h3>
+      <div class="stat-row"><span>Total Problems</span><span class="stat-val">${totalAll}</span></div>
+      <div class="stat-row"><span>Correct</span><span class="stat-val">${correctAll}</span></div>
+      <div class="stat-row"><span>Accuracy</span><span class="stat-val">${pctAll}%</span></div>
+      <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pctAll}%;background:${pctAll>=80?'#44bd60':pctAll>=50?'#f5a623':'#eb3b5a'}"></div></div>
+      <div class="stat-row" style="margin-top:6px;"><span>Best Streak</span><span class="stat-val">🔥 ${state.bestStreak}</span></div>
+      <div class="stat-row"><span>Cats Collected</span><span class="stat-val">🐱 ${state.catsCollected.length}</span></div>
+    </div>
+    <div class="stat-card">
+      <h3>✕ Multiplication</h3>
+      <div class="stat-row"><span>Problems</span><span class="stat-val">${state.totalMul}</span></div>
+      <div class="stat-row"><span>Correct</span><span class="stat-val">${state.correctMul}</span></div>
+      <div class="stat-row"><span>Accuracy</span><span class="stat-val">${pctMul}%</span></div>
+      <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pctMul}%;background:${pctMul>=80?'#44bd60':pctMul>=50?'#f5a623':'#eb3b5a'}"></div></div>
+    </div>
+    <div class="stat-card">
+      <h3>÷ Division</h3>
+      <div class="stat-row"><span>Problems</span><span class="stat-val">${state.totalDiv}</span></div>
+      <div class="stat-row"><span>Correct</span><span class="stat-val">${state.correctDiv}</span></div>
+      <div class="stat-row"><span>Accuracy</span><span class="stat-val">${pctDiv}%</span></div>
+      <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pctDiv}%;background:${pctDiv>=80?'#44bd60':pctDiv>=50?'#f5a623':'#eb3b5a'}"></div></div>
+    </div>
+    <div class="stat-card">
+      <h3>Tables: 1–${state.maxTable}</h3>
+      <div class="settings-sub">Change in ⚙️ settings on Play tab</div>
+    </div>
+    <button class="reset-all-btn" id="resetAllBtn">🗑️ Reset All Progress</button>
+  `;
+
+  $('resetAllBtn').addEventListener('click', () => {
+    if (confirm('Reset ALL progress? This will delete your cats and stats.')) {
+      state = defaultState();
+      saveState();
+      sessionCorrect = 0; sessionTotal = 0;
+      updateTopBar(); updateProgress();
+      renderStats();
+      // Update table grid
+      tableGrid.querySelectorAll('.table-btn').forEach(b => b.classList.toggle('active', +b.dataset.n===state.maxTable));
+      $('settingsSub').textContent = `Tables 1–${state.maxTable} × 1–10`;
+      newProblem();
+    }
+  });
+}
+
+// ===================== INIT =====================
+newProblem();
+updateTopBar();
+</script>
+</body>
+</html>
