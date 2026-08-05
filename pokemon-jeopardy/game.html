@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pokémon Jeopardy!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Bitter:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --jep-blue:#060CE9;         /* board tile blue */
+  --jep-blue-dk:#040790;
+  --gold:#D69F4C;             /* clue value gold */
+  --gold-lt:#F5C87A;
+  --ink:#0A0A12;
+  --panel:#12142B;
+  --panel-lt:#1D2044;
+  --white:#FFFFFF;
+  --shadow:2px 2px 0 #000, 4px 4px 6px rgba(0,0,0,.6);
+  --gap:5px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);color:var(--white);
+  font-family:'Oswald',Impact,'Arial Narrow',sans-serif;
+  display:flex;flex-direction:column;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none}
+.hidden{display:none!important}
+
+/* ---------- shared chrome ---------- */
+.wrap{flex:1;display:flex;flex-direction:column;min-height:0;padding:12px;gap:10px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}
+.roundname{font-size:clamp(14px,2.2vw,22px);letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+.turnpill{font-size:clamp(12px,1.8vw,17px);letter-spacing:.08em;background:var(--panel-lt);
+  padding:6px 16px;border-radius:999px;border:2px solid var(--gold);text-transform:uppercase}
+.ghostbtn{background:transparent;color:#7d82b5;border:2px solid #2b2f5c;border-radius:6px;
+  padding:6px 14px;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.ghostbtn:hover{color:var(--white);border-color:var(--gold)}
+
+/* ---------- board ---------- */
+#board{flex:1;display:grid;gap:var(--gap);min-height:0}
+.col{display:grid;grid-template-rows:1.15fr repeat(5,1fr);gap:var(--gap);min-height:0}
+.cat,.cell{background:var(--jep-blue);display:flex;align-items:center;justify-content:center;
+  text-align:center;border-radius:3px;overflow:hidden;padding:4px}
+.cat{font-size:clamp(9px,1.35vw,19px);line-height:1.06;letter-spacing:.02em;font-weight:700;
+  text-transform:uppercase;text-shadow:var(--shadow);word-break:break-word;hyphens:auto}
+.cell{font-family:'Oswald';font-weight:700;color:var(--gold);
+  font-size:clamp(16px,3.1vw,46px);text-shadow:var(--shadow);
+  transition:transform .09s ease, filter .12s ease}
+.cell:not(.done):hover{filter:brightness(1.32);transform:scale(1.035)}
+.cell:not(.done):focus-visible{outline:4px solid var(--gold-lt);outline-offset:-4px}
+.cell.done{background:#03063a;color:transparent;cursor:default;pointer-events:none}
+
+/* ---------- scoreboard ---------- */
+#scores{flex:0 0 auto;display:flex;gap:10px;justify-content:center}
+.pod{flex:1;max-width:280px;background:linear-gradient(#20244f,#141733);
+  border-radius:8px 8px 4px 4px;padding:8px 10px 10px;text-align:center;
+  border-bottom:5px solid #3a3f7d;transition:.18s}
+.pod.active{border-bottom-color:var(--gold);background:linear-gradient(#2c3170,#191d45);
+  box-shadow:0 0 0 2px var(--gold), 0 0 22px rgba(214,159,76,.35)}
+.pod .nm{font-size:clamp(11px,1.5vw,16px);letter-spacing:.1em;text-transform:uppercase;
+  color:#a9adde;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod.active .nm{color:var(--white)}
+.pod .sc{font-size:clamp(20px,3.4vw,36px);font-weight:700;letter-spacing:.01em}
+.pod .sc.neg{color:#FF5A5A}
+
+/* ---------- clue overlay ---------- */
+#overlay{position:fixed;inset:0;background:var(--jep-blue);z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:3vh 5vw;gap:2vh;animation:zoomIn .26s cubic-bezier(.2,.8,.3,1);
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* auto-margin pseudos centre the content but still allow full scroll when it overflows */
+#overlay::before{content:'';margin-top:auto}
+#overlay::after{content:'';margin-bottom:auto}
+#overlay>*{flex-shrink:0}
+.mcRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(760px,90vw)}
+@media (max-width:560px){.mcRow{grid-template-columns:1fr}}
+.mcBtn{font-family:'Bitter',Georgia,serif;font-size:clamp(14px,2.1vw,24px);text-transform:uppercase;
+  padding:14px 12px;border-radius:10px;border:3px solid var(--gold);background:rgba(255,255,255,.06);
+  color:#fff;cursor:pointer;letter-spacing:.03em;line-height:1.15}
+.mcBtn:hover{background:var(--gold);color:#231400}
+/* once the answer is revealed, shrink the clue so the buttons always fit */
+#overlay.showingVerdict #clueImg{max-height:16vh}
+#overlay.showingVerdict #clueText{font-size:clamp(13px,2vw,24px);max-width:34ch}
+#overlay.showingVerdict .vhead{font-size:clamp(20px,3.6vw,40px)}
+@keyframes zoomIn{from{transform:scale(.06);opacity:.2}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){#overlay{animation:none}}
+#clueText{font-family:'Bitter',Georgia,serif;font-weight:600;text-transform:uppercase;
+  font-size:clamp(17px,3.5vw,46px);line-height:1.24;text-align:center;max-width:19ch;
+  text-shadow:var(--shadow);letter-spacing:.005em}
+#clueText.long{font-size:clamp(14px,2.5vw,31px);max-width:30ch}
+#clueImg{max-height:34vh;max-width:60vw;object-fit:contain;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
+#clueImg.sil{filter:brightness(0) drop-shadow(0 6px 14px rgba(0,0,0,.4));
+  transition:filter .5s ease}
+#clueImg.sil.revealed{filter:none}
+.cluemeta{font-size:clamp(11px,1.6vw,17px);letter-spacing:.22em;color:var(--gold-lt);
+  text-transform:uppercase}
+
+.answerRow{display:flex;gap:10px;width:min(680px,86vw)}
+#answerInput{flex:1;font-family:'Oswald';font-size:clamp(16px,2.4vw,26px);padding:12px 16px;
+  border-radius:8px;border:3px solid var(--gold);background:#fff;color:#111;text-align:center;
+  text-transform:uppercase;letter-spacing:.04em;min-width:0}
+#answerInput:focus{outline:none;border-color:var(--gold-lt);box-shadow:0 0 0 4px rgba(214,159,76,.35)}
+.gold{background:var(--gold);color:#231400;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;border-radius:8px;padding:12px 26px;font-size:clamp(13px,1.9vw,20px)}
+.gold:hover{background:var(--gold-lt)}
+.gold:disabled{opacity:.45;cursor:not-allowed}
+
+#verdict{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;
+  padding-bottom:2vh}
+.vhead{font-size:clamp(24px,5vw,60px);font-weight:700;letter-spacing:.06em;text-shadow:var(--shadow)}
+.vhead.ok{color:#7CFFA0}.vhead.no{color:#FF8A8A}
+.vans{font-family:'Bitter',Georgia,serif;font-size:clamp(18px,3.2vw,38px);text-transform:uppercase;
+  text-shadow:var(--shadow)}
+.vsub{font-size:clamp(11px,1.6vw,15px);letter-spacing:.14em;color:var(--gold-lt);text-transform:uppercase}
+.vbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.override{background:transparent;border:2px solid rgba(255,255,255,.45);color:#fff;
+  border-radius:8px;padding:10px 20px;font-size:clamp(11px,1.5vw,15px);letter-spacing:.1em;
+  text-transform:uppercase}
+.override:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+
+/* ---------- daily double ---------- */
+#dd{position:fixed;inset:0;background:var(--jep-blue);z-index:60;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:3vh;padding:5vw}
+.ddball{width:min(210px,34vw);aspect-ratio:1;border-radius:50%;position:relative;
+  background:linear-gradient(#EE1515 0 49.5%, #111 49.5% 50.5%, #F0F0F0 50.5% 100%);
+  border:6px solid #111;box-shadow:0 12px 34px rgba(0,0,0,.6);
+  animation:shake .55s cubic-bezier(.36,.07,.19,.97) 2}
+.ddball::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:29%;aspect-ratio:1;border-radius:50%;background:#F0F0F0;border:6px solid #111}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-13deg)}75%{transform:rotate(13deg)}}
+@media (prefers-reduced-motion:reduce){.ddball{animation:none}}
+.ddtitle{font-size:clamp(30px,7.5vw,86px);font-weight:700;letter-spacing:.06em;
+  color:var(--gold);text-shadow:var(--shadow);text-align:center}
+.ddsub{font-size:clamp(13px,2vw,22px);letter-spacing:.16em;text-align:center;text-transform:uppercase}
+.wagerRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+#wagerInput{font-family:'Oswald';font-size:clamp(20px,3.4vw,34px);width:min(240px,60vw);
+  padding:10px 14px;border-radius:8px;border:3px solid var(--gold);text-align:center;background:#fff;color:#111}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.4);color:#fff;
+  border-radius:999px;padding:7px 16px;font-size:clamp(11px,1.5vw,15px);letter-spacing:.08em}
+.chip:hover{background:rgba(255,255,255,.28)}
+
+/* ---------- setup / interstitial ---------- */
+.screen{position:fixed;inset:0;z-index:70;background:radial-gradient(circle at 50% 22%,#171B4A,#05060F 72%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:5vh 6vw;overflow-y:auto}
+.logo{text-align:center;line-height:.94}
+.logo .l1{font-size:clamp(30px,7vw,74px);font-weight:700;letter-spacing:.03em;color:var(--gold);
+  text-shadow:var(--shadow)}
+.logo .l2{font-size:clamp(42px,11.5vw,124px);font-weight:700;letter-spacing:.02em;
+  text-shadow:var(--shadow);-webkit-text-stroke:2px #000}
+.setupCard{background:rgba(12,15,44,.92);border:2px solid #2c3170;border-radius:14px;
+  padding:22px 26px;display:flex;flex-direction:column;gap:18px;width:min(560px,92vw)}
+.fieldLabel{font-size:12px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.segs{display:flex;gap:8px}
+.seg{flex:1;background:#191d45;color:#9aa0d8;border:2px solid #2c3170;border-radius:8px;
+  padding:11px 4px;font-size:15px;letter-spacing:.08em;text-transform:uppercase}
+.seg.on{background:var(--gold);color:#231400;border-color:var(--gold);font-weight:700}
+.nameIn{width:100%;font-family:'Oswald';font-size:17px;padding:11px 14px;border-radius:8px;
+  border:2px solid #2c3170;background:#0C0F2C;color:#fff;margin-bottom:8px;letter-spacing:.04em}
+.nameIn:focus{outline:none;border-color:var(--gold)}
+.toggleRow{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:13px;letter-spacing:.06em;color:#b9bdea;text-transform:uppercase}
+.sw{width:52px;height:28px;border-radius:999px;background:#2c3170;position:relative;flex:0 0 auto}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:#8b91cf;transition:.18s}
+.sw.on{background:var(--gold)}.sw.on::after{left:27px;background:#fff}
+.hint{font-size:11.5px;color:#6b70a8;letter-spacing:.04em;line-height:1.5;text-transform:none}
+
+.interTitle{font-size:clamp(28px,6vw,68px);font-weight:700;color:var(--gold);
+  text-shadow:var(--shadow);text-align:center;letter-spacing:.04em}
+.interSub{font-size:clamp(13px,2vw,20px);letter-spacing:.14em;text-align:center;color:#b9bdea;text-transform:uppercase}
+.resultTable{width:min(560px,92vw);display:flex;flex-direction:column;gap:8px}
+.resultRow{display:flex;justify-content:space-between;align-items:center;background:#141733;
+  border-radius:8px;padding:13px 18px;border-left:5px solid #3a3f7d;font-size:clamp(14px,2.2vw,20px);
+  letter-spacing:.06em;text-transform:uppercase}
+.resultRow.win{border-left-color:var(--gold);background:#232855}
+.resultRow .amt{font-weight:700;color:var(--gold)}
+
+@media (max-width:640px){
+  .wrap{padding:7px;gap:7px}
+  :root{--gap:3px}
+  .pod{padding:6px 5px 7px}
+}
+</style>
+</head>
+<body>
+
+<style>
+.flagRow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.flagBtn{font-family:inherit;font-size:12px;letter-spacing:.04em;padding:7px 12px;
+  border-radius:999px;cursor:pointer;background:rgba(255,255,255,.07);
+  color:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.18)}
+.flagBtn:hover{background:rgba(255,255,255,.13);color:#fff}
+.flagBtn.on{background:#C0392B;border-color:#E74C3C;color:#fff}
+.flagBtn.dif.on{background:#2C6FBB;border-color:#4A93E0}
+.flagLbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);align-self:center}
+.adminRow{display:flex;align-items:center;gap:10px;justify-content:center;
+  margin-top:12px;font-size:12px;color:rgba(255,255,255,.5)}
+.linkBtn{background:none;border:none;color:#D69F4C;font-family:inherit;font-size:12px;
+  cursor:pointer;text-decoration:underline;padding:2px 4px}
+.linkBtn:hover{color:#f0c078}
+#homeScores{margin-top:4px}
+.hsTitle{font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.45);margin-bottom:6px}
+.hsRow{display:flex;justify-content:space-between;font-size:13px;
+  color:rgba(255,255,255,.8);padding:3px 0}
+.hsRow .amt{color:#D69F4C;font-variant-numeric:tabular-nums}
+</style>
+<!-- ============ SETUP ============ -->
+<div class="screen" id="setup">
+  <div class="logo"><div class="l1">Pokémon</div><div class="l2">JEOPARDY!</div></div>
+  <div class="setupCard">
+    <div>
+      <div class="fieldLabel">Players</div>
+      <div class="segs" id="segPlayers">
+        <button class="seg on" data-n="1">1</button>
+        <button class="seg" data-n="2">2</button>
+        <button class="seg" data-n="3">3</button>
+      </div>
+    </div>
+    <div id="nameFields"></div>
+    <div>
+      <div class="fieldLabel">Board size</div>
+      <div class="segs" id="segBoard">
+        <button class="seg" data-c="3">Short<br><span style="font-size:10px;opacity:.75">3 cats</span></button>
+        <button class="seg on" data-c="4">Medium<br><span style="font-size:10px;opacity:.75">4 cats</span></button>
+        <button class="seg" data-c="6">Full<br><span style="font-size:10px;opacity:.75">6 cats</span></button>
+      </div>
+    </div>
+    <div>
+      <div class="fieldLabel">Answering</div>
+      <div class="segs" id="segMode">
+        <button class="seg on" data-m="0">Type it<br><span style="font-size:10px;opacity:.75">spelling is forgiving</span></button>
+        <button class="seg" data-m="1">Multiple choice<br><span style="font-size:10px;opacity:.75">pick from 4</span></button>
+      </div>
+    </div>
+    <div>
+      <div class="toggleRow"><span>Lose points for wrong answers</span><button class="sw" id="swPenalty"></button></div>
+      <div class="hint">Off by default. Daily Doubles and Final Jeopardy always risk your wager.</div>
+    </div>
+    <div id="homeScores"></div>
+    <button class="gold" id="startBtn" style="width:100%">Start game</button>
+    <div class="adminRow">
+      <span id="flagCount">No reported clues</span>
+      <button class="linkBtn" id="expBtn">Export</button>
+      <button class="linkBtn" id="clrBtn">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INTERSTITIAL ============ -->
+<div class="screen hidden" id="inter">
+  <div class="interTitle" id="interTitle"></div>
+  <div class="interSub" id="interSub"></div>
+  <div id="interBody"></div>
+  <button class="gold" id="interBtn">Continue</button>
+</div>
+
+<!-- ============ MAIN ============ -->
+<div class="wrap" id="main">
+  <div class="topbar">
+    <div class="roundname" id="roundName">Jeopardy!</div>
+    <div class="turnpill" id="turnPill">—</div>
+    <button class="ghostbtn" id="quitBtn">New game</button>
+  </div>
+  <div id="board"></div>
+  <div id="scores"></div>
+</div>
+
+<!-- ============ CLUE OVERLAY ============ -->
+<div id="overlay" class="hidden">
+  <div class="cluemeta" id="clueMeta"></div>
+  <img id="clueImg" class="hidden" alt="">
+  <div id="clueText"></div>
+  <div class="mcRow hidden" id="mcRow"></div>
+  <div class="answerRow" id="answerRow">
+    <input id="answerInput" placeholder="Your answer" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="gold" id="submitBtn">Answer</button>
+  </div>
+  <div id="verdict" class="hidden"></div>
+</div>
+
+<!-- ============ DAILY DOUBLE ============ -->
+<div id="dd" class="hidden">
+  <div class="ddball"></div>
+  <div class="ddtitle">DAILY DOUBLE!</div>
+  <div class="ddsub" id="ddWho"></div>
+  <div class="wagerRow">
+    <input id="wagerInput" type="number" min="5" step="5" inputmode="numeric">
+    <button class="gold" id="wagerBtn">Wager</button>
+  </div>
+  <div class="chips" id="wagerChips"></div>
+  <div class="ddsub" id="ddMax" style="opacity:.8"></div>
+</div>
+
+<script>
+const DATA = __QUESTIONS__;
+
+/* placeholder */
+/* ================= config ================= */
+const CFG = { players:1, names:['Player 1'], cats:4, penalize:false, mc:false };
+
+/* ================= persistence =================
+   localStorage, not cookies: cookies cap ~4KB and are blocked on file://  */
+const STORE_KEY = 'pokejeopardy:v1';
+let ST = { flags:{}, difficulty:{}, scores:[], cfg:null };
+let STORE_OK = true;
+function loadStore(){
+  try{ const raw = localStorage.getItem(STORE_KEY);
+       if(raw) ST = Object.assign({flags:{},difficulty:{},scores:[],cfg:null}, JSON.parse(raw));
+       ST.difficulty = ST.difficulty || {}; }
+  catch(e){ STORE_OK = false; }
+}
+function saveStore(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(ST)); }
+  catch(e){ STORE_OK = false; }
+}
+function flagCount(){ return Object.keys(ST.flags).length; }
+function diffCount(){ return Object.keys(ST.difficulty).length; }
+function reportCount(){ return flagCount() + diffCount(); }
+function diffDir(id){ return (id && ST.difficulty[id]) ? ST.difficulty[id].direction : null; }
+/* three-state: none -> easier -> none, or none -> harder -> none */
+function setDifficulty(clue, catName, value, direction){
+  if(!clue || !clue.id) return null;
+  const cur = diffDir(clue.id);
+  if(cur === direction){ delete ST.difficulty[clue.id]; saveStore(); return null; }
+  ST.difficulty[clue.id] = { id:clue.id, category:catName||'', direction,
+    assignedTier: (typeof clue.t === 'number' ? clue.t : null),
+    shownValue: value, round: (typeof G!=='undefined' && G ? G.round : null),
+    clue:clue.c, response:clue.r, at:new Date().toISOString() };
+  saveStore(); return direction;
+}
+function isFlagged(id){ return !!(id && ST.flags[id]); }
+function toggleFlag(clue, catName, why){
+  if(!clue || !clue.id) return false;
+  if(ST.flags[clue.id]){ delete ST.flags[clue.id]; saveStore(); return false; }
+  // store full text so a flag stays actionable even if the clue is later reworded
+  ST.flags[clue.id] = { id:clue.id, category:catName||'', why:why||'reported',
+    clue:clue.c, response:clue.r, aliases:clue.a||[], at:new Date().toISOString() };
+  saveStore(); return true;
+}
+function exportFlags(){
+  const arr = Object.values(ST.flags).sort((a,b)=>a.id.localeCompare(b.id));
+  const dif = Object.values(ST.difficulty).sort((a,b)=>a.id.localeCompare(b.id));
+  const payload = { exported:new Date().toISOString(),
+    questionSetVersion:(window.DATA && DATA.version) || 'unknown',
+    flagCount:arr.length, difficultyCount:dif.length,
+    flags:arr, difficulty:dif };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'pokejeopardy-reports-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function recordScore(){
+  G.players.forEach(p=>ST.scores.push({ name:p.name, score:p.score,
+    at:new Date().toISOString(), players:G.players.length,
+    cats:CFG.cats, penalize:CFG.penalize }));
+  ST.scores.sort((a,b)=>b.score-a.score);
+  ST.scores = ST.scores.slice(0,25);
+  saveStore();
+}
+const VALUES = [200,400,600,800,1000];
+
+/* ================= state ================= */
+let G = null;
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const rand = a => a[Math.floor(Math.random()*a.length)];
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const money = n => (n<0?'-$':'$') + Math.abs(n).toLocaleString();
+
+/* ---- answer matching ---- */
+function norm(s){
+  return (s||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[\u2640]/g,' f').replace(/[\u2642]/g,' m')
+    .replace(/^(what|who|where|when|which)\s+(is|are|was|were)\s+/,'')
+    .replace(/^(a|an|the)\s+/,'')
+    .replace(/[^a-z0-9 ]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+function lev(a,b){
+  if(a===b) return 0;
+  const m=a.length,n=b.length;
+  if(!m||!n) return m||n;
+  let prev=Array.from({length:n+1},(_,i)=>i), cur=new Array(n+1);
+  for(let i=1;i<=m;i++){
+    cur[0]=i;
+    for(let j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+    [prev,cur]=[cur,prev];
+  }
+  return prev[n];
+}
+/* ---- generous matching for a nine-year-old's spelling ----
+   Four independent chances to be judged correct; any one passing is enough. */
+const FILLER = /^(what|who|whats|whos|its|it is|is|a|an|the)\s+/i;
+const TAIL = /\s+(type|pokemon|pokémon|region|form|forme|evolution)$/i;
+function stripFiller(t){
+  let p=String(t||'').trim();
+  for(let i=0;i<3;i++) p=p.replace(FILLER,'');
+  return p.trim();
+}
+function stripTail(t){ let p=stripFiller(t); return p.replace(TAIL,'').trim() || p; }
+
+/* Crude phonetic key: what the name SOUNDS like, so spelling barely matters.
+   charizard/charzard/charizzard -> same key. */
+function soundKey(w){
+  let t = w.toLowerCase().replace(/[^a-z]/g,'');
+  if(!t) return '';
+  t = t.replace(/ck/g,'k').replace(/ph/g,'f').replace(/ch/g,'C')
+       .replace(/sh/g,'S').replace(/th/g,'T').replace(/qu/g,'kw')
+       .replace(/x/g,'ks').replace(/c/g,'k').replace(/q/g,'k')
+       .replace(/z/g,'s').replace(/v/g,'f').replace(/j/g,'g')
+       .replace(/y/g,'i');
+  t = t.replace(/(.)\1+/g,'$1');                 // doubled letters
+  const first = t[0];
+  t = first + t.slice(1).replace(/[aeiou]/g,'');  // consonant skeleton
+  return t.replace(/(.)\1+/g,'$1');
+}
+
+/* Damerau-Levenshtein: also forgives swapped adjacent letters (tyranitar/tyrantiar) */
+function dlev(a,b){
+  const m=a.length,n=b.length;
+  if(!m) return n; if(!n) return m;
+  const d=Array.from({length:m+1},(_,i)=>Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) d[i][0]=i;
+  for(let j=0;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){
+    const c = a[i-1]===b[j-1]?0:1;
+    d[i][j]=Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+c);
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]) d[i][j]=Math.min(d[i][j], d[i-2][j-2]+1);
+  }
+  return d[m][n];
+}
+
+function matchesOne(g, p){
+  if(!g || !p) return false;
+  if(g===p) return true;
+  // generous edit distance: ~1 mistake per 3 characters, minimum 2
+  const tol = Math.max(2, Math.floor(p.length/3));
+  if(dlev(g,p) <= tol) return true;
+  // sounds the same
+  const gk=soundKey(g), pk=soundKey(p);
+  if(gk && pk && (gk===pk || (pk.length>=6 && dlev(gk,pk)<=1))) return true;
+  // prefix / containment rules, but the length gap must stay small so that
+  // "dragonite" is not accepted for "dragon"
+  const delta = Math.abs(g.length - p.length);
+  const maxDelta = p.length <= 7 ? 2 : 4;
+  if(p.length>=6 && g.length>=5 && p.slice(0,5)===g.slice(0,5) && delta<=maxDelta) return true;
+  if(p.length>5 && (p.includes(g)||g.includes(p)) && delta<=maxDelta) return true;
+  return false;
+}
+/* every word the player typed prefix-matches a distinct word of the answer */
+function tokenSubset(gRaw, pRaw){
+  const gt = gRaw.split(/\s+/).filter(Boolean), pt = pRaw.split(/\s+/).filter(Boolean);
+  if(gt.length<1 || gt.length>pt.length || pt.length<2) return false;
+  const left = pt.slice();
+  for(const w of gt){
+    const i = left.findIndex(x => x.startsWith(w.slice(0,Math.min(3,w.length))) &&
+                                  (x.startsWith(w) || w.startsWith(x) || dlev(w,x)<=2));
+    if(i<0) return false;
+    left.splice(i,1);
+  }
+  return true;
+}
+
+function isCorrect(input, clue){
+  const raw = stripFiller(String(input||''));
+  const g = norm(raw);
+  if(!g) return false;
+  const pool = [clue.r, ...(clue.a||[])].map(x=>norm(stripFiller(String(x)))).filter(Boolean);
+  for(const p of pool){ if(matchesOne(g,p)) return true; }
+  // "flying type" -> "flying";  "mega evo" -> "mega evolution"
+  const gT = norm(stripTail(raw));
+  for(const x of [clue.r, ...(clue.a||[])]){
+    const pT = norm(stripTail(String(x)));
+    if(pT && matchesOne(gT,pT)) return true;
+    if(tokenSubset(stripFiller(raw).toLowerCase(), String(x).toLowerCase())) return true;
+  }
+  // also try each word of a multi-word answer on its own
+  for(const p of pool){
+    for(const w of String(p).split(/\s+/)) if(w.length>=5 && matchesOne(g,norm(w))) return true;
+  }
+  return false;
+}
+
+/* ---- board assembly ---- */
+function drawTier(cat, t, used){
+  const tiers = DATA.categories[cat].tiers;
+  const order = [t, t+1, t-1, t+2, t-2, t+3, t-3, t+4, t-4];
+  for(const o of order){
+    const pool = tiers[String(o)];
+    if(!pool || !pool.length) continue;
+    const ok = shuffle(pool).find(c => !used.has(norm(c.r)));
+    if(ok) return ok;
+  }
+  return null;
+}
+function buildCategory(name, used, skew){
+  const meta = DATA.categories[name];
+  if(meta.src === 'B'){
+    // hand-authored categories are fixed, so skip any that collide with answers already on the board
+    if(meta.fixed.some(c => used.has(norm(c.r)))) return null;
+    meta.fixed.forEach(c => used.add(norm(c.r)));
+    return { name, silhouette:false, clues: meta.fixed.map(c => ({...c})) };
+  }
+  const clues=[];
+  for(let i=0;i<5;i++){
+    const t = Math.min(4, i + skew);
+    const c = drawTier(name, t, used);
+    if(!c) return null;
+    used.add(norm(c.r));
+    clues.push(c);
+  }
+  return { name, silhouette: !!meta.silhouette, clues };
+}
+function buildBoard(nCats, skew, usedCats, used){
+  const names = shuffle(Object.keys(DATA.categories)).filter(n => !usedCats.has(n));
+  const out = [];
+  for(const n of names){
+    if(out.length >= nCats) break;
+    const c = buildCategory(n, used, skew);
+    if(c){ out.push(c); usedCats.add(n); }
+  }
+  return out;
+}
+
+/* ================= game flow ================= */
+function newGame(){
+  G = {
+    round: 1,
+    players: CFG.names.slice(0, CFG.players).map((n,i)=>({name:n, score:0, id:i})),
+    turn: 0,
+    usedCats: new Set(),
+    usedAnswers: new Set(),
+    board: null,
+    remaining: 0,
+    dd: new Set(),
+    finalWagers: {},
+    finalIdx: 0,
+    finalClue: null
+  };
+  startRound(1);
+}
+function startRound(r){
+  G.round = r;
+  const skew = r===2 ? 1 : 0;
+  G.board = buildBoard(CFG.cats, skew, G.usedCats, G.usedAnswers);
+  G.remaining = G.board.length * 5;
+  // Daily Doubles: 1 in round 1, 2 in round 2. Never in the top row.
+  G.dd = new Set();
+  const cells = [];
+  for(let c=0;c<G.board.length;c++) for(let r2=1;r2<5;r2++) cells.push(c+':'+r2);
+  shuffle(cells).slice(0, r===2?2:1).forEach(k=>G.dd.add(k));
+  $('#roundName').textContent = r===2 ? 'Double Jeopardy!' : 'Jeopardy!';
+  renderBoard(); renderScores();
+}
+function valueAt(row){ return VALUES[row] * (G.round===2?2:1); }
+
+function renderBoard(){
+  const b = $('#board');
+  b.style.gridTemplateColumns = `repeat(${G.board.length},1fr)`;
+  b.innerHTML = '';
+  G.board.forEach((cat,ci)=>{
+    const col = document.createElement('div'); col.className='col';
+    const h = document.createElement('div'); h.className='cat'; h.textContent = cat.name;
+    col.appendChild(h);
+    cat.clues.forEach((clue,ri)=>{
+      const cell = document.createElement('button');
+      cell.className = 'cell' + (clue.done ? ' done' : '');
+      cell.textContent = money(valueAt(ri));
+      cell.onclick = ()=>openClue(ci,ri);
+      col.appendChild(cell);
+    });
+    b.appendChild(col);
+  });
+}
+function renderScores(){
+  $('#scores').innerHTML = G.players.map(p=>`
+    <div class="pod ${p.id===G.turn?'active':''}">
+      <div class="nm">${p.name}</div>
+      <div class="sc ${p.score<0?'neg':''}">${money(p.score)}</div>
+    </div>`).join('');
+  $('#turnPill').textContent = G.players.length>1
+    ? `${G.players[G.turn].name}'s turn`
+    : G.players[0].name;
+}
+function nextTurn(){ G.turn = (G.turn+1) % G.players.length; renderScores(); }
+
+/* ---- clue ---- */
+let CUR = null;
+function openClue(ci,ri){
+  const cat = G.board[ci], clue = cat.clues[ri];
+  if(clue.done) return;
+  const value = valueAt(ri);
+  CUR = { ci, ri, cat, clue, value, wager:null, isDD:G.dd.has(ci+':'+ri) };
+  if(CUR.isDD) showDailyDouble();
+  else showClue();
+}
+function showDailyDouble(){
+  const p = G.players[G.turn];
+  const maxBoard = VALUES[4] * (G.round===2?2:1);
+  const max = Math.max(p.score, maxBoard);
+  $('#ddWho').textContent = `${p.name} — how much do you risk?`;
+  $('#ddMax').textContent = `Minimum $5 · Maximum ${money(max)}`;
+  const wi = $('#wagerInput'); wi.max = max; wi.value = Math.min(CUR.value, max);
+  $('#wagerChips').innerHTML =
+    [['Small',Math.min(200*(G.round===2?2:1),max)],
+     ['Half',Math.max(5,Math.floor(max/2/5)*5)],
+     ['Everything',max]]
+    .map(([l,v])=>`<button class="chip" data-v="${v}">${l} · ${money(v)}</button>`).join('');
+  $('#wagerChips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ wi.value=b.dataset.v; });
+  $('#dd').classList.remove('hidden');
+  setTimeout(()=>wi.focus(),380);
+}
+$('#wagerBtn').onclick = ()=>{
+  const p = G.players[G.turn];
+  const max = Math.max(p.score, VALUES[4]*(G.round===2?2:1));
+  let w = parseInt($('#wagerInput').value,10);
+  if(isNaN(w)) w = 5;
+  CUR.wager = Math.max(5, Math.min(max, w));
+  $('#dd').classList.add('hidden');
+  showClue();
+};
+
+function allResponsesIn(catName){
+  const m = DATA.categories[catName]; if(!m) return [];
+  if(m.fixed) return m.fixed.map(c=>c.r);
+  return Object.values(m.tiers).flat().map(c=>c.r);
+}
+function distractors(catName, correct, n){
+  const bad = new Set([norm(correct)]);
+  let pool = allResponsesIn(catName).filter(r=>!bad.has(norm(r)));
+  if(pool.length < n*3){
+    for(const k of Object.keys(DATA.categories)){
+      if(pool.length >= n*3) break;
+      if(k!==catName) pool = pool.concat(allResponsesIn(k).filter(r=>!bad.has(norm(r))));
+    }
+  }
+  const out=[], seen=new Set([norm(correct)]);
+  for(const r of shuffle(pool)){
+    if(out.length>=n) break;
+    const k=norm(r); if(seen.has(k)) continue;
+    seen.add(k); out.push(r);
+  }
+  return out;
+}
+function renderChoices(){
+  const row = $('#mcRow');
+  const opts = shuffle([CUR.clue.r, ...distractors(CUR.cat.name, CUR.clue.r, 3)]);
+  row.innerHTML = opts.map((o,i)=>`<button class="mcBtn" data-i="${i}">${o}</button>`).join('');
+  row.querySelectorAll('.mcBtn').forEach((b,i)=>{
+    b.onclick = ()=>{ row.classList.add('hidden'); showVerdict(norm(opts[i])===norm(CUR.clue.r), opts[i]); };
+  });
+  row.classList.remove('hidden');
+}
+function showClue(){
+  const {clue, cat, value, wager, isDD} = CUR;
+  $('#clueMeta').textContent = `${cat.name} — ${money(wager ?? value)}${isDD?' · Daily Double':''}`;
+  const t = $('#clueText');
+  t.textContent = clue.c;
+  t.className = clue.c.length > 95 ? 'long' : '';
+  const img = $('#clueImg');
+  if(clue.i){
+    img.src = clue.i; img.classList.remove('hidden','revealed');
+    img.classList.toggle('sil', !!cat.silhouette);
+  } else img.classList.add('hidden');
+  $('#verdict').classList.add('hidden');
+  $('#overlay').classList.remove('showingVerdict');
+  if(CFG.mc){
+    $('#answerRow').classList.add('hidden');
+    renderChoices();
+    $('#overlay').classList.remove('hidden');
+  } else {
+    $('#mcRow').classList.add('hidden');
+    $('#answerRow').classList.remove('hidden');
+    $('#answerInput').value=''; $('#submitBtn').disabled=false;
+    $('#overlay').classList.remove('hidden');
+    setTimeout(()=>$('#answerInput').focus(),300);
+  }
+}
+$('#submitBtn').onclick = submitAnswer;
+$('#answerInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); submitAnswer(); }
+});
+
+function submitAnswer(){
+  const given = $('#answerInput').value;
+  const ok = isCorrect(given, CUR.clue);
+  showVerdict(ok, given);
+}
+let VERDICT_AT = 0;
+function showVerdict(ok, given){
+  $('#submitBtn').disabled = true;
+  $('#answerRow').classList.add('hidden');
+  $('#mcRow').classList.add('hidden');
+  $('#clueImg').classList.add('revealed');
+  const v = $('#verdict');
+  const amount = CUR.wager ?? CUR.value;
+  const willChange = ok ? amount : (CUR.isDD || CFG.penalize ? -amount : 0);
+  v.innerHTML = `
+    <div class="vhead ${ok?'ok':'no'}">${ok?'Correct!':'Not quite'}</div>
+    <div class="vans">${CUR.clue.r}</div>
+    <div class="vsub">${willChange===0?'No change':(willChange>0?'+':'') + money(willChange)}</div>
+    <div class="vbtns">
+      ${!ok ? `<button class="override" id="ovBtn">Actually, that was right</button>` : ``}
+      <button class="gold" id="nextBtn">Continue</button>
+    </div>
+    <div class="flagRow">
+      <button class="flagBtn ${isFlagged(CUR.clue.id)?'on':''}" id="flagWrong">&#128681; Answer is wrong</button>
+      <button class="flagBtn ${isFlagged(CUR.clue.id)?'on':''}" id="flagBad">&#128681; Confusing clue</button>
+    </div>
+    <div class="flagRow">
+      <span class="flagLbl">Wrong money?</span>
+      <button class="flagBtn dif ${diffDir(CUR.clue.id)==='easier'?'on':''}" id="difEasy">Too easy</button>
+      <button class="flagBtn dif ${diffDir(CUR.clue.id)==='harder'?'on':''}" id="difHard">Too hard</button>
+    </div>`;
+  v.classList.remove('hidden');
+  $('#overlay').classList.add('showingVerdict');
+  VERDICT_AT = Date.now();
+  const wire=(sel,why)=>{ const b=$(sel); if(!b) return; b.onclick=()=>{
+    const on = toggleFlag(CUR.clue, CUR.cat && CUR.cat.name, why);
+    v.querySelectorAll('.flagBtn').forEach(x=>x.classList.toggle('on', on));
+  };};
+  wire('#flagWrong','wrong-answer'); wire('#flagBad','bad-clue');
+  const wireDif=(sel,dir)=>{ const b=$(sel); if(!b) return; b.onclick=()=>{
+    const now = setDifficulty(CUR.clue, CUR.cat && CUR.cat.name, CUR.wager ?? CUR.value, dir);
+    $('#difEasy').classList.toggle('on', now==='easier');
+    $('#difHard').classList.toggle('on', now==='harder');
+  };};
+  wireDif('#difEasy','easier'); wireDif('#difHard','harder');
+  if(!ok) $('#ovBtn').onclick = ()=>showVerdict(true, given);
+  $('#nextBtn').onclick = ()=>{
+    // ignore the tail of the same Enter press that opened this panel
+    if(Date.now() - VERDICT_AT < 450) return;
+    resolveClue(ok, willChange);
+  };
+  setTimeout(()=>{ const b=$('#nextBtn'); if(b) b.focus(); }, 460);
+}
+function resolveClue(ok, delta){
+  G.players[G.turn].score += delta;
+  CUR.clue.done = true;
+  G.remaining--;
+  $('#overlay').classList.add('hidden');
+  $('#overlay').classList.remove('showingVerdict');
+  CUR = null;
+  nextTurn();
+  renderBoard(); renderScores();
+  if(G.remaining <= 0) endRound();
+}
+function endRound(){
+  if(G.round === 1){
+    inter('Double Jeopardy!','All values are doubled', '', 'Start round 2', ()=>startRound(2));
+  } else {
+    startFinal();
+  }
+}
+
+/* ---- final jeopardy ---- */
+function startFinal(){
+  G.finalClue = rand(DATA.final);
+  const eligible = G.players.filter(p=>p.score>0);
+  if(!eligible.length){
+    inter('Final Jeopardy!','Nobody has points to wager','', 'See results', showResults);
+    return;
+  }
+  G.finalQueue = eligible.map(p=>p.id);
+  G.finalIdx = 0;
+  askWager();
+}
+function askWager(){
+  if(G.finalIdx >= G.finalQueue.length){ revealFinalClue(); return; }
+  const p = G.players[G.finalQueue[G.finalIdx]];
+  inter('Final Jeopardy!', `${p.name} — set your wager`,
+    `<div class="wagerRow" style="margin:8px 0">
+       <input id="fWager" type="number" min="0" step="5" value="0" max="${p.score}"
+         style="font-family:Oswald;font-size:30px;width:min(240px,60vw);padding:10px;border-radius:8px;border:3px solid var(--gold);text-align:center">
+     </div>
+     <div class="interSub" style="opacity:.75">You can wager up to ${money(p.score)}</div>`,
+    'Lock it in', ()=>{
+      let w = parseInt($('#fWager').value,10); if(isNaN(w)) w=0;
+      G.finalWagers[p.id] = Math.max(0, Math.min(p.score, w));
+      G.finalIdx++;
+      askWager();
+    });
+  setTimeout(()=>{ const f=$('#fWager'); if(f){f.focus();f.select();} },200);
+}
+function revealFinalClue(){
+  G.finalIdx = 0;
+  askFinalAnswer();
+}
+function askFinalAnswer(){
+  if(G.finalIdx >= G.finalQueue.length){ showResults(); return; }
+  const p = G.players[G.finalQueue[G.finalIdx]];
+  inter('Final Jeopardy!', p.name,
+    `<div style="font-family:Bitter,Georgia,serif;font-weight:600;text-transform:uppercase;
+        font-size:clamp(15px,2.6vw,30px);line-height:1.3;text-align:center;max-width:26ch;
+        margin:14px auto;text-shadow:var(--shadow)">${G.finalClue.c}</div>
+     <div class="wagerRow"><input id="fAns" placeholder="Your answer" autocomplete="off"
+        style="font-family:Oswald;font-size:22px;width:min(420px,80vw);padding:11px;border-radius:8px;
+        border:3px solid var(--gold);text-align:center;text-transform:uppercase"></div>`,
+    'Submit', ()=>{
+      const given = $('#fAns').value;
+      const ok = isCorrect(given, G.finalClue);
+      const w = G.finalWagers[p.id] || 0;
+      finalVerdict(p, ok, w, given);
+    });
+  setTimeout(()=>{ const f=$('#fAns'); if(f) f.focus(); },200);
+}
+function finalVerdict(p, ok, w, given){
+  inter(ok?'Correct!':'Not quite', p.name,
+    `<div class="vans" style="margin:10px 0">${G.finalClue.r}</div>
+     <div class="interSub">${given?`You said: ${given}`:'No answer given'}</div>
+     <div class="vsub" style="margin-top:10px;font-size:19px">${ok?'+':'-'}${money(w).replace('-','')}</div>
+     ${!ok?`<div style="margin-top:14px"><button class="override" id="fOv">Actually, that was right</button></div>`:''}`,
+    'Continue', ()=>{
+      p.score += ok ? w : -w;
+      G.finalIdx++;
+      askFinalAnswer();
+    });
+  setTimeout(()=>{
+    const b=$('#fOv');
+    if(b) b.onclick = ()=>finalVerdict(p, true, w, given);
+  },80);
+}
+function showResults(){
+  recordScore();
+  const sorted = G.players.slice().sort((a,b)=>b.score-a.score);
+  const top = sorted[0].score;
+  inter('Final scores', top>0 ? `${sorted.filter(p=>p.score===top).map(p=>p.name).join(' & ')} wins!` : 'Better luck next time',
+    `<div class="resultTable">${sorted.map(p=>`
+      <div class="resultRow ${p.score===top&&top>0?'win':''}">
+        <span>${p.name}</span><span class="amt">${money(p.score)}</span>
+      </div>`).join('')}</div>`,
+    'Play again', ()=>{ renderHome(); $('#setup').classList.remove('hidden'); });
+  if(G.finalClue){
+    const fb=document.createElement('button');
+    fb.className='flagBtn'+(isFlagged(G.finalClue.id)?' on':'');
+    fb.style.marginTop='14px';
+    fb.innerHTML='&#128681; Report the Final Jeopardy clue';
+    fb.onclick=()=>{ const on=toggleFlag(G.finalClue,'FINAL JEOPARDY','reported');
+                     fb.classList.toggle('on',on); };
+    $('#interBody').appendChild(fb);
+  }
+}
+
+/* ---- interstitial ---- */
+function inter(title, sub, bodyHTML, btnLabel, cb){
+  $('#interTitle').textContent = title;
+  $('#interSub').textContent = sub;
+  $('#interBody').innerHTML = bodyHTML || '';
+  const b = $('#interBtn'); b.textContent = btnLabel;
+  b.onclick = ()=>{ $('#inter').classList.add('hidden'); cb(); };
+  $('#inter').classList.remove('hidden');
+  setTimeout(()=>{ if(!$('#interBody').querySelector('input')) b.focus(); },120);
+}
+
+/* ================= setup UI ================= */
+function renderNameFields(){
+  const wrap = $('#nameFields');
+  wrap.innerHTML = `<div class="fieldLabel">Names</div>` +
+    Array.from({length:CFG.players},(_,i)=>
+      `<input class="nameIn" data-i="${i}" maxlength="14" placeholder="Player ${i+1}" value="${CFG.names[i]&&CFG.names[i]!=='Player '+(i+1)?CFG.names[i]:''}">`
+    ).join('');
+  wrap.querySelectorAll('.nameIn').forEach(el=>{
+    el.oninput = ()=>{ CFG.names[+el.dataset.i] = el.value.trim() || ('Player '+(+el.dataset.i+1)); };
+  });
+}
+$('#segPlayers').querySelectorAll('.seg').forEach(b=>b.onclick=()=>{
+  $('#segPlayers').querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); CFG.players = +b.dataset.n;
+  for(let i=0;i<3;i++) if(!CFG.names[i]) CFG.names[i]='Player '+(i+1);
+  renderNameFields();
+});
+$('#segBoard').querySelectorAll('.seg').forEach(b=>b.onclick=()=>{
+  $('#segBoard').querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); CFG.cats = +b.dataset.c;
+});
+$('#segMode').querySelectorAll('.seg').forEach(b=>b.onclick=()=>{
+  $('#segMode').querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); CFG.mc = b.dataset.m==='1';
+});
+$('#swPenalty').onclick = ()=>{
+  CFG.penalize = !CFG.penalize;
+  $('#swPenalty').classList.toggle('on', CFG.penalize);
+$('#segMode').querySelectorAll('.seg').forEach(b=>
+  b.classList.toggle('on', (b.dataset.m==='1') === !!CFG.mc));
+};
+$('#startBtn').onclick = ()=>{
+  for(let i=0;i<CFG.players;i++) if(!CFG.names[i]) CFG.names[i]='Player '+(i+1);
+  ST.cfg = {players:CFG.players, names:CFG.names.slice(), cats:CFG.cats,
+            penalize:CFG.penalize, mc:CFG.mc};
+  saveStore();
+  $('#setup').classList.add('hidden');
+  newGame();
+};
+$('#quitBtn').onclick = ()=>{
+  $('#overlay').classList.add('hidden'); $('#dd').classList.add('hidden');
+  $('#inter').classList.add('hidden'); renderHome(); $('#setup').classList.remove('hidden');
+};
+function renderHome(){
+  const f = flagCount(), d = diffCount(), n = f + d;
+  const bits = [];
+  if(f) bits.push(f+' flagged');
+  if(d) bits.push(d+' re-rated');
+  $('#flagCount').textContent = !STORE_OK ? 'Saving unavailable in this browser'
+    : n===0 ? 'No reported clues' : bits.join(' · ');
+  $('#expBtn').style.display = n ? '' : 'none';
+  $('#clrBtn').style.display = n ? '' : 'none';
+  const top = (ST.scores||[]).slice(0,5);
+  $('#homeScores').innerHTML = top.length
+    ? `<div class="hsTitle">High scores</div>` + top.map(r=>
+        `<div class="hsRow"><span>${r.name}</span><span class="amt">${money(r.score)}</span></div>`).join('')
+    : '';
+}
+$('#expBtn').onclick = exportFlags;
+$('#clrBtn').onclick = ()=>{
+  if(confirm('Clear all '+reportCount()+' reports?')){
+    ST.flags={}; ST.difficulty={}; saveStore(); renderHome(); }
+};
+
+loadStore();
+if(ST.cfg){ Object.assign(CFG, ST.cfg); }
+CFG.names = (ST.cfg && ST.cfg.names) || ['Player 1','Player 2','Player 3'];
+$('#segPlayers').querySelectorAll('.seg').forEach(b=>
+  b.classList.toggle('on', +b.dataset.n === CFG.players));
+$('#segBoard').querySelectorAll('.seg').forEach(b=>
+  b.classList.toggle('on', +b.dataset.c === CFG.cats));
+$('#swPenalty').classList.toggle('on', CFG.penalize);
+$('#segMode').querySelectorAll('.seg').forEach(b=>
+  b.classList.toggle('on', (b.dataset.m==='1') === !!CFG.mc));
+renderNameFields();
+renderHome();
+</script>
+</body>
+</html>
