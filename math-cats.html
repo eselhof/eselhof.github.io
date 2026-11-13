@@ -152,6 +152,37 @@ body.zooming .nav,body.zooming .mode-toggle,body.zooming #zoomBtn{opacity:.35;po
 .shop-price{font-size:13px;color:var(--muted)}
 .fish-big{font-size:28px;font-weight:700;text-align:center}
 
+/* shop extras */
+.shop-prev{height:74px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.shop-prev .art{width:clamp(40px,calc(var(--w)*5px),110px)}
+.shop-prev .art svg{max-height:74px;width:100%}
+.shop-prev .emo{font-size:clamp(30px,calc(var(--w)*4.5px),58px);line-height:1}
+.shop-item.legend{background:linear-gradient(160deg,#fffaf0,#fff1c9);border-color:#f3d37a}
+.swatch{width:100%;height:64px;border-radius:10px;border:2px solid var(--soft);container-type:inline-size}
+.mini-bar{width:80%;height:5px;border-radius:3px;background:var(--soft);overflow:hidden}
+.mini-bar>div{height:100%;background:linear-gradient(90deg,#f39c12,#e67e22)}
+body.big .shop-grid{grid-template-columns:repeat(3,1fr)}
+/* room */
+.room{position:relative;width:min(100%,calc(66vh*4/3));aspect-ratio:4/3;margin:0 auto;border-radius:18px;overflow:hidden;container-type:inline-size;border:3px solid #e8d6b8;flex-shrink:0;touch-action:pan-y}
+.room-wall{position:absolute;left:0;right:0;top:0;height:60%}
+.room-floor{position:absolute;left:0;right:0;top:60%;bottom:0}
+.room-base{position:absolute;left:0;right:0;top:59%;height:1.6%;background:#fff;box-shadow:0 2px 3px rgba(0,0,0,.08)}
+.ritem{position:absolute;width:calc(var(--w)*1cqw);transform:translate(-50%,-100%);display:flex;justify-content:center;align-items:flex-end;cursor:pointer}
+.ritem .art{width:100%}
+.ritem .emo{font-size:calc(var(--w)*.9cqw);line-height:1;display:block}
+.ritem .away{display:none;position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:none;background:#e74c3c;color:#fff;font-size:12px;line-height:24px;padding:0;z-index:2}
+.room.editing .ritem{outline:2px dashed rgba(90,70,40,.35);outline-offset:2px;border-radius:6px;touch-action:none;cursor:grab}
+.room.editing .ritem.sel .away{display:block}
+.room.editing .ritem.sel{outline:3px solid #e67e22}
+.ritem.dragging{outline-color:#e67e22!important;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
+.room-cat{position:absolute;transform:translate(-50%,-100%);transition:left 1.6s ease-in-out,top 1.6s ease-in-out;cursor:pointer}
+.room-cat canvas{display:block}
+.room-cat.walking canvas{animation:waddle .3s ease-in-out infinite alternate}
+.room-fx{position:absolute;font-size:6cqw;z-index:200;pointer-events:none}
+.room-empty{position:absolute;left:0;right:0;top:30%;text-align:center;font-weight:600;color:var(--muted);font-size:4cqw;padding:0 8%}
+.tray{display:flex;flex-wrap:wrap;gap:6px}
+.tray-chip{display:flex;align-items:center;gap:6px;border:2px solid var(--soft);background:#fff;border-radius:12px;padding:4px 10px;font-weight:600;color:var(--ink);font-size:13px}
+.tc-art{width:30px;display:flex;justify-content:center}.tc-art .art{width:30px}.tc-art .emo{font-size:24px}
 /* stats */
 .stat-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:14px;color:var(--muted)}
 .stat-val{font-weight:700;color:var(--ink)}
@@ -253,7 +284,7 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
 #page-play{overflow:hidden}
 .play-left{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 .play-right{flex-shrink:0}
-@media (max-width:430px){ .pill{padding:3px 7px;font-size:13px} .icon-btn{padding:4px 7px} .mode-btn{padding:4px 7px} }
+@media (max-width:430px){ .nav-btn{font-size:12.5px} .pill{padding:3px 7px;font-size:13px} .icon-btn{padding:4px 7px} .mode-btn{padding:4px 7px} }
 /* landscape: two columns */
 body.land #app{max-width:1100px}
 body.land #page-play.active{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:16px}
@@ -282,6 +313,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
   <div class="nav" id="nav">
     <button class="nav-btn active" data-page="play">🎮 Play</button>
     <button class="nav-btn" data-page="cats">🐱 Cats</button>
+    <button class="nav-btn" data-page="room">🏠 Room</button>
     <button class="nav-btn" data-page="shop">🛍️ Shop</button>
     <button class="nav-btn" data-page="stats">📊 Stats</button>
   </div>
@@ -334,6 +366,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
   </div>
 
   <div class="page" id="page-cats"><div class="inner" id="catsInner"></div></div>
+  <div class="page" id="page-room"><div class="inner" id="roomInner"></div></div>
   <div class="page" id="page-shop"><div class="inner" id="shopInner"></div></div>
   <div class="page" id="page-stats"><div class="inner" id="statsInner"></div></div>
 </div>
@@ -520,6 +553,7 @@ function defaultState() {
     knock: 0, knockObj: 0, broken: 0,
     boss: null, bossCounter: 0, dogsBonked: 0,
     zoomBest: 0, zoomRuns: 0, zoomIntroSeen: false,
+    room: { wall: 'cream', floor: 'wood', styles: [], items: [], nextUid: 1 },
     facts: {}, welcomed: true
   };
 }
@@ -868,6 +902,48 @@ function drawHat(ctx, hat, cx, top, r) {
     ctx.beginPath(); ctx.ellipse(cx, top + r * 0.12, r * 0.7, r * 0.13, 0, 0, 7); ctx.fill();
     ctx.fillStyle = '#FFD700'; ctx.font = `${r * 0.3}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('★', cx - r * 0.05, top - r * 0.35); ctx.fillText('★', cx + r * 0.15, top - r * 0.05); ctx.fillText('★', cx - r * 0.18, top - r * 0.75);
+  } else if (hat === 'nerd') {
+    const eyeY = top + r * 0.85; ctx.strokeStyle = '#222'; ctx.lineWidth = r * 0.07;
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(cx + sd * r * 0.38, eyeY, r * 0.21, 0, 7); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(cx - r * 0.17, eyeY); ctx.quadraticCurveTo(cx, eyeY - r * 0.08, cx + r * 0.17, eyeY); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.fillRect(cx - r * 0.05, eyeY - r * 0.07, r * 0.1, r * 0.08);
+  } else if (hat === 'mustache') {
+    const y = top + r * 1.24; ctx.fillStyle = '#4a2f1a';
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(cx, y); ctx.quadraticCurveTo(cx + sd * r * 0.25, y - r * 0.14, cx + sd * r * 0.45, y - r * 0.02);
+      ctx.quadraticCurveTo(cx + sd * r * 0.56, y - r * 0.1, cx + sd * r * 0.52, y - r * 0.2); ctx.quadraticCurveTo(cx + sd * r * 0.64, y + r * 0.05, cx + sd * r * 0.4, y + r * 0.08);
+      ctx.quadraticCurveTo(cx + sd * r * 0.2, y + r * 0.1, cx, y + r * 0.04); ctx.closePath(); ctx.fill();
+    }
+  } else if (hat === 'mask') {
+    const eyeY = top + r * 0.85; ctx.fillStyle = '#e74c3c';
+    roundRect(ctx, cx - r * 0.78, eyeY - r * 0.2, r * 1.56, r * 0.38, r * 0.18); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + r * 0.74, eyeY); ctx.lineTo(cx + r * 1.08, eyeY - r * 0.16); ctx.lineTo(cx + r * 1.02, eyeY + r * 0.14); ctx.closePath(); ctx.fill();
+    for (const sd of [-1, 1]) { const ex = cx + sd * r * 0.38; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(ex, eyeY, r * 0.16, r * 0.12, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#1a1a1a'; ctx.beginPath(); ctx.arc(ex, eyeY, r * 0.07, 0, 7); ctx.fill(); }
+  } else if (hat === 'headphones') {
+    ctx.strokeStyle = '#333'; ctx.lineWidth = r * 0.12; ctx.beginPath(); ctx.arc(cx, top + r * 0.75, r * 0.95, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+    for (const sd of [-1, 1]) { ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.ellipse(cx + sd * r * 0.95, top + r * 0.85, r * 0.17, r * 0.27, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#333'; ctx.beginPath(); ctx.ellipse(cx + sd * r * 0.86, top + r * 0.85, r * 0.07, r * 0.2, 0, 0, 7); ctx.fill(); }
+  } else if (hat === 'cowboy') {
+    ctx.fillStyle = '#8B5A2B'; ctx.beginPath(); ctx.ellipse(cx, top + r * 0.12, r * 0.95, r * 0.17, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx - r * 0.42, top + r * 0.1); ctx.quadraticCurveTo(cx - r * 0.46, top - r * 0.62, cx - r * 0.15, top - r * 0.55); ctx.quadraticCurveTo(cx, top - r * 0.4, cx + r * 0.15, top - r * 0.55); ctx.quadraticCurveTo(cx + r * 0.46, top - r * 0.62, cx + r * 0.42, top + r * 0.1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#5a3a1a'; ctx.fillRect(cx - r * 0.43, top - r * 0.08, r * 0.86, r * 0.12);
+  } else if (hat === 'chef') {
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#d8d8d8'; ctx.lineWidth = r * 0.03;
+    for (const [dx, dy, rr] of [[-0.3, -0.55, 0.3], [0, -0.75, 0.35], [0.3, -0.55, 0.3]]) { ctx.beginPath(); ctx.arc(cx + r * dx, top + r * dy, r * rr, 0, 7); ctx.fill(); ctx.stroke(); }
+    ctx.fillRect(cx - r * 0.42, top - r * 0.45, r * 0.84, r * 0.6); ctx.strokeRect(cx - r * 0.42, top - r * 0.05, r * 0.84, r * 0.2);
+  } else if (hat === 'viking') {
+    ctx.fillStyle = '#f3e5c0';
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx + sd * r * 0.45, top + r * 0.02); ctx.quadraticCurveTo(cx + sd * r * 0.98, top - r * 0.1, cx + sd * r * 0.9, top - r * 0.78); ctx.quadraticCurveTo(cx + sd * r * 0.75, top - r * 0.25, cx + sd * r * 0.32, top - r * 0.25); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = '#9aa4ad'; ctx.beginPath(); ctx.arc(cx, top + r * 0.2, r * 0.62, Math.PI, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#7d868e'; ctx.fillRect(cx - r * 0.64, top + r * 0.08, r * 1.28, r * 0.14);
+    ctx.fillStyle = '#d0d6db'; [-0.4, 0, 0.4].forEach(dx => { ctx.beginPath(); ctx.arc(cx + r * dx, top + r * 0.15, r * 0.04, 0, 7); ctx.fill(); });
+  } else if (hat === 'unicorn') {
+    ctx.fillStyle = '#ffd1f0'; ctx.beginPath(); ctx.moveTo(cx - r * 0.17, top + r * 0.12); ctx.lineTo(cx, top - r * 0.95); ctx.lineTo(cx + r * 0.17, top + r * 0.12); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#f6b93b'; ctx.lineWidth = r * 0.05;
+    for (let i = 1; i <= 3; i++) { const yy = top + r * 0.12 - i * r * 0.26, hw = r * 0.17 * (1 - i * 0.26); ctx.beginPath(); ctx.moveTo(cx - hw, yy + r * 0.05); ctx.lineTo(cx + hw, yy - r * 0.05); ctx.stroke(); }
+    [['#a29bfe', -0.35], ['#74b9ff', 0.35], ['#ff9ff3', -0.18]].forEach(([c, dx]) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(cx + r * dx, top + r * 0.14, r * 0.1, 0, 7); ctx.fill(); });
+  } else if (hat === 'halo') {
+    ctx.strokeStyle = '#f6c90e'; ctx.lineWidth = r * 0.1; ctx.shadowColor = '#ffe680'; ctx.shadowBlur = r * 0.35;
+    ctx.beginPath(); ctx.ellipse(cx, top - r * 0.45, r * 0.55, r * 0.15, 0, 0, 7); ctx.stroke();
   } else if (hat === 'crown') {
     const base = top + r * 0.15, h = r * 0.6;
     ctx.fillStyle = '#FFD54F'; ctx.strokeStyle = '#E0A800'; ctx.lineWidth = r * 0.04;
@@ -904,7 +980,7 @@ function drawCatRear(canvas, id, size, opts) {
   ctx.fillStyle = fur;
   for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(hx + sd * hr * 0.95, hy - hr * 0.1); ctx.lineTo(hx + sd * hr * 0.6, hy - hr * 1.35); ctx.lineTo(hx + sd * hr * 0.15, hy - hr * 0.6); ctx.closePath(); ctx.fill(); }
   ctx.beginPath(); ctx.arc(hx, hy, hr, 0, 7); ctx.fill(); ctx.strokeStyle = OUTLINE; ctx.lineWidth = Math.max(1, W * 0.01); ctx.stroke();
-  if (opts.hat && opts.hat !== 'shades') drawHat(ctx, opts.hat, hx, hy - hr * 0.95, hr);
+  if (opts.hat && !['shades', 'nerd', 'mustache', 'mask'].includes(opts.hat)) drawHat(ctx, opts.hat, hx, hy - hr * 0.95, hr);
   // back paws
   for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(bx + sd * br * 0.55, by + br * 0.9, W * 0.08, W * 0.04, 0, 0, 7); ctx.fill(); ctx.stroke(); }
   // body
@@ -1191,7 +1267,7 @@ function layout() {
   drawBuddy();
 }
 function drawBuddy() { drawFullCat($('buddyCanvas'), buddyId(), Math.round(90 * sceneK()), { fat: state.meter / 10, hat: state.hat }); }
-window.addEventListener('resize', () => layout());
+window.addEventListener('resize', () => { layout(); if (currentPage === 'room') sizeRoomCat(); });
 
 function sceneMsg(text, ms) {
   const m = $('sceneMsg'); m.textContent = text; m.classList.add('show');
@@ -1923,34 +1999,320 @@ function openCatModal(id) {
 }
 
 // ============================================================
+// BUDDY'S ROOM (buy stuff in the shop, arrange it here)
+// ============================================================
+const SVG = (vb, body) => `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;overflow:visible">${body}</svg>`;
+const ropeLines = (x, y1, y2, w) => { let s = ''; for (let y = y1; y < y2; y += 7) s += `<path d="M${x} ${y} L${x + w} ${y + 4}" stroke="#b8956a" stroke-width="2"/>`; return s; };
+const ART = {
+  foodbowl: SVG('0 0 100 50', `<ellipse cx="50" cy="16" rx="38" ry="8" fill="#8d5a2b"/><circle cx="34" cy="12" r="5" fill="#a86b33"/><circle cx="46" cy="9" r="5" fill="#7a4a22"/><circle cx="58" cy="11" r="5" fill="#a86b33"/><circle cx="68" cy="14" r="4" fill="#7a4a22"/><path d="M6 18 H94 L84 48 H16 Z" fill="#e74c3c"/><ellipse cx="50" cy="18" rx="44" ry="6" fill="none" stroke="#c0392b" stroke-width="4"/><text x="50" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Fredoka,sans-serif">MEOW</text>`),
+  waterbowl: SVG('0 0 100 50', `<path d="M6 18 H94 L84 48 H16 Z" fill="#3498db"/><ellipse cx="50" cy="18" rx="44" ry="7" fill="#8fd3ff" stroke="#2475ad" stroke-width="4"/><ellipse cx="38" cy="17" rx="11" ry="2" fill="#fff" opacity=".75"/><text x="50" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Fredoka,sans-serif">SIP</text>`),
+  litterbox: SVG('0 0 100 56', `<rect x="4" y="10" width="92" height="44" rx="8" fill="#6c7a89"/><rect x="11" y="14" width="78" height="12" rx="5" fill="#f3d9a4"/><circle cx="30" cy="19" r="2" fill="#d9b97a"/><circle cx="62" cy="18" r="2" fill="#d9b97a"/><rect x="4" y="24" width="92" height="30" rx="8" fill="#95a5a6"/><path d="M76 4 L86 22" stroke="#e67e22" stroke-width="4" stroke-linecap="round"/>`),
+  cushion: SVG('0 0 100 40', `<ellipse cx="50" cy="26" rx="48" ry="13" fill="#ff8fab"/><ellipse cx="50" cy="21" rx="36" ry="8" fill="#ffc2d1"/>`),
+  catbed: SVG('0 0 100 58', `<ellipse cx="50" cy="38" rx="48" ry="17" fill="#7d4ac9"/><ellipse cx="50" cy="30" rx="39" ry="12" fill="#d7b8ff"/><path d="M2 38 Q50 66 98 38" stroke="#f1c40f" stroke-width="4" fill="none"/><path d="M41 52 L44 43 L50 49 L56 43 L59 52 Z" fill="#f1c40f"/>`),
+  rug: SVG('0 0 140 40', `<ellipse cx="70" cy="20" rx="68" ry="18" fill="#4ecdc4"/><ellipse cx="70" cy="20" rx="55" ry="13" fill="#a8e6cf"/><ellipse cx="70" cy="20" rx="40" ry="8.5" fill="#4ecdc4" stroke="#fff" stroke-width="2" stroke-dasharray="5 4"/>`),
+  scratcher: SVG('0 0 60 140', `<rect x="2" y="124" width="56" height="14" rx="4" fill="#a0703c"/><rect x="22" y="22" width="16" height="104" fill="#d9b98c"/>${ropeLines(22, 26, 122, 16)}<rect x="6" y="12" width="48" height="12" rx="4" fill="#a0703c"/><path d="M50 24 V62" stroke="#666" stroke-width="1.5"/><circle cx="50" cy="66" r="6" fill="#ff6b9d"/>`),
+  tunnel: SVG('0 0 140 64', `<path d="M4 62 V36 A66 34 0 0 1 136 36 V62 Z" fill="#4ecdc4"/><path d="M18 62 V38 A52 28 0 0 1 122 38 V62" stroke="#3aa59e" stroke-width="3" fill="none"/><path d="M32 62 V44 A38 22 0 0 1 108 44 V62 Z" fill="#1d6f6a"/><ellipse cx="70" cy="62" rx="38" ry="3" fill="#155b56"/>`),
+  window: SVG('0 0 100 92', `<rect x="10" y="6" width="80" height="70" rx="4" fill="#fff"/><rect x="16" y="12" width="68" height="58" fill="#bfe3ff"/><circle cx="68" cy="26" r="8" fill="#ffd93b"/><ellipse cx="34" cy="34" rx="12" ry="5" fill="#fff"/><ellipse cx="44" cy="31" rx="8" ry="5" fill="#fff"/><path d="M50 12 V70 M16 41 H84" stroke="#fff" stroke-width="4"/><path d="M8 4 Q20 40 6 78 L2 78 L2 4 Z M92 4 Q80 40 94 78 L98 78 L98 4 Z" fill="#ff9fb6"/><rect x="4" y="74" width="92" height="9" rx="3" fill="#e0c9a6"/>`),
+  fishtank: SVG('0 0 110 90', `<rect x="4" y="74" width="102" height="14" rx="3" fill="#6e4a25"/><rect x="8" y="10" width="94" height="64" rx="4" fill="#d9f1ff" stroke="#7fb3c8" stroke-width="3"/><rect x="10" y="20" width="90" height="52" fill="#7cc7f0"/><path d="M10 64 Q30 58 50 64 T100 64 V72 H10 Z" fill="#e8c88a"/><path d="M26 66 Q22 50 28 40 M32 66 Q36 54 31 46" stroke="#3fae5a" stroke-width="3" fill="none"/><text x="58" y="46" font-size="18">🐠</text><text x="38" y="58" font-size="12">🐟</text><circle cx="82" cy="34" r="2.5" fill="#fff" opacity=".8"/><circle cx="86" cy="27" r="1.8" fill="#fff" opacity=".8"/>`),
+  cattree: SVG('0 0 100 200', `<rect x="6" y="186" width="88" height="13" rx="4" fill="#a0703c"/><rect x="24" y="58" width="13" height="130" fill="#d9b98c"/>${ropeLines(24, 62, 140, 13)}<rect x="66" y="108" width="12" height="80" fill="#d9b98c"/>${ropeLines(66, 112, 186, 12)}<rect x="6" y="140" width="50" height="47" rx="9" fill="#c49a6c"/><ellipse cx="31" cy="166" rx="13" ry="12" fill="#5a3b20"/><rect x="50" y="100" width="46" height="11" rx="4" fill="#a0703c"/><rect x="8" y="50" width="58" height="12" rx="5" fill="#a0703c"/><ellipse cx="37" cy="49" rx="25" ry="5" fill="#ffc2d1"/><path d="M60 62 V88" stroke="#666" stroke-width="1.5"/><circle cx="60" cy="92" r="5" fill="#4ecdc4"/>`),
+  hammock: SVG('0 0 130 80', `<path d="M8 78 L30 18 L52 78 M78 78 L100 18 L122 78" stroke="#8a5d2f" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M30 20 Q65 72 100 20 Q65 50 30 20 Z" fill="#f9a8d4" stroke="#e57ab0" stroke-width="3"/>`),
+  throne: SVG('0 0 100 140', `<path d="M14 100 V30 L26 6 L38 26 L50 2 L62 26 L74 6 L86 30 V100 Z" fill="#f1c40f" stroke="#c99b00" stroke-width="3"/><path d="M24 96 V36 Q50 24 76 36 V96 Z" fill="#c0392b"/><circle cx="50" cy="16" r="5" fill="#3498db"/><circle cx="26" cy="14" r="4" fill="#e74c3c"/><circle cx="74" cy="14" r="4" fill="#2ecc71"/><rect x="6" y="94" width="88" height="22" rx="8" fill="#f1c40f" stroke="#c99b00" stroke-width="3"/><rect x="14" y="92" width="72" height="10" rx="5" fill="#e74c3c"/><rect x="12" y="114" width="10" height="24" fill="#c99b00"/><rect x="78" y="114" width="10" height="24" fill="#c99b00"/>`)
+};
+// tier: 0 basics, 1 comfy, 2 fancy, 3 legendary.  w = width as % of the room.  place: floor | wall | rug
+// use: what Buddy does there.  perch: how high up (fraction of the item's height) Buddy sits.
+const ROOM_ITEMS = [
+  { id: 'foodbowl', name: 'Food Bowl', tier: 0, price: 5, art: 'foodbowl', w: 10, place: 'floor', use: 'eat' },
+  { id: 'waterbowl', name: 'Water Bowl', tier: 0, price: 5, art: 'waterbowl', w: 10, place: 'floor', use: 'drink' },
+  { id: 'ball', name: 'Tennis Ball', tier: 0, price: 6, emoji: '🎾', w: 4.5, place: 'floor', use: 'play', multi: true },
+  { id: 'yarn', name: 'Yarn Ball', tier: 0, price: 8, emoji: '🧶', w: 5.5, place: 'floor', use: 'play', multi: true },
+  { id: 'toymouse', name: 'Toy Mouse', tier: 0, price: 8, emoji: '🐭', w: 5, place: 'floor', use: 'play', multi: true },
+  { id: 'feather', name: 'Feather Toy', tier: 0, price: 10, emoji: '🪶', w: 6, place: 'floor', use: 'play' },
+  { id: 'box', name: 'Cardboard Box', tier: 0, price: 12, emoji: '📦', w: 12, place: 'floor', use: 'sit', perch: 0.55 },
+  { id: 'litterbox', name: 'Litter Box', tier: 0, price: 15, art: 'litterbox', w: 15, place: 'floor', use: 'potty' },
+  { id: 'plant', name: 'Plant', tier: 0, price: 15, emoji: '🪴', w: 9, place: 'floor', multi: true },
+  { id: 'cushion', name: 'Comfy Cushion', tier: 0, price: 20, art: 'cushion', w: 16, place: 'floor', use: 'sleep', perch: 0.4 },
+  { id: 'rug', name: 'Round Rug', tier: 0, price: 25, art: 'rug', w: 34, place: 'rug' },
+  { id: 'balloons', name: 'Balloon', tier: 0, price: 30, emoji: '🎈', w: 6, place: 'wall', multi: true },
+  { id: 'teddy', name: 'Teddy Bear', tier: 1, price: 45, emoji: '🧸', w: 9, place: 'floor', use: 'sit' },
+  { id: 'scratcher', name: 'Scratching Post', tier: 1, price: 50, art: 'scratcher', w: 9, place: 'floor', use: 'scratch' },
+  { id: 'clock', name: 'Clock', tier: 1, price: 55, emoji: '🕰️', w: 8, place: 'wall' },
+  { id: 'painting', name: 'Painting', tier: 1, price: 60, emoji: '🖼️', w: 12, place: 'wall' },
+  { id: 'tunnel', name: 'Cat Tunnel', tier: 1, price: 70, art: 'tunnel', w: 22, place: 'floor', use: 'play' },
+  { id: 'catbed', name: 'Royal Cat Bed', tier: 1, price: 80, art: 'catbed', w: 20, place: 'floor', use: 'sleep', perch: 0.45 },
+  { id: 'window', name: 'Window', tier: 1, price: 90, art: 'window', w: 20, place: 'wall', use: 'watch' },
+  { id: 'tv', name: 'Cat TV', tier: 1, price: 110, emoji: '📺', w: 13, place: 'floor', use: 'watch' },
+  { id: 'couch', name: 'Mini Couch', tier: 1, price: 120, emoji: '🛋️', w: 22, place: 'floor', use: 'sit', perch: 0.5 },
+  { id: 'fishtank', name: 'Fish Tank', tier: 1, price: 150, art: 'fishtank', w: 22, place: 'floor', use: 'watch' },
+  { id: 'hammock', name: 'Cat Hammock', tier: 2, price: 200, art: 'hammock', w: 24, place: 'floor', use: 'sleep', perch: 0.5 },
+  { id: 'xmas', name: 'Holiday Tree', tier: 2, price: 220, emoji: '🎄', w: 14, place: 'floor' },
+  { id: 'cattree', name: 'Cat Tree', tier: 2, price: 250, art: 'cattree', w: 20, place: 'floor', use: 'sleep', perch: 0.74 },
+  { id: 'piano', name: 'Piano', tier: 2, price: 280, emoji: '🎹', w: 16, place: 'floor', use: 'play' },
+  { id: 'fountain', name: 'Fountain', tier: 2, price: 300, emoji: '⛲', w: 15, place: 'floor', use: 'drink' },
+  { id: 'disco', name: 'Disco Ball', tier: 2, price: 350, emoji: '🪩', w: 9, place: 'wall' },
+  { id: 'rainbow', name: 'Rainbow', tier: 2, price: 400, emoji: '🌈', w: 22, place: 'wall' },
+  { id: 'castle', name: 'Cat Castle', tier: 3, price: 800, emoji: '🏰', w: 26, place: 'floor' },
+  { id: 'rocket', name: 'Rocket Ship', tier: 3, price: 1000, emoji: '🚀', w: 16, place: 'floor' },
+  { id: 'unicorn', name: 'Unicorn Friend', tier: 3, price: 1200, emoji: '🦄', w: 15, place: 'floor' },
+  { id: 'dragon', name: 'Pet Dragon', tier: 3, price: 1500, emoji: '🐉', w: 18, place: 'floor' },
+  { id: 'ufo', name: 'Flying Saucer', tier: 3, price: 1800, emoji: '🛸', w: 16, place: 'wall' },
+  { id: 'throne', name: 'Royal Throne', tier: 3, price: 2000, art: 'throne', w: 18, place: 'floor', use: 'sit', perch: 0.48 }
+];
+const TIERS = ['🐾 Basics', '🛋️ Comfy', '✨ Fancy', '👑 Legendary'];
+const WALLS = [
+  { id: 'cream', name: 'Cozy Cream', price: 0, css: '#fbf1dc' },
+  { id: 'mint', name: 'Mint', price: 20, css: '#d8f3e6' },
+  { id: 'pink', name: 'Bubblegum', price: 20, css: '#ffe0ec' },
+  { id: 'sky', name: 'Sky Blue', price: 20, css: '#d6ecff' },
+  { id: 'stripes', name: 'Stripes', price: 60, css: 'repeating-linear-gradient(90deg,#fde2c8 0 8cqw,#fbf1dc 8cqw 16cqw)' },
+  { id: 'dots', name: 'Polka Dots', price: 60, css: 'radial-gradient(#f7b2c4 22%, transparent 24%) 0 0/7cqw 7cqw, #fff4f7' },
+  { id: 'stars', name: 'Starry Night', price: 150, css: 'radial-gradient(#ffe680 10%, transparent 12%) 0 0/9cqw 9cqw, radial-gradient(#fff 6%, transparent 8%) 4cqw 5cqw/9cqw 9cqw, #283a6b' },
+  { id: 'rainbowwall', name: 'Rainbow', price: 300, css: 'linear-gradient(90deg,#ffb3b3,#ffd9a8,#fff3a8,#bff0c0,#b3d9ff,#d9c2ff)' },
+  { id: 'space', name: 'Outer Space', price: 500, css: 'radial-gradient(circle at 80% 30%, #ff9f68 0 6%, transparent 6.5%), radial-gradient(#fff 5%, transparent 7%) 0 0/6cqw 6cqw, radial-gradient(#cfd8ff 4%, transparent 6%) 3cqw 3cqw/11cqw 11cqw, #0b1030' }
+];
+const FLOORS = [
+  { id: 'wood', name: 'Wood', price: 0, css: 'repeating-linear-gradient(90deg,#c99a63 0 12cqw,#b98a55 12cqw 12.5cqw)' },
+  { id: 'checker', name: 'Checker Tiles', price: 40, css: 'conic-gradient(#fff 25%, #e2e2e2 0 50%, #fff 0 75%, #e2e2e2 0) 0 0/10cqw 10cqw' },
+  { id: 'carpet', name: 'Blue Carpet', price: 40, css: 'radial-gradient(#8fb6e3 20%, transparent 22%) 0 0/3cqw 3cqw, #7da7d9' },
+  { id: 'grass', name: 'Grass', price: 120, css: 'repeating-linear-gradient(80deg,#7fc85e 0 1.2cqw,#6fb84f 1.2cqw 2.4cqw)' },
+  { id: 'candy', name: 'Candy Stripes', price: 200, css: 'repeating-linear-gradient(45deg,#ffc2d1 0 3cqw,#fff 3cqw 6cqw)' },
+  { id: 'clouds', name: 'Cloud Floor', price: 300, css: 'radial-gradient(ellipse at 20% 40%, #fff 0 18%, transparent 19%), radial-gradient(ellipse at 70% 70%, #fff 0 22%, transparent 23%), #dceeff' }
+];
+const RANKS = [[0, 'Empty Room'], [40, 'Cozy Corner'], [150, 'Comfy Den'], [500, 'Fancy Pad'], [1500, 'Cat Mansion'], [4000, 'Cat Palace'], [8000, 'Legendary Kingdom']];
+const itemDef = id => ROOM_ITEMS.find(x => x.id === id);
+function roomValue() {
+  const r = state.room;
+  return r.items.reduce((a, it) => a + (itemDef(it.id) ? itemDef(it.id).price : 0), 0)
+    + r.styles.reduce((a, k) => { const [t, id] = k.split(':'); const d = (t === 'wall' ? WALLS : FLOORS).find(x => x.id === id); return a + (d ? d.price : 0); }, 0);
+}
+function roomRank() {
+  const v = roomValue(); let i = 0;
+  while (i + 1 < RANKS.length && v >= RANKS[i + 1][0]) i++;
+  return { v, i, name: RANKS[i][1], next: RANKS[i + 1] || null, prev: RANKS[i][0] };
+}
+function defaultSpot(def) {
+  if (def.place === 'wall') return { x: 12 + Math.random() * 76, y: 22 + Math.random() * 28 };
+  if (def.place === 'rug') return { x: 50, y: 93 };
+  return { x: 8 + Math.random() * 84, y: 70 + Math.random() * 26 };
+}
+function addRoomItem(id) {
+  const def = itemDef(id), s = defaultSpot(def);
+  state.room.items.push({ u: state.room.nextUid++, id, x: Math.round(s.x * 10) / 10, y: Math.round(s.y * 10) / 10, out: false });
+}
+function itemArtHTML(def) { return def.art ? `<div class="art">${ART[def.art]}</div>` : `<span class="emo">${def.emoji}</span>`; }
+
+let roomEditing = false, roomCatTimer = null;
+function renderRoom() {
+  const el = $('roomInner'); el.innerHTML = '';
+  const r = state.room, rk = roomRank();
+  const pctNext = rk.next ? Math.round((rk.v - rk.prev) / (rk.next[0] - rk.prev) * 100) : 100;
+  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🏠</span> ${esc(catName(buddyId()) || 'Buddy')}'s Room</div>
+    <div class="sub">Level: <b>${rk.name}</b> • coziness ${rk.v}${rk.next ? ` / ${rk.next[0]} to <b>${rk.next[1]}</b>` : ' — MAXED OUT! 👑'}</div>
+    <div class="bar" style="max-width:340px;margin:6px auto 0"><div style="width:${pctNext}%;background:linear-gradient(90deg,#f39c12,#e67e22)"></div></div></div>`);
+  const ctl = document.createElement('div'); ctl.className = 'row'; ctl.style.justifyContent = 'center';
+  const eb = document.createElement('button'); eb.className = 'btn small' + (roomEditing ? ' green' : '');
+  eb.textContent = roomEditing ? '✅ Done moving' : '✋ Move things';
+  eb.onclick = () => { roomEditing = !roomEditing; renderRoom(); };
+  const sb = document.createElement('button'); sb.className = 'btn small primary'; sb.textContent = '🛍️ Shop for more';
+  sb.onclick = () => { shopTab = 'room'; goPage('shop'); };
+  ctl.appendChild(eb); ctl.appendChild(sb); el.appendChild(ctl);
+  if (roomEditing) el.insertAdjacentHTML('beforeend', '<div class="sub">Tap something to pick it (it jumps to the front), then drag it around. Tap its ✖ to put it in storage.</div>');
+
+  const room = document.createElement('div'); room.className = 'room' + (roomEditing ? ' editing' : ''); room.id = 'room';
+  const wall = WALLS.find(w => w.id === r.wall) || WALLS[0], floor = FLOORS.find(f => f.id === r.floor) || FLOORS[0];
+  room.innerHTML = `<div class="room-wall" style="background:${wall.css}"></div><div class="room-floor" style="background:${floor.css}"></div><div class="room-base"></div>`;
+  r.items.filter(it => !it.out).forEach(it => room.appendChild(buildRoomItem(it)));
+  const cw = document.createElement('div'); cw.className = 'room-cat'; cw.id = 'roomCat';
+  cw.innerHTML = '<canvas></canvas>'; room.appendChild(cw);
+  el.appendChild(room);
+  if (!r.items.length) room.insertAdjacentHTML('beforeend', `<div class="room-empty">It's empty in here! 🥺<br>Earn 🐟 and buy Buddy some stuff in the Shop.</div>`);
+
+  // storage tray
+  const out = r.items.filter(it => it.out);
+  if (out.length) {
+    const tr = document.createElement('div'); tr.className = 'box';
+    tr.innerHTML = '<div class="section-title">📦 In storage — tap to put back</div>';
+    const row = document.createElement('div'); row.className = 'tray';
+    out.forEach(it => {
+      const d = itemDef(it.id), b = document.createElement('button'); b.className = 'tray-chip';
+      b.innerHTML = `<span class="tc-art" style="--w:${d.w}">${itemArtHTML(d)}</span><span>${d.name}</span>`;
+      b.onclick = () => { it.out = false; const s = defaultSpot(d); it.x = s.x; it.y = s.y; save(); Sound.pop(); renderRoom(); };
+      row.appendChild(b);
+    });
+    tr.appendChild(row); el.appendChild(tr);
+  }
+  requestAnimationFrame(() => { sizeRoomCat(); roomCatStart(); });
+}
+function buildRoomItem(it) {
+  const d = itemDef(it.id);
+  const e = document.createElement('div'); e.className = 'ritem' + (d.place === 'rug' ? ' rug' : ''); e.dataset.u = it.u;
+  e.style.setProperty('--w', d.w); e.style.left = it.x + '%'; e.style.top = it.y + '%';
+  e.style.zIndex = d.place === 'rug' ? 2 : 10 + Math.round(it.y);
+  e.innerHTML = itemArtHTML(d) + '<button class="away" aria-label="Put away">✖</button>';
+  e.querySelector('.away').addEventListener('click', ev => { ev.stopPropagation(); it.out = true; save(); renderRoom(); });
+  e.addEventListener('click', () => {
+    if (roomEditing) return;
+    pulse(e, [{ transform: 'translate(-50%,-100%) scale(1)' }, { transform: 'translate(-50%,-100%) scale(1.15,.9)' }, { transform: 'translate(-50%,-100%) scale(1)' }], { duration: 300 });
+    Sound.pop();
+    if (d.use) roomCatGo(it);
+  });
+  // dragging in edit mode
+  e.addEventListener('pointerdown', ev => {
+    if (!roomEditing || ev.target.classList.contains('away')) return;
+    ev.preventDefault(); try { e.setPointerCapture(ev.pointerId); } catch (er) {}
+    $('room').querySelectorAll('.ritem.sel').forEach(o => { o.classList.remove('sel'); const oi = state.room.items.find(i => i.u == o.dataset.u); if (oi) o.style.zIndex = itemDef(oi.id).place === 'rug' ? 2 : 10 + Math.round(oi.y); });
+    e.classList.add('sel', 'dragging'); e.style.zIndex = 900;
+    const rr = $('room').getBoundingClientRect();
+    const ox = (ev.clientX - rr.left) / rr.width * 100 - it.x, oy = (ev.clientY - rr.top) / rr.height * 100 - it.y;
+    const move = m => {
+      it.x = clampN((m.clientX - rr.left) / rr.width * 100 - ox, 3, 97);
+      it.y = clampN((m.clientY - rr.top) / rr.height * 100 - oy, 10, 99);
+      e.style.left = it.x + '%'; e.style.top = it.y + '%';
+    };
+    const up = () => { e.removeEventListener('pointermove', move); e.removeEventListener('pointerup', up); e.removeEventListener('pointercancel', up); e.classList.remove('dragging'); it.x = Math.round(it.x * 10) / 10; it.y = Math.round(it.y * 10) / 10; save(); };
+    e.addEventListener('pointermove', move); e.addEventListener('pointerup', up); e.addEventListener('pointercancel', up);
+  });
+  return e;
+}
+
+// ---- Buddy lives in the room ----
+const USE_FX = { sleep: '💤', eat: '😋', drink: '💧', play: '⭐', scratch: '✨', potty: '🙈', sit: '😺', watch: '👀' };
+let roomCatPos = { x: 50, y: 88 };
+function sizeRoomCat() {
+  const room = $('room'), cw = $('roomCat'); if (!room || !cw) return;
+  const sz = Math.round(room.clientWidth * 0.16);
+  drawFullCat(cw.querySelector('canvas'), buddyId(), sz, { fat: state.meter / 10, hat: state.hat });
+  cw.style.left = roomCatPos.x + '%'; cw.style.top = roomCatPos.y + '%'; cw.style.zIndex = 10 + Math.round(roomCatPos.y) + 1;
+  cw.onclick = () => { Sound.meow(); roomFx('💕', roomCatPos.x, roomCatPos.y - 14); };
+  cw.style.display = roomEditing ? 'none' : '';
+}
+function roomFx(t, x, y) {
+  const room = $('room'); if (!room) return;
+  const f = document.createElement('div'); f.className = 'room-fx'; f.textContent = t; f.style.left = x + '%'; f.style.top = y + '%';
+  room.appendChild(f);
+  pulse(f, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: 'translate(-50%,-90%) scale(1.1)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-200%) scale(1)', opacity: 0 }], { duration: 1500 }).then(() => f.remove());
+}
+function roomCatGo(it) {
+  const room = $('room'), cw = $('roomCat'); if (!room || !cw || roomEditing) return;
+  let x, y, z, fx = null;
+  if (it) {
+    const d = itemDef(it.id), node = room.querySelector(`.ritem[data-u="${it.u}"]`);
+    const ih = node ? node.offsetHeight / room.clientHeight * 100 : 10;
+    if (d.place === 'wall') { x = it.x; y = 96; }
+    else if (d.perch) { x = it.x; y = it.y - ih * d.perch + 2; }
+    else { x = clampN(it.x + (it.x > 50 ? -9 : 9), 6, 94); y = Math.max(it.y, 66); }
+    z = (d.perch ? 10 + Math.round(it.y) + 1 : 10 + Math.round(y) + 1);
+    fx = d.use ? (d.use === 'play' && d.emoji ? d.emoji : USE_FX[d.use]) : '❤️';
+  } else { x = 10 + Math.random() * 80; y = 70 + Math.random() * 26; z = 10 + Math.round(y) + 1; }
+  cw.style.zIndex = Math.max(z, 10 + Math.round(roomCatPos.y) + 1);
+  cw.classList.add('walking');
+  cw.style.left = x + '%'; cw.style.top = y + '%';
+  roomCatPos = { x, y };
+  clearTimeout(roomCatGo._t);
+  roomCatGo._t = setTimeout(() => {
+    cw.classList.remove('walking'); cw.style.zIndex = z;
+    if (fx) roomFx(fx, x, y - 16);
+    if (fx === '💤') { setTimeout(() => roomFx('💤', x + 3, y - 18), 900); }
+  }, 1700);
+}
+function roomCatStart() {
+  clearTimeout(roomCatTimer);
+  const tick = () => {
+    if (currentPage !== 'room' || !$('room')) return;
+    if (!roomEditing && !overlayCount) {
+      const usable = state.room.items.filter(it => !it.out && itemDef(it.id).use);
+      roomCatGo(usable.length && Math.random() < 0.7 ? pick(usable) : null);
+    }
+    roomCatTimer = setTimeout(tick, 3800 + Math.random() * 2500);
+  };
+  roomCatTimer = setTimeout(tick, 900);
+}
+
+// ============================================================
 // SHOP
 // ============================================================
 const HATS = [
-  { id: 'party', name: 'Party Hat', price: 10 }, { id: 'bow', name: 'Pink Bow', price: 15 },
+  { id: 'party', name: 'Party Hat', price: 10 }, { id: 'nerd', name: 'Smart Glasses', price: 12 },
+  { id: 'bow', name: 'Pink Bow', price: 15 }, { id: 'mustache', name: 'Fancy Mustache', price: 18 },
   { id: 'shades', name: 'Cool Shades', price: 20 }, { id: 'flowers', name: 'Flower Crown', price: 25 },
-  { id: 'tophat', name: 'Fancy Top Hat', price: 35 }, { id: 'pirate', name: 'Pirate Hat', price: 45 },
-  { id: 'wizard', name: 'Wizard Hat', price: 60 }, { id: 'crown', name: 'Royal Crown', price: 80 }
+  { id: 'mask', name: 'Superhero Mask', price: 30 }, { id: 'tophat', name: 'Fancy Top Hat', price: 35 },
+  { id: 'chef', name: 'Chef Hat', price: 35 }, { id: 'cowboy', name: 'Cowboy Hat', price: 40 },
+  { id: 'pirate', name: 'Pirate Hat', price: 45 }, { id: 'headphones', name: 'Headphones', price: 55 },
+  { id: 'wizard', name: 'Wizard Hat', price: 60 }, { id: 'viking', name: 'Viking Helmet', price: 75 },
+  { id: 'crown', name: 'Royal Crown', price: 80 }, { id: 'unicorn', name: 'Unicorn Horn', price: 100 },
+  { id: 'halo', name: 'Angel Halo', price: 150 }
 ];
+let shopTab = 'room';
+function buyBtn(price, onBuy) {
+  const b = document.createElement('button'); b.className = 'btn small';
+  if (state.fish >= price) {
+    b.className += ' primary'; b.textContent = 'Buy';
+    b.onclick = () => { state.fish -= price; Sound.coin(); onBuy(); save(); updateHUD(); renderShop(); };
+  } else { b.disabled = true; b.textContent = `Need ${price - state.fish} more`; }
+  return b;
+}
+function priceLine(price) {
+  const p = Math.min(100, Math.round(state.fish / price * 100));
+  return `<div class="shop-price">🐟 ${price}</div>${state.fish < price ? `<div class="mini-bar"><div style="width:${p}%"></div></div>` : ''}`;
+}
 function renderShop() {
   const el = $('shopInner'); el.innerHTML = '';
-  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🛍️</span> Hat Shop</div><div class="fish-big">🐟 ${state.fish}</div><div class="sub">Earn fish by answering problems. Zoomies = double fish! Playing with a puppy = +10.</div></div>`);
-  const grid = document.createElement('div'); grid.className = 'shop-grid';
-  HATS.forEach(h => {
-    const owned = state.hatsOwned.includes(h.id), wearing = state.hat === h.id;
-    const it = document.createElement('div'); it.className = 'shop-item' + (wearing ? ' wearing' : '');
-    const c = document.createElement('canvas'); drawCat(c, buddyId(), 96, { hat: h.id }); it.appendChild(c);
-    it.insertAdjacentHTML('beforeend', `<div class="shop-name">${h.name}</div>`);
-    const b = document.createElement('button'); b.className = 'btn small';
-    if (wearing) { b.textContent = 'Take off'; b.onclick = () => { state.hat = null; save(); updateHUD(); renderShop(); }; }
-    else if (owned) { b.className += ' green'; b.textContent = 'Wear it'; b.onclick = () => { state.hat = h.id; save(); Sound.pop(); updateHUD(); renderShop(); }; }
-    else {
-      it.insertAdjacentHTML('beforeend', `<div class="shop-price">🐟 ${h.price}</div>`);
-      if (state.fish >= h.price) { b.className += ' primary'; b.textContent = 'Buy'; b.onclick = () => { state.fish -= h.price; state.hatsOwned.push(h.id); state.hat = h.id; save(); Sound.coin(); updateHUD(); renderShop(); toast(`Buddy is wearing the ${h.name}!`); }; }
-      else { b.disabled = true; b.textContent = `Need ${h.price - state.fish} more`; }
-    }
-    it.appendChild(b); grid.appendChild(it);
+  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🛍️</span> Shop</div><div class="fish-big">🐟 ${state.fish}</div><div class="sub">1 🐟 per right answer • Zoomies = double • Puppy playdate = +10</div></div>`);
+  const seg = document.createElement('div'); seg.className = 'seg';
+  [['room', '🏠 Room stuff'], ['style', '🎨 Walls & floors'], ['hats', '🎩 Hats & masks']].forEach(([k, l]) => {
+    const b = document.createElement('button'); b.textContent = l; b.classList.toggle('active', shopTab === k);
+    b.onclick = () => { shopTab = k; renderShop(); }; seg.appendChild(b);
   });
-  el.appendChild(grid);
+  el.appendChild(seg);
+
+  if (shopTab === 'hats') {
+    const grid = document.createElement('div'); grid.className = 'shop-grid';
+    HATS.forEach(h => {
+      const owned = state.hatsOwned.includes(h.id), wearing = state.hat === h.id;
+      const it = document.createElement('div'); it.className = 'shop-item' + (wearing ? ' wearing' : '');
+      const c = document.createElement('canvas'); drawCat(c, buddyId(), 88, { hat: h.id }); it.appendChild(c);
+      it.insertAdjacentHTML('beforeend', `<div class="shop-name">${h.name}</div>`);
+      if (wearing) { const b = document.createElement('button'); b.className = 'btn small'; b.textContent = 'Take off'; b.onclick = () => { state.hat = null; save(); updateHUD(); renderShop(); }; it.appendChild(b); }
+      else if (owned) { const b = document.createElement('button'); b.className = 'btn small green'; b.textContent = 'Wear it'; b.onclick = () => { state.hat = h.id; save(); Sound.pop(); updateHUD(); renderShop(); }; it.appendChild(b); }
+      else { it.insertAdjacentHTML('beforeend', priceLine(h.price)); it.appendChild(buyBtn(h.price, () => { state.hatsOwned.push(h.id); state.hat = h.id; toast(`Buddy is wearing the ${h.name}!`); })); }
+      grid.appendChild(it);
+    });
+    el.appendChild(grid);
+  } else if (shopTab === 'style') {
+    [['wall', '🧱 Wallpaper', WALLS], ['floor', '🟫 Floors', FLOORS]].forEach(([kind, title, list]) => {
+      const sec = document.createElement('div');
+      sec.innerHTML = `<div class="section-title">${title}</div>`;
+      const grid = document.createElement('div'); grid.className = 'shop-grid';
+      list.forEach(d => {
+        const key = kind + ':' + d.id, owned = d.price === 0 || state.room.styles.includes(key), using = state.room[kind] === d.id;
+        const it = document.createElement('div'); it.className = 'shop-item' + (using ? ' wearing' : '');
+        it.insertAdjacentHTML('beforeend', `<div class="swatch" style="background:${d.css}"></div><div class="shop-name">${d.name}</div>`);
+        if (using) it.insertAdjacentHTML('beforeend', '<div class="shop-price">✓ Using</div>');
+        else if (owned) { const b = document.createElement('button'); b.className = 'btn small green'; b.textContent = 'Use it'; b.onclick = () => { state.room[kind] = d.id; save(); Sound.pop(); renderShop(); }; it.appendChild(b); }
+        else { it.insertAdjacentHTML('beforeend', priceLine(d.price)); it.appendChild(buyBtn(d.price, () => { state.room.styles.push(key); state.room[kind] = d.id; toast(`New ${kind === 'wall' ? 'wallpaper' : 'floor'} in Buddy's room!`); })); }
+        grid.appendChild(it);
+      });
+      sec.appendChild(grid); el.appendChild(sec);
+    });
+  } else {
+    TIERS.forEach((tname, t) => {
+      const sec = document.createElement('div');
+      sec.innerHTML = `<div class="section-title">${tname}</div>`;
+      const grid = document.createElement('div'); grid.className = 'shop-grid';
+      ROOM_ITEMS.filter(d => d.tier === t).forEach(d => {
+        const n = state.room.items.filter(i => i.id === d.id).length;
+        const it = document.createElement('div'); it.className = 'shop-item' + (n && !d.multi ? ' wearing' : '') + (t === 3 ? ' legend' : '');
+        it.insertAdjacentHTML('beforeend', `<div class="shop-prev" style="--w:${d.w}">${itemArtHTML(d)}</div><div class="shop-name">${d.name}</div>`);
+        if (n && !d.multi) it.insertAdjacentHTML('beforeend', '<div class="shop-price">✓ In the room</div>');
+        else {
+          if (n) it.insertAdjacentHTML('beforeend', `<div class="shop-price">You have ${n}</div>`);
+          it.insertAdjacentHTML('beforeend', priceLine(d.price));
+          it.appendChild(buyBtn(d.price, () => { addRoomItem(d.id); toast(`🏠 ${d.name} added to Buddy's room!`); }));
+        }
+        grid.appendChild(it);
+      });
+      sec.appendChild(grid); el.appendChild(sec);
+    });
+  }
 }
 
 // ============================================================
@@ -2151,9 +2513,11 @@ function saveClipBlob(slot, blob) {
 // NAV + INIT
 // ============================================================
 let currentPage = 'play';
-function refreshPage() { if (currentPage === 'cats') renderCats(); else if (currentPage === 'shop') renderShop(); else if (currentPage === 'stats') renderStats(); }
+function refreshPage() { if (currentPage === 'cats') renderCats(); else if (currentPage === 'room') renderRoom(); else if (currentPage === 'shop') renderShop(); else if (currentPage === 'stats') renderStats(); }
+function goPage(pg) { const b = document.querySelector(`.nav-btn[data-page="${pg}"]`); if (b) b.click(); }
 document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => {
   currentPage = btn.dataset.page;
+  if (currentPage !== 'room') { roomEditing = false; clearTimeout(roomCatTimer); }
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + currentPage));
   if (currentPage === 'cats') catsShown = 60;
