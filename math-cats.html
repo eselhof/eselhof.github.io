@@ -32,7 +32,7 @@ body.zooming .nav,body.zooming .mode-toggle,body.zooming #zoomBtn{opacity:.35;po
 .inner{display:flex;flex-direction:column;gap:12px;padding-bottom:24px}
 
 /* top bar */
-.top-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-shrink:0}
+.top-bar{display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-shrink:0}
 .pill{background:white;border:2px solid var(--line);border-radius:12px;padding:4px 9px;font-size:14px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap}
 .spacer{flex:1}
 .icon-btn{background:white;border:2px solid var(--line);border-radius:12px;padding:4px 9px;font-size:15px;color:var(--muted);white-space:nowrap}
@@ -40,56 +40,59 @@ body.zooming .nav,body.zooming .mode-toggle,body.zooming #zoomBtn{opacity:.35;po
 .gear{position:relative;overflow:hidden}
 .gear::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--orange)}
 .gear.holding::after{width:100%;transition:width 1.2s linear}
-.streak-badge{display:none;align-items:center;gap:3px;background:linear-gradient(135deg,#ff6b35,#ff9a56);border-radius:14px;padding:4px 9px;box-shadow:0 2px 8px rgba(255,107,53,.3);color:white;font-weight:700;font-size:13px;white-space:nowrap}
+.streak-badge{position:absolute;right:6px;top:6px;z-index:5;display:none;align-items:center;gap:3px;background:linear-gradient(135deg,#ff6b35,#ff9a56);border-radius:14px;padding:3px 8px;box-shadow:0 2px 8px rgba(255,107,53,.3);color:white;font-weight:700;font-size:calc(12px*var(--k));white-space:nowrap}
 .streak-badge.visible{display:flex}
 
-.mode-toggle{display:flex;gap:4px;margin-bottom:8px;flex-shrink:0}
-.mode-btn{flex:1;padding:7px;border:2px solid var(--line);border-radius:12px;background:white;font-size:13px;font-weight:600;color:var(--muted)}
+.mode-toggle{display:flex;gap:3px;flex-shrink:0}
+.mode-btn{padding:4px 8px;border:2px solid var(--line);border-radius:11px;background:white;font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
+.mode-btn .lbl,.zoom-btn .lbl{display:none}
+@media (min-width:620px){.mode-btn .lbl,.zoom-btn .lbl{display:inline}}
 .mode-btn.active{border-color:var(--orange);background:linear-gradient(135deg,#ffecd2,#fcb69f);color:#c0392b}
 
 /* scene */
 .scene{--k:1;position:relative;height:calc(150px*var(--k));background:linear-gradient(#fff8ec,#fdebd0);border:2px solid var(--soft);border-radius:18px;margin-bottom:6px;overflow:hidden;flex-shrink:0}
 .window{position:absolute;right:8%;top:calc(14px*var(--k));width:calc(70px*var(--k));height:calc(52px*var(--k));border-radius:8px;background:linear-gradient(#bfe3ff,#e6f4ff);border:4px solid #fff;box-shadow:0 0 0 2px #e8d9c0}
 .window::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;background:#fff;transform:translateX(-50%)}
-.floor{position:absolute;left:0;right:0;bottom:0;height:calc(16px*var(--k));background:#e2c9a0}
 .table-top{position:absolute;left:4%;width:52%;top:calc(100px*var(--k));height:calc(10px*var(--k));background:#a0703c;border-radius:4px}
-.table-leg{position:absolute;top:calc(110px*var(--k));bottom:calc(16px*var(--k));width:calc(8px*var(--k));background:#8a5d2f}
+.table-leg{position:absolute;top:calc(110px*var(--k));bottom:calc(24px*var(--k));width:calc(8px*var(--k));background:#8a5d2f}
 .table-leg.l{left:7%}.table-leg.r{left:51%}
 .knock-obj{position:absolute;top:calc(65px*var(--k));left:33%;font-size:calc(32px*var(--k));line-height:calc(36px*var(--k));transition:left .35s ease;z-index:2}
 .buddy-wrap{position:absolute;left:5%;top:calc(12px*var(--k));width:calc(90px*var(--k));height:calc(90px*var(--k));z-index:3}
-.buddy-wrap.zoom{top:calc(46px*var(--k));animation:zoomLap 1.3s linear infinite}
+.buddy-wrap.zoom{top:calc(36px*var(--k));animation:zoomLap 1.3s linear infinite}
 .buddy-wrap.zoom canvas{animation:bob .16s ease-in-out infinite alternate}
 @keyframes zoomLap{0%{left:2%;transform:scaleX(1)}48%{left:78%;transform:scaleX(1)}50%{left:78%;transform:scaleX(-1)}98%{left:2%;transform:scaleX(-1)}100%{left:2%;transform:scaleX(1)}}
 @keyframes bob{from{transform:translateY(0)}to{transform:translateY(-7px)}}
-.dog{position:absolute;right:6%;bottom:calc(14px*var(--k));display:none;text-align:center;z-index:2}
+.dog{position:absolute;right:6%;bottom:calc(18px*var(--k));display:none;text-align:center;z-index:2}
 .dog.show{display:block}
 .dog-emoji{font-size:calc(54px*var(--k));line-height:1;transform:scaleX(-1)}
 .dog-angry{position:absolute;top:calc(14px*var(--k));left:-6px;font-size:calc(16px*var(--k))}
 .dog-hp{font-size:calc(11px*var(--k));letter-spacing:-1px;margin-bottom:2px}
 .scene-msg{position:absolute;left:50%;transform:translateX(-50%);top:6px;max-width:92%;text-align:center;background:rgba(255,255,255,.92);border-radius:12px;padding:3px 10px;font-weight:700;font-size:calc(13px*var(--k));color:var(--orange);pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;text-shadow:0 1px 0 white,0 -1px 0 white,1px 0 0 white,-1px 0 0 white}
 .scene-msg.show{opacity:1}
-.zoom-timer{position:absolute;left:0;right:0;bottom:0;height:7px;background:rgba(0,0,0,.08);display:none;z-index:5}
+.zoom-timer{position:absolute;left:0;right:0;top:0;height:6px;background:rgba(0,0,0,.08);display:none;z-index:5}
 #zoomFill{height:100%;width:100%;background:linear-gradient(90deg,#a29bfe,#6c5ce7)}
 .fx{position:absolute;pointer-events:none;z-index:6;line-height:1}
 
-/* meter */
-.meter{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;background:white;border:2px solid var(--soft);border-radius:14px;padding:4px 10px}
-.meter.full{border-color:#c79a5b;animation:rumble .4s infinite}
-.meter-label{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:600}
-.pips{display:flex;flex:1;justify-content:space-between}
-.pip{font-size:16px;filter:grayscale(1);opacity:.22;transition:all .3s}
+/* meter (lives in the floor of the scene) */
+.meter{position:absolute;left:0;right:0;bottom:0;height:calc(24px*var(--k));background:#e2c9a0;display:flex;align-items:center;gap:6px;padding:0 10px;z-index:1}
+.meter.full{background:#d9b47c;animation:rumble .4s infinite}
+.meter-label{font-size:calc(12px*var(--k));color:#7a6346;white-space:nowrap;font-weight:700}
+.pips{display:flex;flex:1;justify-content:space-between;max-width:calc(260px*var(--k))}
+.pip{font-size:calc(14px*var(--k));filter:grayscale(1);opacity:.28;transition:all .3s}
 .pip.full{filter:none;opacity:1}
 @keyframes rumble{0%,100%{transform:translateX(0)}25%{transform:translateX(-1px)}75%{transform:translateX(1px)}}
 
 /* card */
-.card{background:white;border-radius:20px;padding:14px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.06);border:2px solid var(--soft);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:170px;flex:1 1 auto}
+.card{background:white;border-radius:20px;padding:10px;margin-bottom:6px;box-shadow:0 4px 20px rgba(0,0,0,.06);border:2px solid var(--soft);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;flex:1 1 auto}
+.card.compact .reward-traits,.card.compact .reward-extra{display:none}
+.card.compact .mini-btn{margin-top:2px;padding:2px 8px}
 .card.shake{animation:shake .4s ease}
 .play-view{display:flex;flex-direction:column;align-items:center}
-.equation{font-size:46px;font-weight:700;display:flex;align-items:center;gap:8px;animation:float 3s ease-in-out infinite}
-.equation .op{color:var(--orange);font-size:34px}
-.equation .eq{color:var(--faint);font-size:34px}
-.equation .q{color:var(--orange);font-size:34px}
-.answer-display{margin-top:8px;font-size:38px;font-weight:700;min-height:46px;text-align:center;border-bottom:3px solid var(--line);min-width:96px;padding:0 8px;transition:border-color .3s,color .3s}
+.equation{font-size:var(--eq,46px);font-weight:700;display:flex;align-items:center;gap:.18em;animation:float 3s ease-in-out infinite;line-height:1.1}
+.equation .op{color:var(--orange);font-size:.74em}
+.equation .eq{color:var(--faint);font-size:.74em}
+.equation .q{color:var(--orange);font-size:.74em}
+.answer-display{margin-top:.2em;font-size:var(--ans,38px);font-weight:700;min-height:1.2em;line-height:1.2;text-align:center;border-bottom:3px solid var(--line);min-width:2.6em;padding:0 8px;transition:border-color .3s,color .3s}
 .answer-display.wrong{color:var(--red);border-color:var(--red)}
 .answer-display.right{color:var(--green);border-color:var(--green)}
 .placeholder{color:#ddd}
@@ -107,12 +110,12 @@ body.zooming .nav,body.zooming .mode-toggle,body.zooming #zoomBtn{opacity:.35;po
 .zoom-flash{position:absolute;right:12px;top:10px;font-weight:700;color:var(--purple);font-size:15px;opacity:0;pointer-events:none}
 
 /* numpad */
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;max-width:300px;margin:0 auto;flex-shrink:0}
-.num-btn{font-size:24px;font-weight:600;padding:12px 0;border-radius:13px;border:none;background:white;color:var(--ink);box-shadow:0 3px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:var(--padw,300px);margin:0 auto;flex-shrink:0}
+.num-btn{font-size:var(--kf,24px);font-weight:600;height:var(--key,50px);padding:0;border-radius:13px;border:none;background:white;color:var(--ink);box-shadow:0 3px 0 var(--line);transition:transform .08s,box-shadow .08s}
 .num-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
-.num-btn.back{font-size:20px;background:var(--soft);color:var(--muted)}
-.num-btn.submit{font-size:20px;background:linear-gradient(135deg,var(--teal),var(--green));color:white;box-shadow:0 3px 0 #2d9e5a}
-.next-btn{width:100%;max-width:300px;margin:0 auto;display:block;font-size:17px;font-weight:600;padding:15px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--orange2),var(--orange));color:white;box-shadow:0 4px 0 #c0771a,0 6px 16px rgba(230,126,34,.3);flex-shrink:0}
+.num-btn.back{font-size:calc(var(--kf,24px)*.82);background:var(--soft);color:var(--muted)}
+.num-btn.submit{font-size:calc(var(--kf,24px)*.82);background:linear-gradient(135deg,var(--teal),var(--green));color:white;box-shadow:0 3px 0 #2d9e5a}
+.next-btn{width:100%;max-width:var(--padw,300px);margin:0 auto;display:block;font-size:calc(var(--kf,24px)*.75);font-weight:600;height:calc(var(--key,50px)*1.15);padding:0 15px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--orange2),var(--orange));color:white;box-shadow:0 4px 0 #c0771a,0 6px 16px rgba(230,126,34,.3);flex-shrink:0}
 .next-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #c0771a}
 
 /* generic */
@@ -199,45 +202,74 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
 #toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(60,50,40,.9);color:white;padding:9px 16px;border-radius:14px;font-size:14px;z-index:90;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1}
 
-/* poop scene */
+/* prank stage */
 #poopOverlay{position:fixed;inset:0;z-index:60;display:none;overflow:hidden;background:linear-gradient(#cfe8ff 0%,#eaf4ff 58%,#d9b98c 58%,#caa877 100%)}
 #poopOverlay.open{display:block}
-.poop-caption{position:absolute;top:max(24px,env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:30px;font-weight:700;padding:0 16px;color:var(--ink);text-shadow:0 2px 0 white;z-index:3}
-.poop-sub{position:absolute;top:calc(max(24px,env(safe-area-inset-top)) + 46px);left:0;right:0;text-align:center;font-size:17px;color:var(--muted);padding:0 16px;z-index:3}
-.dad{position:absolute;right:5%;bottom:7%;height:62%;aspect-ratio:200/340;z-index:1}
+#poopOverlay.night{background:linear-gradient(#141a3a 0%,#2a2f5e 58%,#3b2f25 58%,#2e241c 100%)}
+.poop-head{position:absolute;top:max(20px,env(safe-area-inset-top));left:0;right:0;z-index:8;pointer-events:none}
+.poop-caption{text-align:center;font-size:clamp(22px,4.2vh,40px);font-weight:700;padding:0 16px;color:var(--ink);text-shadow:0 2px 0 white;z-index:8;line-height:1.15}
+.poop-sub{margin-top:6px;text-align:center;font-size:clamp(14px,2.2vh,20px);color:var(--muted);padding:0 16px;z-index:8}
+.night .poop-caption{color:#fff;text-shadow:0 2px 0 #000}
+.night .poop-sub{color:#c9cbe8}
+.dad{position:absolute;right:5%;bottom:7%;height:min(62%,76vw);aspect-ratio:200/340;z-index:2}
 .dad.shocked{animation:shake .45s 3}
-.pc-walker{position:absolute;bottom:8%;left:-400px;width:min(40vw,30vh);height:min(40vw,30vh);z-index:2}
+.bed{position:absolute;right:3%;bottom:6%;width:min(92vw,70vh);aspect-ratio:360/200;z-index:2}
+.pc-walker{position:absolute;left:-999px;top:0;z-index:3}
 .pc-walker canvas{display:block;width:100%!important;height:100%!important}
 .pc-walker.walking canvas{animation:waddle .32s ease-in-out infinite alternate}
+#walkerItem{position:absolute;left:50%;top:42%;transform:translateX(-50%);line-height:1;pointer-events:none}
 @keyframes waddle{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-10px) rotate(4deg)}}
-.projectile{position:absolute;font-size:clamp(42px,7vh,84px);line-height:1;display:none;z-index:4;transform:translate(-50%,-50%)}
-.poop-done{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);width:auto;padding:14px 30px;display:none;z-index:5}
-.poop-done:active{transform:translateX(-50%) translateY(2px)}
-.fly{position:absolute;font-size:clamp(22px,3vh,34px);z-index:5;animation:orbit 1.1s linear infinite;pointer-events:none}
+.poop-done{position:relative;margin:12px auto 0;width:auto;height:auto;padding:12px 30px;display:none;pointer-events:auto;font-size:clamp(16px,2.4vh,22px)}
+.fly{position:absolute;font-size:clamp(22px,3vh,34px);z-index:7;animation:orbit 1.1s linear infinite;pointer-events:none}
 @keyframes orbit{from{transform:translate(-50%,-50%) rotate(0deg) translateX(6vh) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg) translateX(6vh) rotate(-360deg)}}
 .sky{position:absolute;font-size:clamp(40px,7vh,80px);opacity:.9;z-index:0}
 .cloud{animation:drift 9s ease-in-out infinite alternate}
 @keyframes drift{from{transform:translateX(0)}to{transform:translateX(40px)}}
+#skyMoon,#skyStars{display:none}
+.night #skyMoon,.night #skyStars{display:block}
+.night #skySun,.night .cloud{display:none}
+.say-fx{font-weight:700;color:#c0392b;white-space:nowrap;text-shadow:0 2px 0 #fff}
+.night .say-fx{color:#ffd166;text-shadow:0 2px 0 #000}
+.prop{position:absolute;z-index:1}
+.side-table{background:linear-gradient(#a0703c 0,#a0703c 12px,transparent 12px)}
+.side-table::before,.side-table::after{content:'';position:absolute;top:12px;bottom:0;width:10px;background:#8a5d2f}
+.side-table::before{left:10%}.side-table::after{right:10%}
+.fancy-bed{border-radius:40% 40% 18px 18px;background:radial-gradient(ellipse at 50% 35%,#d7b8ff 0 38%,#9b6be0 40%,#7d4ac9 100%);border:3px solid #f1c40f;box-shadow:0 4px 0 #c99b00}
+.price-tag{position:absolute;right:-8px;top:-14px;background:#fff;border:2px solid #e0a800;border-radius:6px;padding:0 5px;font-weight:700;font-size:13px;color:#b07d00;transform:rotate(12deg)}
+.cbox{z-index:4;background:#c9a06a;border:3px solid #a57b45;border-radius:4px}
+.cbox::before,.cbox::after{content:'';position:absolute;top:-16%;width:48%;height:22%;background:#d8b07a;border:3px solid #a57b45}
+.cbox::before{left:-6%;transform:rotate(-18deg)}.cbox::after{right:-6%;transform:rotate(18deg)}
+.hairball{border-radius:50%;background:radial-gradient(circle at 35% 35%,#a07850,#5b3d22 70%);box-shadow:0 0 0 3px rgba(91,61,34,.45)}
+.hairpiece{background:#6b4a2f;border-radius:50% 50% 25% 25%}
+.prank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}
+.prank-tile{border:2px solid var(--soft);background:#fff8e7;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.prank-tile .pe{font-size:30px;line-height:1.1}
+.prank-tile .pn{font-size:11px;font-weight:600;color:var(--ink);text-align:center;line-height:1.2}
+.prank-tile .pc{font-size:10px;color:var(--muted)}
+.prank-tile.locked{background:#f3ede3;border-style:dashed}
+.prank-tile.locked .pe{filter:grayscale(1);opacity:.5}
 
-/* phones */
-@media (max-width:430px){ .zoom-btn .lbl{display:none} .pill{padding:3px 7px;font-size:13px} .top-bar{gap:4px} .icon-btn{padding:4px 7px} }
-/* big screens (iPad) */
-@media (min-width:600px) and (min-height:860px){
-  #app{max-width:640px}
-  .scene{--k:1.6}
-  .nav-btn{font-size:17px;padding:10px 2px}
-  .pill,.icon-btn,.streak-badge{font-size:17px}
-  .mode-btn{font-size:16px;padding:10px}
-  .meter{padding:6px 14px}.pip{font-size:22px}.meter-label{font-size:15px}
-  .equation{font-size:76px;gap:12px}.equation .op,.equation .eq,.equation .q{font-size:56px}
-  .answer-display{font-size:60px;min-height:72px;min-width:150px}
-  .feedback{font-size:18px}
-  .reward-name{font-size:20px}.reward-traits{font-size:13px}.reward-msg{font-size:24px}.reward-eq{font-size:19px}.reward-extra{font-size:15px}.mini-btn{font-size:15px}
-  .numpad{max-width:400px;gap:10px}.num-btn{font-size:32px;padding:16px 0}
-  .next-btn{max-width:400px;font-size:21px;padding:18px}
-  .h2{font-size:30px}.sub{font-size:14px}.section-title{font-size:17px}
-  .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
-}
+#mummy .mb{fill:#fbfbf6;stroke:#cfc9b8;stroke-width:2;display:none}
+/* layout wrappers */
+#page-play{overflow:hidden}
+.play-left{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+.play-right{flex-shrink:0}
+@media (max-width:430px){ .pill{padding:3px 7px;font-size:13px} .icon-btn{padding:4px 7px} .mode-btn{padding:4px 7px} }
+/* landscape: two columns */
+body.land #app{max-width:1100px}
+body.land #page-play.active{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);column-gap:16px}
+body.land #topBar{grid-column:1 / 3}
+body.land .play-left{grid-column:1;grid-row:2}
+body.land .play-right{grid-column:2;grid-row:2;display:flex;flex-direction:column;justify-content:center;padding-bottom:6px}
+/* tablets */
+body.big #app{max-width:660px}
+body.big.land #app{max-width:1100px}
+body.big .nav-btn{font-size:17px;padding:10px 2px}
+body.big .pill,body.big .icon-btn,body.big .mode-btn{font-size:17px}
+body.big .feedback{font-size:18px}
+body.big .reward-name{font-size:20px} body.big .reward-traits{font-size:13px} body.big .reward-msg{font-size:24px} body.big .reward-eq{font-size:19px} body.big .reward-extra{font-size:15px} body.big .mini-btn{font-size:15px}
+body.big .h2{font-size:30px} body.big .sub{font-size:14px} body.big .section-title{font-size:17px}
+body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 /* animations */
 @keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes starBurst{0%{transform:translate(-50%,-50%) translate(0,0) scale(0);opacity:1}100%{transform:translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(1);opacity:0}}
@@ -256,47 +288,50 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
   </div>
 
   <div class="page active" id="page-play">
-    <div class="top-bar">
+    <div class="top-bar" id="topBar">
       <div class="pill">🐟 <span id="fishCount">0</span></div>
       <div class="pill">🐱 <span id="catCount">0</span></div>
-      <div id="streakBadge" class="streak-badge"></div>
       <div class="spacer"></div>
+      <div class="mode-toggle" id="modeToggle">
+        <button class="mode-btn" data-mode="multiply">✕<span class="lbl"> Times</span></button>
+        <button class="mode-btn" data-mode="divide">÷<span class="lbl"> Divide</span></button>
+        <button class="mode-btn" data-mode="mixed">🔀<span class="lbl"> Mixed</span></button>
+      </div>
       <button class="icon-btn zoom-btn" id="zoomBtn">⚡<span class="lbl"> Zoomies</span></button>
       <button class="icon-btn" id="muteBtn">🔊</button>
       <button class="icon-btn gear" id="gearBtn" aria-label="Grown-up settings">⚙️</button>
     </div>
-    <div class="mode-toggle" id="modeToggle">
-      <button class="mode-btn" data-mode="multiply">✕ Times</button>
-      <button class="mode-btn" data-mode="divide">÷ Divide</button>
-      <button class="mode-btn" data-mode="mixed">🔀 Mixed</button>
-    </div>
-    <div class="scene" id="scene">
-      <div class="window"></div>
-      <div class="floor"></div>
-      <div class="table-top"></div><div class="table-leg l"></div><div class="table-leg r"></div>
-      <div class="knock-obj" id="knockObj"></div>
-      <div class="buddy-wrap" id="buddyWrap"><canvas id="buddyCanvas"></canvas></div>
-      <div class="dog" id="dog"><div class="dog-hp" id="dogHp"></div><div class="dog-angry">💢</div><div class="dog-emoji">🐕</div></div>
-      <div class="scene-msg" id="sceneMsg"></div>
-      <div class="zoom-timer" id="zoomTimer"><div id="zoomFill"></div></div>
-    </div>
-    <div class="meter" id="meter">
-      <span class="meter-label">🥣 Food</span>
-      <div class="pips" id="pips"></div>
-      <span class="meter-label" id="meterTxt">0/10</span>
-    </div>
-    <div class="card" id="card">
-      <div id="starContainer"></div>
-      <div id="playView" class="play-view">
-        <div class="equation"><span id="numA"></span><span class="op" id="opSymbol">×</span><span id="numB"></span><span class="eq">=</span><span class="q">?</span></div>
-        <div class="answer-display" id="answerDisplay"></div>
-        <div class="feedback" id="feedback"></div>
+    <div class="play-left">
+      <div class="scene" id="scene">
+        <div class="window"></div>
+        <div class="table-top"></div><div class="table-leg l"></div><div class="table-leg r"></div>
+        <div class="knock-obj" id="knockObj"></div>
+        <div class="buddy-wrap" id="buddyWrap"><canvas id="buddyCanvas"></canvas></div>
+        <div class="dog" id="dog"><div class="dog-hp" id="dogHp"></div><div class="dog-angry">💢</div><div class="dog-emoji">🐕</div></div>
+        <div id="streakBadge" class="streak-badge"></div>
+        <div class="scene-msg" id="sceneMsg"></div>
+        <div class="meter" id="meter">
+          <span class="meter-label">🥣 Food</span>
+          <div class="pips" id="pips"></div>
+          <span class="meter-label" id="meterTxt">0/10</span>
+        </div>
+        <div class="zoom-timer" id="zoomTimer"><div id="zoomFill"></div></div>
       </div>
-      <div id="rewardView" class="reward" style="display:none"></div>
-      <div id="zoomFlash" class="zoom-flash"></div>
+      <div class="card" id="card">
+        <div id="starContainer"></div>
+        <div id="playView" class="play-view">
+          <div class="equation"><span id="numA"></span><span class="op" id="opSymbol">×</span><span id="numB"></span><span class="eq">=</span><span class="q">?</span></div>
+          <div class="answer-display" id="answerDisplay"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+        <div id="rewardView" class="reward" style="display:none"></div>
+        <div id="zoomFlash" class="zoom-flash"></div>
+      </div>
     </div>
-    <div id="numpadArea"><div class="numpad" id="numpad"></div></div>
-    <button class="next-btn" id="nextBtn" style="display:none">Next Problem! →</button>
+    <div class="play-right">
+      <div id="numpadArea"><div class="numpad" id="numpad"></div></div>
+      <button class="next-btn" id="nextBtn" style="display:none">Next Problem! →</button>
+    </div>
   </div>
 
   <div class="page" id="page-cats"><div class="inner" id="catsInner"></div></div>
@@ -305,20 +340,30 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
 </div>
 
 <div id="poopOverlay">
-  <div class="sky" style="right:8%;top:16%">☀️</div><div class="sky cloud" style="left:8%;top:20%">☁️</div><div class="sky cloud" style="left:42%;top:30%;animation-delay:-4s">☁️</div>
-  <div class="poop-caption" id="poopCaption"></div>
-  <div class="poop-sub" id="poopSub"></div>
+  <div class="sky" id="skySun" style="right:8%;top:16%">☀️</div>
+  <div class="sky cloud" style="left:8%;top:20%">☁️</div>
+  <div class="sky cloud" style="left:42%;top:30%;animation-delay:-4s">☁️</div>
+  <div class="sky" id="skyMoon" style="right:10%;top:16%">🌙</div>
+  <div class="sky" id="skyStars" style="left:10%;top:22%;font-size:clamp(20px,3vh,34px);letter-spacing:2em">✨ ⭐ ✨</div>
+  <div class="poop-head"><div class="poop-caption" id="poopCaption"></div><div class="poop-sub" id="poopSub"></div><button class="next-btn poop-done" id="poopDone">Hehehe 😹</button></div>
+  <div id="propLayer"></div>
   <svg id="dadSvg" class="dad" viewBox="0 0 200 340" preserveAspectRatio="xMidYMid meet">
+    <defs><clipPath id="scrClip"><rect x="61" y="191" width="78" height="42"/></clipPath></defs>
     <rect x="78" y="230" width="19" height="92" rx="7" fill="#3d5a80"/>
     <rect x="103" y="230" width="19" height="92" rx="7" fill="#3d5a80"/>
     <ellipse cx="80" cy="326" rx="21" ry="9" fill="#5a3825"/>
     <ellipse cx="120" cy="326" rx="21" ry="9" fill="#5a3825"/>
     <rect x="60" y="108" width="80" height="134" rx="24" fill="#e85d4a"/>
     <text x="100" y="152" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="24" fill="white">DAD</text>
-    <rect x="90" y="90" width="20" height="22" fill="#f2c29b"/>
-    <circle cx="62" cy="66" r="8" fill="#f2c29b"/><circle cx="138" cy="66" r="8" fill="#f2c29b"/>
-    <circle cx="100" cy="62" r="38" fill="#f2c29b"/>
-    <path d="M63 56 Q62 18 100 20 Q138 18 137 56 Q126 36 100 37 Q74 36 63 56 Z" fill="#6b4a2f"/>
+    <g id="wetPatch" style="display:none">
+      <ellipse cx="100" cy="244" rx="19" ry="15" fill="#1f3350" opacity=".85"/>
+      <path d="M90 258 Q88 266 91 268 Q94 266 90 258 Z M108 260 Q106 268 109 270 Q112 268 108 260 Z" fill="#7fc8ff"/>
+    </g>
+    <rect class="skin" x="90" y="90" width="20" height="22" fill="#f2c29b"/>
+    <circle class="skin" cx="62" cy="66" r="8" fill="#f2c29b"/><circle class="skin" cx="138" cy="66" r="8" fill="#f2c29b"/>
+    <circle class="skin" cx="100" cy="62" r="38" fill="#f2c29b"/>
+    <path id="dadHair" d="M63 56 Q62 18 100 20 Q138 18 137 56 Q126 36 100 37 Q74 36 63 56 Z" fill="#6b4a2f"/>
+    <ellipse id="baldShine" cx="86" cy="36" rx="11" ry="5" fill="#fff" opacity=".6" style="display:none"/>
     <g id="faceNormal">
       <circle cx="86" cy="62" r="4.5" fill="#2b2b2b"/><circle cx="114" cy="62" r="4.5" fill="#2b2b2b"/>
       <path d="M80 52 L92 51 M108 51 L120 52" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/>
@@ -331,28 +376,84 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
       <ellipse cx="100" cy="85" rx="8" ry="10" fill="#7a3e2b"/>
       <path d="M134 40 Q140 50 134 54 Q128 50 134 40 Z" fill="#7fc8ff"/>
     </g>
-    <path id="armL" d="M66 125 Q48 160 58 205" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
-    <path id="armR" d="M134 125 Q152 160 142 205" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
-    <g id="propPaper">
+    <g id="faceGross" style="display:none">
+      <path d="M79 56 L91 62 L79 68 M121 56 L109 62 L121 68" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84 84 Q90 78 96 84 Q102 90 108 84 Q114 78 118 84" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="105" cy="90" rx="5" ry="6" fill="#e57373"/>
+    </g>
+    <g id="faceSad" style="display:none">
+      <path d="M80 62 Q86 57 92 62 M108 62 Q114 57 120 62" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M80 50 L92 54 M108 54 L120 50" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/>
+      <path d="M88 86 Q100 76 112 86" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M84 66 Q79 76 84 80 Q89 76 84 66 Z M116 66 Q111 76 116 80 Q121 76 116 66 Z" fill="#7fc8ff"/>
+    </g>
+    <g id="faceHappy" style="display:none">
+      <path d="M80 63 Q86 56 92 63 M108 63 Q114 56 120 63" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M84 78 Q100 96 116 78 Z" fill="#7a3e2b"/>
+    </g>
+    <path id="armL" class="arm" d="M66 125 Q54 175 60 220" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path id="armR" class="arm" d="M134 125 Q146 175 140 220" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <g id="propPaper" style="display:none">
       <rect x="48" y="180" width="104" height="58" rx="3" fill="#f4f1e8" stroke="#cfc6b0" stroke-width="2"/>
       <text x="100" y="198" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="13" fill="#444">NEWS</text>
       <path d="M58 208 H142 M58 216 H130 M58 224 H138" stroke="#bbb" stroke-width="3"/>
     </g>
-    <g id="propCoffee">
+    <g id="propCoffee" style="display:none">
       <rect x="27" y="168" width="28" height="32" rx="4" fill="white" stroke="#b9ae9a" stroke-width="2"/>
       <path d="M55 176 Q66 178 64 188 Q62 194 55 193" stroke="#b9ae9a" stroke-width="3" fill="none"/>
       <rect x="29" y="171" width="24" height="5" fill="#6f4a2e"/>
       <path d="M35 160 Q31 152 36 146 M45 160 Q41 152 46 146" stroke="#ccc" stroke-width="2" fill="none"/>
     </g>
-    <g id="propLaptop">
+    <g id="propLaptop" style="display:none">
       <rect x="56" y="186" width="88" height="52" rx="4" fill="#4a4a4a"/>
       <rect x="61" y="191" width="78" height="42" rx="2" fill="#9ad3f5"/>
+      <g clip-path="url(#scrClip)" font-family="Menlo, monospace" font-size="7.5" fill="#123">
+        <text id="scr0" x="63" y="200"></text><text id="scr1" x="63" y="209"></text><text id="scr2" x="63" y="218"></text><text id="scr3" x="63" y="227"></text>
+      </g>
       <path d="M48 238 H152 L160 250 H40 Z" fill="#bdbdbd"/>
     </g>
+    <g id="mummy">
+      <rect class="mb" x="62" y="311" width="76" height="14" rx="3" transform="rotate(4 100 318)"/>
+      <rect class="mb" x="70" y="288" width="60" height="14" rx="3" transform="rotate(-4 100 295)"/>
+      <rect class="mb" x="70" y="263" width="60" height="14" rx="3" transform="rotate(4 100 270)"/>
+      <rect class="mb" x="58" y="238" width="84" height="14" rx="3" transform="rotate(-4 100 245)"/>
+      <rect class="mb" x="46" y="213" width="108" height="14" rx="3" transform="rotate(4 100 220)"/>
+      <rect class="mb" x="44" y="188" width="112" height="14" rx="3" transform="rotate(-4 100 195)"/>
+      <rect class="mb" x="44" y="163" width="112" height="14" rx="3" transform="rotate(4 100 170)"/>
+      <rect class="mb" x="48" y="138" width="104" height="14" rx="3" transform="rotate(-4 100 145)"/>
+      <rect class="mb" x="54" y="113" width="92" height="14" rx="3" transform="rotate(4 100 120)"/>
+      <rect class="mb" x="60" y="78" width="80" height="14" rx="3" transform="rotate(-4 100 85)"/>
+      <rect class="mb" x="62" y="36" width="76" height="14" rx="3" transform="rotate(4 100 43)"/>
+    </g>
   </svg>
-  <div class="pc-walker" id="pcWalker"><canvas id="pcCat"></canvas></div>
-  <div class="projectile" id="projectile">💩</div>
-  <button class="next-btn poop-done" id="poopDone">Hehehe 😹</button>
+  <svg id="bedSvg" class="bed" viewBox="0 0 360 200" preserveAspectRatio="xMidYMid meet" style="display:none">
+    <rect id="bedHead" x="8" y="40" width="34" height="150" rx="8" fill="#8a5d2f"/>
+    <rect id="bedFoot" x="330" y="100" width="24" height="90" rx="6" fill="#8a5d2f"/>
+    <rect id="bedMat" x="30" y="118" width="310" height="48" rx="10" fill="#f4f1e8"/>
+    <rect x="40" y="166" width="14" height="26" fill="#6e4a25"/><rect x="316" y="166" width="14" height="26" fill="#6e4a25"/>
+    <ellipse cx="78" cy="114" rx="42" ry="18" fill="#ffffff" stroke="#ddd" stroke-width="2"/>
+    <circle class="skin" cx="88" cy="92" r="30" fill="#f2c29b"/>
+    <path d="M58 88 Q58 60 88 60 Q118 60 118 86 Q106 72 88 72 Q70 72 58 88 Z" fill="#6b4a2f"/>
+    <g id="bFaceSleep">
+      <path d="M74 92 Q80 97 86 92 M94 92 Q100 97 106 92" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="90" cy="106" rx="4" ry="3" fill="#7a3e2b"/>
+    </g>
+    <g id="bFaceShock" style="display:none">
+      <circle cx="79" cy="90" r="8" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><circle cx="79" cy="91" r="3" fill="#2b2b2b"/>
+      <circle cx="101" cy="90" r="8" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><circle cx="101" cy="91" r="3" fill="#2b2b2b"/>
+      <ellipse cx="90" cy="108" rx="6" ry="8" fill="#7a3e2b"/>
+    </g>
+    <g id="bFaceHappy" style="display:none">
+      <circle cx="80" cy="91" r="3.5" fill="#2b2b2b"/><circle cx="100" cy="91" r="3.5" fill="#2b2b2b"/>
+      <path d="M80 102 Q90 112 100 102" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <g id="bFaceGross" style="display:none">
+      <path d="M73 86 L83 91 L73 96 M107 86 L97 91 L107 96" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M78 106 Q83 101 88 106 Q93 111 98 106 Q102 101 104 106" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <path id="bedBlanket" d="M114 104 Q132 84 170 92 Q220 100 262 96 Q306 90 330 110 L334 152 Q220 160 114 152 Z" fill="#7aa6e0"/>
+  </svg>
+  <div class="pc-walker" id="pcWalker"><canvas id="pcCat"></canvas><div id="walkerItem"></div></div>
 </div>
 
 <div class="overlay" id="modal"><div class="modal" id="modalBox"></div></div>
@@ -416,17 +517,17 @@ function defaultState() {
     correctMul: 0, totalMul: 0, correctDiv: 0, totalDiv: 0,
     catsCollected: [], names: {}, buddy: 0,
     fish: 0, fishEarned: 0, hatsOwned: [], hat: null,
-    meter: 0, poopPending: false, dadPooped: 0, lastPoopVariant: null,
+    meter: 0, poopPending: false, dadPooped: 0, lastPoopVariant: null, pranksSeen: {}, lastPrank: null,
     knock: 0, knockObj: 0, broken: 0,
     boss: null, bossCounter: 0, dogsBonked: 0,
-    zoomBest: 0, zoomRuns: 0,
+    zoomBest: 0, zoomRuns: 0, zoomIntroSeen: false,
     facts: {}, welcomed: true
   };
 }
 function loadState() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) { const s = JSON.parse(raw); if (s && s.version === 3) return Object.assign(defaultState(), s); }
+    if (raw) { const s = JSON.parse(raw); if (s && s.version === 3) { const m = Object.assign(defaultState(), s); if (m.dadPooped && !Object.keys(m.pranksSeen).length) m.pranksSeen = { poop: m.dadPooped }; return m; } }
   } catch (e) {}
   try {
     const raw = localStorage.getItem(OLD_KEY);
@@ -552,6 +653,16 @@ const Sound = {
       }
     }
     this.dadBufs = bufs;
+  },
+  cough() { if (!this.on()) return; const t = this.ctx.currentTime; this.burst(t, 0.12, 'bandpass', 700, 0.5, 1.5); this.burst(t + 0.16, 0.2, 'bandpass', 480, 0.6, 1.5); this.tone(170, t, 0.32, 'sawtooth', 0.06, 110); },
+  clack() { if (!this.on()) return; this.burst(this.ctx.currentTime, 0.03, 'highpass', 3500, 0.22); },
+  splash() { if (!this.on()) return; const t = this.ctx.currentTime; this.burst(t, 0.45, 'bandpass', 1800, 0.5, 0.8); this.burst(t, 0.3, 'lowpass', 600, 0.4); },
+  say(lines) {
+    if (!state.sound) return;
+    if (this.ctx && this.dadBufs.length) { this.playBuf(pick(this.dadBufs)); return; }
+    try {
+      if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(pick(lines)); u.pitch = 0.7; u.rate = 0.95; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+    } catch (e) {}
   },
   playBuf(b) { const s = this.ctx.createBufferSource(); s.buffer = b; s.connect(this.out); s.start(); },
   dad() {
@@ -999,9 +1110,11 @@ function onCorrect() {
 
 function showReward(catId, fishGain) {
   $('playView').style.display = 'none';
+  $('nextBtn').style.display = 'block'; $('numpadArea').style.display = 'none';
   const rv = $('rewardView'); rv.style.display = 'block'; rv.innerHTML = '';
   const box = document.createElement('div'); box.className = 'reward-container';
-  const c = document.createElement('canvas'); drawCat(c, catId, Math.round(84 * Math.min(1.5, sceneK()))); box.appendChild(c);
+  const card = $('card'); card.classList.toggle('compact', card.clientHeight < 240);
+  const c = document.createElement('canvas'); drawCat(c, catId, Math.round(clampN(card.clientHeight * 0.34, 48, 140))); box.appendChild(c);
   const t = catIdToTraits(catId);
   const name = document.createElement('div'); name.className = 'reward-name'; name.textContent = catName(catId) || 'New cat!'; box.appendChild(name);
   const tr = document.createElement('div'); tr.className = 'reward-traits'; tr.textContent = `${t.fur} • ${t.eyes} eyes • ${t.pattern} • ${t.ears} ears • ${t.mouth}`; box.appendChild(tr);
@@ -1053,9 +1166,34 @@ function updateHUD() {
   renderDog();
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
 }
-function sceneK() { return parseFloat(getComputedStyle($('scene')).getPropertyValue('--k')) || 1; }
+function sceneK() { return parseFloat($('scene').style.getPropertyValue('--k')) || 1; }
+const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+function layout() {
+  const w = window.innerWidth, h = window.innerHeight;
+  const land = w > h && w >= 560;
+  const big = Math.min(w, h) >= 600;
+  document.body.classList.toggle('land', land);
+  document.body.classList.toggle('big', big);
+  let k, key, eq, padw;
+  if (land) {
+    k = clampN((h - 110) * 0.42 / 150, 0.55, 1.5);
+    key = clampN((h - 140) / 4.6, 40, 92);
+    eq = clampN(h * 0.085, 30, 80);
+    padw = Math.min(460, key * 4.2);
+  } else {
+    k = clampN(Math.min(w / 360, h * 0.2 / 150), 0.7, 1.6);
+    key = clampN(h * 0.075, 40, 80);
+    eq = clampN(h * 0.062, 32, 80);
+    padw = big ? 420 : 340;
+  }
+  const r = document.documentElement.style;
+  r.setProperty('--key', key + 'px'); r.setProperty('--kf', Math.round(key * 0.46) + 'px');
+  r.setProperty('--eq', eq + 'px'); r.setProperty('--ans', Math.round(eq * 0.82) + 'px'); r.setProperty('--padw', padw + 'px');
+  $('scene').style.setProperty('--k', k.toFixed(3));
+  drawBuddy();
+}
 function drawBuddy() { drawFullCat($('buddyCanvas'), buddyId(), Math.round(90 * sceneK()), { fat: state.meter / 10, hat: state.hat }); }
-window.addEventListener('resize', () => drawBuddy());
+window.addEventListener('resize', () => layout());
 
 function sceneMsg(text, ms) {
   const m = $('sceneMsg'); m.textContent = text; m.classList.add('show');
@@ -1085,13 +1223,13 @@ function knockStep() {
   state.knock = 0; state.broken++; state.knockObj = (state.knockObj + 1) % KNOCK_OBJS.length; save();
   o.style.left = '57%';
   setTimeout(async () => {
-    await anim(o, [{ transform: 'translateY(0) rotate(0deg)' }, { transform: `translateY(${48 * sceneK()}px) rotate(120deg)` }], { duration: 380, easing: 'ease-in' });
+    await anim(o, [{ transform: 'translateY(0) rotate(0deg)' }, { transform: `translateY(${25 * sceneK()}px) rotate(120deg)` }], { duration: 380, easing: 'ease-in' });
     o.style.opacity = '0';
     Sound.crash();
-    sceneFx('💥', 55, 98 * sceneK(), 40 * sceneK(), [{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.3)', opacity: 0 }], 600);
+    sceneFx('💥', 55, 88 * sceneK(), 40 * sceneK(), [{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.3)', opacity: 0 }], 600);
     for (let i = 0; i < 6; i++) {
       const dx = (Math.random() - 0.5) * 90, dy = -20 - Math.random() * 40;
-      sceneFx(pick(['✨', '🔹', '◆', '▲']), 58, 118 * sceneK(), 12 * sceneK(), [{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(${dx * 4}deg)`, opacity: 0 }], 700);
+      sceneFx(pick(['✨', '🔹', '◆', '▲']), 58, 110 * sceneK(), 12 * sceneK(), [{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(${dx * 4}deg)`, opacity: 0 }], 700);
     }
     sceneMsg(pick(['CRASH! 💥', 'Oops! 😼', 'Not sorry! 😹', 'Bye bye!']) + ` Buddy broke ${name}!`, 2000);
     setTimeout(() => { placeKnockObj(); pulse($('knockObj'), [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'cubic-bezier(.34,1.56,.64,1)' }); }, 900);
@@ -1121,7 +1259,7 @@ function bossHit() {
   setTimeout(() => {
     Sound.bonk();
     pulse($('buddyCanvas'), [{ transform: 'translate(0,0)' }, { transform: 'translate(30px,-22px) rotate(15deg)' }, { transform: 'translate(0,0)' }], { duration: 380 });
-    sceneFx('💥', 80, 70 * sceneK(), 34 * sceneK(), [{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.4)', opacity: 0 }], 500);
+    sceneFx('💥', 80, 66 * sceneK(), 34 * sceneK(), [{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.4)', opacity: 0 }], 500);
     if (dead) {
       $('dogHp').textContent = '🤍🤍🤍🤍🤍';
       anim($('dog'), [{ transform: 'translate(0,0) rotate(0)' }, { transform: 'translate(260px,-140px) rotate(720deg)' }], { duration: 750, easing: 'ease-in' })
@@ -1139,6 +1277,20 @@ async function startZoomies() {
   if (zoom || overlayCount) return;
   if (state.poopPending) await runPoop();
   if (pendingBadge !== null) { const b = pendingBadge; pendingBadge = null; await showBadgeUnlock(b); }
+  if (!state.zoomIntroSeen) {
+    Sound.meow();
+    const go = await openDialog(`<h3>⚡ What are Zoomies?</h3>
+      <p style="font-size:56px;margin:4px 0">🐈💨</p>
+      <p style="text-align:left">Your buddy gets the zoomies and runs laps!<br><br>
+      ⏱️ You have <b>30 seconds</b>.<br>
+      ✅ Answer as many problems as you can.<br>
+      🐟 Every right answer = <b>2 fish</b> (double!) and a new cat.<br>
+      ❌ Wrong answers just let you try again.<br>
+      🏆 Try to beat your record!</p>`,
+      [{ label: 'Not now', value: false }, { label: "Let's zoom! ⚡", cls: 'primary', value: true }]);
+    state.zoomIntroSeen = true; save();
+    if (!go) return;
+  }
   await countdown();
   zoom = { count: 0, end: Date.now() + 30000 };
   document.body.classList.add('zooming'); $('buddyWrap').classList.add('zoom'); $('zoomTimer').style.display = 'block';
@@ -1173,116 +1325,472 @@ async function endZoomies() {
 }
 
 // ============================================================
-// THE POOP SCENE
+// DAD PRANKS (one plays when the food bowl is full)
 // ============================================================
-const DAD_TARGETS = { head: [100, 26], shoe: [80, 320], coffee: [41, 168], laptop: [100, 244] };
-const DAD_ARMS = {
+const STAGE = () => $('poopOverlay');
+function stageRect() { return STAGE().getBoundingClientRect(); }
+function svgPt(id, vbW, vbH, x, y) {
+  const r = $(id).getBoundingClientRect(), st = stageRect();
+  const sc = Math.min(r.width / vbW, r.height / vbH), ox = (r.width - vbW * sc) / 2, oy = (r.height - vbH * sc) / 2;
+  return [r.left - st.left + ox + x * sc, r.top - st.top + oy + y * sc, sc];
+}
+const dadPt = (x, y) => svgPt('dadSvg', 200, 340, x, y);
+const bedPt = (x, y) => svgPt('bedSvg', 360, 200, x, y);
+const groundY = () => stageRect().height * 0.93;
+const baseCat = () => Math.round(Math.min(window.innerWidth * 0.4, window.innerHeight * 0.3));
+const cap = t => { $('poopCaption').textContent = t; };
+const sub = t => { $('poopSub').textContent = t; };
+let prankTimers = [];
+
+function stageFx(content, x, y, size, cls) {
+  const el = document.createElement('div'); el.className = 'fx ' + (cls || '');
+  if (typeof content === 'string') el.textContent = content; else el.appendChild(content);
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  if (size) el.style.fontSize = size + 'px';
+  el.style.transform = 'translate(-50%,-50%)';
+  STAGE().appendChild(el); return el;
+}
+function floatFx(text, x, y, size, cls, ms) {
+  const el = stageFx(text, x, y, size, cls);
+  pulse(el, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%,-70%) scale(1.1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-160%) scale(1)', opacity: 0 }], { duration: ms || 1400, easing: 'ease-out' }).then(() => el.remove());
+  return el;
+}
+function sayFx(text, x, y) { return floatFx(text, x, y, clampN(window.innerHeight * 0.04, 20, 40), 'say-fx', 1800); }
+function flies(x, y) { for (let i = 0; i < 3; i++) { const f = stageFx('🪰', x, y, 0, 'fly'); f.style.fontSize = ''; f.style.transform = ''; f.style.animationDelay = (-i * 0.37) + 's'; } }
+function propBox(cls, x, y, w, h, html) {
+  const el = document.createElement('div'); el.className = 'prop ' + cls;
+  el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = w + 'px'; el.style.height = h + 'px';
+  if (html) el.innerHTML = html;
+  $('propLayer').appendChild(el); return el;
+}
+async function throwThing(content, sx, sy, ex, ey, opts) {
+  opts = opts || {};
+  const el = stageFx(content, sx, sy, opts.size);
+  const cx = (sx + ex) / 2, cy = Math.min(sy, ey) - (opts.arc != null ? opts.arc : Math.max(120, stageRect().height * 0.2));
+  const fr = [];
+  for (let i = 0; i <= 24; i++) {
+    const p = i / 24, q = 1 - p;
+    fr.push({ left: (q * q * sx + 2 * q * p * cx + p * p * ex) + 'px', top: (q * q * sy + 2 * q * p * cy + p * p * ey) + 'px', transform: `translate(-50%,-50%) rotate(${p * (opts.spin != null ? opts.spin : 720)}deg) scale(${1 + 0.4 * Math.sin(p * Math.PI)})` });
+  }
+  if (!opts.quiet) Sound.whoosh();
+  await anim(el, fr, { duration: opts.dur || 900, easing: 'linear' });
+  return el;
+}
+
+// ---- the cat on stage ----
+const Walker = {
+  get el() { return $('pcWalker'); }, get cv() { return $('pcCat'); },
+  size: 100, x: -999, y: 0, view: 'front', fat: 1,
+  draw(view, size, fat) {
+    this.view = view; if (size) this.size = Math.round(size); if (fat != null) this.fat = fat;
+    this.el.style.width = this.size + 'px'; this.el.style.height = this.size + 'px';
+    (view === 'rear' ? drawCatRear : drawFullCat)(this.cv, buddyId(), this.size, { fat: this.fat, hat: state.hat });
+    $('walkerItem').style.fontSize = (this.size * 0.24) + 'px';
+    this.place(this.x, this.y);
+  },
+  place(x, y) { this.x = x; this.y = y; this.el.style.left = (x - this.size / 2) + 'px'; this.el.style.top = (y - this.size) + 'px'; },
+  async walk(x, y, ms) {
+    this.el.classList.add('walking');
+    await anim(this.el, [{ left: (this.x - this.size / 2) + 'px', top: (this.y - this.size) + 'px' }, { left: (x - this.size / 2) + 'px', top: (y - this.size) + 'px' }], { duration: ms || 1500, easing: 'ease-out' });
+    this.el.classList.remove('walking'); this.x = x; this.y = y;
+  },
+  async jump(x, y, ms, hgt) {
+    const sx = this.x, sy = this.y, peak = Math.min(sy, y) - (hgt != null ? hgt : 90), cx = (sx + x) / 2, fr = [];
+    for (let i = 0; i <= 16; i++) {
+      const p = i / 16, q = 1 - p;
+      fr.push({ left: (q * q * sx + 2 * q * p * cx + p * p * x - this.size / 2) + 'px', top: (q * q * sy + 2 * q * p * peak + p * p * y - this.size) + 'px' });
+    }
+    Sound.pop();
+    await anim(this.el, fr, { duration: ms || 600, easing: 'linear' });
+    this.x = x; this.y = y;
+  },
+  async turn(view) {
+    await anim(this.el, [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }], { duration: 140 });
+    this.draw(view);
+    await anim(this.el, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 140 });
+  },
+  shake() { return pulse(this.el, [{ transform: 'translateX(0) scaleY(1)' }, { transform: 'translateX(-6px) scaleY(.92)' }, { transform: 'translateX(6px) scaleY(1.05)' }, { transform: 'translateX(0) scaleY(1)' }], { duration: 380 }); },
+  nudge(dir) { return pulse(this.el, [{ transform: 'rotate(0)' }, { transform: `rotate(${12 * dir}deg) translateX(${10 * dir}px)` }, { transform: 'rotate(0)' }], { duration: 320 }); },
+  item(t) { $('walkerItem').textContent = t || ''; }
+};
+
+// ---- Dad ----
+const ARMS = {
+  hang: ['M66 125 Q54 175 60 220', 'M134 125 Q146 175 140 220'],
   paper: ['M66 125 Q46 160 56 205', 'M134 125 Q154 160 144 205'],
   coffee: ['M66 125 Q38 150 42 182', 'M134 125 Q154 175 142 218'],
-  laptop: ['M66 125 Q50 175 60 240', 'M134 125 Q150 175 140 240']
+  laptop: ['M66 125 Q50 175 60 240', 'M134 125 Q150 175 140 240'],
+  facepalm: ['M66 125 Q50 175 60 240', 'M134 125 Q164 98 124 64'],
+  up: ['M66 125 Q40 95 44 50', 'M134 125 Q160 95 156 50'],
+  hand: ['M66 125 Q38 160 26 170', 'M134 125 Q146 175 140 220'],
+  present: ['M66 125 Q36 150 20 168', 'M134 125 Q146 175 140 220']
 };
+function dadArms(n) { $('armL').setAttribute('d', ARMS[n][0]); $('armR').setAttribute('d', ARMS[n][1]); }
+function dadProp(n) { [['paper', 'propPaper'], ['coffee', 'propCoffee'], ['laptop', 'propLaptop']].forEach(([k, id]) => { $(id).style.display = k === n ? '' : 'none'; }); }
+function dadFace(n) { ['Normal', 'Shock', 'Gross', 'Sad', 'Happy'].forEach(f => { $('face' + f).style.display = f.toLowerCase() === n ? '' : 'none'; }); }
+function bedFace(n) { ['Sleep', 'Shock', 'Happy', 'Gross'].forEach(f => { $('bFace' + f).style.display = f.toLowerCase() === n ? '' : 'none'; }); }
+function dadSkin(green) {
+  const c = green ? '#b5d99c' : '#f2c29b';
+  document.querySelectorAll('#poopOverlay .skin').forEach(e => e.setAttribute('fill', c));
+  document.querySelectorAll('#poopOverlay .arm').forEach(e => e.setAttribute('stroke', c));
+}
+function bedMode(m) {
+  const couch = m === 'couch';
+  $('bedHead').setAttribute('fill', couch ? '#3f8f86' : '#8a5d2f');
+  $('bedFoot').setAttribute('fill', couch ? '#3f8f86' : '#8a5d2f');
+  $('bedMat').setAttribute('fill', couch ? '#5bb5a9' : '#f4f1e8');
+  $('bedBlanket').setAttribute('fill', couch ? '#e85d4a' : '#7aa6e0');
+  $('dadSvg').style.display = 'none'; $('bedSvg').style.display = '';
+}
+function setScreen(lines) { for (let i = 0; i < 4; i++) $('scr' + i).textContent = lines[i] || ''; }
+function dadReset() {
+  dadArms('hang'); dadProp(null); dadFace('normal'); bedFace('sleep'); dadSkin(false);
+  $('dadHair').style.display = ''; $('baldShine').style.display = 'none'; $('wetPatch').style.display = 'none';
+  document.querySelectorAll('#mummy .mb').forEach(b => { b.style.display = 'none'; });
+  setScreen([]);
+  const d = $('dadSvg'); d.style.display = ''; d.style.transform = ''; d.classList.remove('shocked');
+  $('bedSvg').style.display = 'none';
+  STAGE().classList.remove('night');
+  $('propLayer').innerHTML = '';
+  STAGE().querySelectorAll('.fx').forEach(e => e.remove());
+  Walker.item(''); Walker.el.style.zIndex = 3; Walker.el.style.transform = ''; Walker.el.classList.remove('walking');
+  Walker.fat = 1; Walker.place(-999, 0);
+  prankTimers.forEach(t => clearInterval(t)); prankTimers = [];
+}
+function dadJump() {
+  return pulse($('dadSvg'), [{ transform: 'translateY(0)' }, { transform: 'translateY(-22%)', offset: .3 }, { transform: 'translateY(0)', offset: .55 }, { transform: 'translateY(-12%)', offset: .75 }, { transform: 'translateY(0)' }], { duration: 1100, easing: 'ease-out' });
+}
+function dadShock() { const d = $('dadSvg'); d.classList.remove('shocked'); void d.getBoundingClientRect(); d.classList.add('shocked'); }
+function puff(x, y) {
+  const p = stageFx('💨', x, y, clampN(window.innerHeight * 0.05, 34, 60));
+  pulse(p, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: 'translate(-90%,-60%) scale(1.6)', opacity: 0 }], { duration: 900 }).then(() => p.remove());
+}
+const emojiSize = () => clampN(window.innerHeight * 0.07, 42, 84);
+async function enterCat(size, stopX, ms) {
+  Walker.fat = 1; Walker.place(-size, groundY()); Walker.draw('front', size, 1);
+  await Walker.walk(stopX, groundY(), ms || 1600);
+}
+const dadLeft = () => dadPt(0, 0)[0];
+
+// ---- 1. poop ----
+const DAD_TARGETS = { head: [100, 26], shoe: [80, 320], coffee: [41, 168], laptop: [100, 244] };
 const POOP_LINES = {
   head: ["RIGHT ON DAD'S HEAD!! 💩", "Bullseye! Dad's head! 🎯"],
   shoe: ['Dad stepped in it! 🦶💩', "Splat! Right on Dad's shoe!"],
   coffee: ["Into Dad's coffee! ☕💩", "Dad's coffee is RUINED!"],
   laptop: ["All over Dad's laptop! 💻💩", "Dad's computer is POOPY now!"]
 };
-function setupDad(v) {
-  const prop = v === 'coffee' ? 'coffee' : v === 'laptop' ? 'laptop' : 'paper';
-  $('propPaper').style.display = prop === 'paper' ? '' : 'none';
-  $('propCoffee').style.display = prop === 'coffee' ? '' : 'none';
-  $('propLaptop').style.display = prop === 'laptop' ? '' : 'none';
-  $('armL').setAttribute('d', DAD_ARMS[prop][0]); $('armR').setAttribute('d', DAD_ARMS[prop][1]);
-  setDadFace(false);
-}
-function setDadFace(shock) { $('faceNormal').style.display = shock ? 'none' : ''; $('faceShock').style.display = shock ? '' : 'none'; }
-function dadPoint(v) {
-  const svg = $('dadSvg').getBoundingClientRect(), st = $('poopOverlay').getBoundingClientRect();
-  const sc = Math.min(svg.width / 200, svg.height / 340), ox = (svg.width - 200 * sc) / 2, oy = (svg.height - 340 * sc) / 2;
-  const [x, y] = DAD_TARGETS[v];
-  return [svg.left - st.left + ox + x * sc, svg.top - st.top + oy + y * sc];
-}
-function stageFx(text, x, y, size, cls) {
-  const el = document.createElement('div'); el.className = 'fx ' + (cls || ''); el.textContent = text;
-  el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.fontSize = size + 'px'; el.style.transform = 'translate(-50%,-50%)';
-  $('poopOverlay').appendChild(el); return el;
-}
-
-async function runPoop() {
-  overlayCount++;
-  const ov = $('poopOverlay');
-  ov.querySelectorAll('.fx').forEach(e => e.remove());
-  const variants = ['head', 'shoe', 'coffee', 'laptop'];
-  let v; do { v = pick(variants); } while (v === state.lastPoopVariant);
+async function prankPoop() {
+  let v; do { v = pick(['head', 'shoe', 'coffee', 'laptop']); } while (v === state.lastPoopVariant);
   state.lastPoopVariant = v;
-  setupDad(v);
-  $('dadSvg').classList.remove('shocked');
-  $('poopDone').style.display = 'none'; $('poopSub').textContent = '';
-  $('projectile').style.display = 'none';
-  $('poopCaption').textContent = 'Buddy ate SO much food…';
-  ov.classList.add('open');
-  await sleep(50);
-
-  const walker = $('pcWalker'), cv = $('pcCat');
-  const W = walker.offsetWidth;
-  drawFullCat(cv, buddyId(), W, { fat: 1, hat: state.hat });
-  const st = ov.getBoundingClientRect(), dr = $('dadSvg').getBoundingClientRect();
-  const endLeft = Math.max(8, dr.left - st.left - W * 0.9);
-  walker.style.transform = 'scaleX(1)';
-  walker.classList.add('walking');
-  await anim(walker, [{ left: (-W) + 'px' }, { left: endLeft + 'px' }], { duration: 1800, easing: 'ease-out' });
-  walker.classList.remove('walking');
-  Sound.meow();
-  $('poopCaption').textContent = '…uh oh 😳';
-  await sleep(900);
-  await anim(walker, [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }], { duration: 150 });
-  drawCatRear(cv, buddyId(), W, { fat: 1, hat: state.hat });
-  await anim(walker, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 150 });
-  await sleep(350);
-
-  const wr = walker.getBoundingClientRect();
-  const sx = wr.left - st.left + W * 0.5, sy = wr.top - st.top + W * 0.72;
-  $('poopCaption').textContent = '💨 PFFFRRRT!';
-  Sound.fart();
-  const puff = stageFx('💨', sx - W * 0.3, sy, 46);
-  pulse(puff, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: 'translate(-90%,-60%) scale(1.6)', opacity: 0 }], { duration: 900 }).then(() => puff.remove());
-  await sleep(550);
-
-  // launch!
-  const [ex, ey] = dadPoint(v);
-  const cxp = (sx + ex) / 2, cyp = Math.min(sy, ey) - Math.max(140, st.height * 0.22);
-  const frames = [];
-  for (let i = 0; i <= 24; i++) {
-    const p = i / 24, q = 1 - p;
-    frames.push({ left: (q * q * sx + 2 * q * p * cxp + p * p * ex) + 'px', top: (q * q * sy + 2 * q * p * cyp + p * p * ey) + 'px', transform: `translate(-50%,-50%) rotate(${p * 720}deg) scale(${1 + 0.4 * Math.sin(p * Math.PI)})` });
-  }
-  const pr = $('projectile'); pr.style.display = 'block'; pr.style.left = sx + 'px'; pr.style.top = sy + 'px';
-  Sound.whoosh();
-  $('poopCaption').textContent = '';
-  await anim(pr, frames, { duration: 950, easing: 'linear' });
-
-  // impact
+  const prop = v === 'coffee' ? 'coffee' : v === 'laptop' ? 'laptop' : 'paper';
+  dadProp(prop); dadArms(prop);
+  cap('Buddy ate SO much food…');
+  const W = baseCat();
+  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.35), 1800);
+  Sound.meow(); cap('…uh oh 😳'); await sleep(900);
+  await Walker.turn('rear'); await sleep(350);
+  const sx = Walker.x, sy = Walker.y - W * 0.34;
+  cap('💨 PFFFRRRT!'); Sound.fart(); puff(sx - W * 0.3, sy); await sleep(550);
+  const [ex, ey] = dadPt(...DAD_TARGETS[v]);
+  cap('');
+  const pr = await throwThing('💩', sx, sy, ex, ey, { size: emojiSize() });
   Sound.splat();
   pulse(pr, [{ transform: 'translate(-50%,-50%) scale(1.8,0.6)' }, { transform: 'translate(-50%,-50%) scale(1)' }], { duration: 300 });
-  setDadFace(true); $('dadSvg').classList.add('shocked');
-  const splat = stageFx('SPLAT!', ex, ey - 50, 34);
-  splat.style.fontWeight = '700'; splat.style.color = '#8B5A2B';
-  pulse(splat, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-80%) scale(1.2)', opacity: 1, offset: .5 }, { transform: 'translate(-50%,-120%) scale(1.2)', opacity: 0 }], { duration: 1400 }).then(() => splat.remove());
-  if (v === 'coffee') { const sp = stageFx('💦', ex - 20, ey - 10, 34); pulse(sp, [{ opacity: 1 }, { opacity: 0, transform: 'translate(-80%,-120%)' }], { duration: 900 }).then(() => sp.remove()); }
-  for (let i = 0; i < 3; i++) { const f = stageFx('🪰', ex, ey, 22, 'fly'); f.style.transform = ''; f.style.animationDelay = (-i * 0.37) + 's'; }
-  state.dadPooped++; state.meter = 0; state.poopPending = false; save();
-  $('poopCaption').textContent = pick(POOP_LINES[v]);
-  $('poopSub').textContent = `Dad has been pooped on ${state.dadPooped} ${state.dadPooped === 1 ? 'time' : 'times'}!`;
-  setTimeout(() => Sound.dad(), 350);
-  await sleep(900);
+  dadFace('shock'); dadShock();
+  floatFx('SPLAT!', ex, ey - 40, clampN(window.innerHeight * 0.045, 26, 44), 'say-fx');
+  if (v === 'coffee') floatFx('💦', ex - 20, ey - 10, 34);
+  flies(ex, ey);
+  cap(pick(POOP_LINES[v]));
+  setTimeout(() => Sound.say(['Nooooo!', 'Not again!', 'Ewwww! Gross!', 'Oh come on, cat!']), 350);
+}
 
+// ---- 2. keyboard nap ----
+async function prankKeyboard() {
+  dadProp('laptop'); dadArms('laptop'); dadFace('normal');
+  setScreen(['Dear Boss,', 'The big report', 'is almost don', '']);
+  cap('Dad is working on his laptop… 💻');
+  const sc = dadPt(0, 0)[2], W = Math.round(88 * sc);
+  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.3), 1500);
+  await sleep(300); Sound.meow(); cap('Buddy looks sleepy… 😼'); await sleep(700);
+  const [kx, ky] = dadPt(132, 246);
+  await Walker.jump(kx, ky, 650, 80);
+  cap('FLOP! 💤');
+  let n = 0; const lines = ['Dear Boss,', 'The big report', 'is almost don', ''];
+  await new Promise(res => {
+    const t = setInterval(() => {
+      n++;
+      lines[2] = 'is almost don' + 'j'.repeat(n);
+      lines[3] = 'j'.repeat(Math.max(0, n - 6) * 1);
+      setScreen(lines);
+      if (n % 2) Sound.clack();
+      if (n % 5 === 0) cap('j'.repeat(Math.min(24, n)));
+      if (n >= 36) { clearInterval(t); res(); }
+    }, 55);
+    prankTimers.push(t);
+  });
+  floatFx('💤', Walker.x + Walker.size * 0.3, Walker.y - Walker.size * 0.9, 34);
+  dadArms('facepalm'); dadFace('shock'); dadShock();
+  sayFx('MY REPORT!', dadPt(100, 10)[0], dadPt(100, 10)[1]);
+  cap("Buddy took a nap on Dad's keyboard! ⌨️😴");
+  setTimeout(() => Sound.say(['Get off my keyboard!', 'My report! Nooo!']), 300);
+}
+
+// ---- 3. the water glass ----
+async function prankGlass() {
+  dadArms('hang'); dadFace('normal');
+  const [dl, , sc] = dadPt(0, 0), topY = dadPt(0, 205)[1];
+  const tw = Math.max(110, 120 * sc), right = dl + 8 * sc, left = Math.max(6, right - tw), ground = groundY();
+  propBox('side-table', left, topY, right - left, ground - topY);
+  const gs = clampN(30 * sc, 30, 64);
+  const glass = stageFx('🥛', right - gs * 0.7, topY - gs * 0.5, gs);
+  glass.style.zIndex = 2;
+  cap('Dad put his drink on the table…');
+  const W = Math.round(Math.min(90 * sc, (right - left) * 0.75));
+  await enterCat(W, left + W * 0.45, 1500);
+  await Walker.jump(left + W * 0.45, topY + 2, 550, 60);
+  cap('Buddy is staring at Dad. 👀'); await sleep(900);
+  let gx = right - gs * 0.7;
+  for (let i = 1; i <= 3; i++) {
+    cap('👀' + ' .'.repeat(i * 2));
+    Walker.nudge(1); Sound.clack();
+    gx += gs * 0.25; glass.style.left = gx + 'px';
+    await sleep(850);
+  }
+  cap('…PUSH. 😼');
+  Walker.nudge(1);
+  const [cx, cy] = dadPt(100, 244);
+  const fr = []; const sx = gx, sy = topY - gs * 0.5;
+  for (let i = 0; i <= 16; i++) { const p = i / 16; fr.push({ left: (sx + (cx - sx) * p) + 'px', top: (sy + (cy - sy) * p * p - Math.sin(p * Math.PI) * 30) + 'px', transform: `translate(-50%,-50%) rotate(${p * 150}deg)` }); }
+  await anim(glass, fr, { duration: 420, easing: 'linear' });
+  Sound.splash();
+  $('wetPatch').style.display = '';
+  floatFx('💦', cx - 20, cy - 10, gs * 1.2); floatFx('💦', cx + 22, cy, gs);
+  dadFace('shock'); dadShock();
+  await anim(glass, [{ top: cy + 'px' }, { top: (ground - gs * 0.4) + 'px', transform: 'translate(-50%,-50%) rotate(260deg)' }], { duration: 300, easing: 'ease-in' });
+  Sound.crash(); glass.textContent = '💥';
+  cap('SPLASH! 💦');
+  await sleep(1000);
+  glass.remove();
+  cap('Now it looks like Dad peed his pants! 😂');
+  setTimeout(() => Sound.say(['I did NOT pee my pants!', 'Oh no, my pants!']), 200);
+}
+
+// ---- 4. butt in face ----
+async function prankButt() {
+  bedMode('couch'); bedFace('happy');
+  cap('Dad is relaxing on the couch… 🛋️');
+  const sc = bedPt(0, 0)[2], W = Math.round(118 * sc);
+  const [hx, hy] = bedPt(88, 92);
+  await enterCat(W, bedPt(250, 0)[0], 1500);
+  await Walker.jump(bedPt(230, 0)[0], bedPt(0, 100)[1], 600, 60);
+  await sleep(300);
+  await Walker.walk(bedPt(150, 0)[0], bedPt(0, 98)[1], 900);
+  cap('…oh no. Not the butt. 😳'); await sleep(700);
+  await Walker.turn('rear');
+  Walker.el.classList.add('walking');
+  await anim(Walker.el, [{ left: (Walker.x - W / 2) + 'px', top: (Walker.y - W) + 'px' }, { left: (hx - W / 2) + 'px', top: (hy + W * 0.34 - W) + 'px' }], { duration: 700, easing: 'ease-in-out' });
+  Walker.el.classList.remove('walking'); Walker.x = hx; Walker.y = hy + W * 0.34;
+  Sound.fart(); puff(hx - W * 0.35, hy); puff(hx + W * 0.35, hy - W * 0.1);
+  bedFace('gross'); dadSkin(true);
+  floatFx('🤢', hx - W * 0.6, hy - W * 0.2, 40);
+  sayFx('MMMPHH!!', hx + W * 0.7, hy - W * 0.3);
+  cap('BUTT. IN. FACE. 🍑😂');
+  setTimeout(() => Sound.say(['Get your butt out of my face!', 'Ugh! Cat butt!']), 500);
+}
+
+// ---- 5. the "gift" ----
+async function prankGift() {
+  dadProp('paper'); dadArms('paper'); dadFace('normal');
+  cap('Buddy has a surprise for Dad… 🎁');
+  const W = baseCat();
+  Walker.item('🐭');
+  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.25), 1700);
+  cap('😼 "A present for you, Dad!"'); Sound.meow(); await sleep(900);
+  Walker.item('');
+  const ms = clampN(W * 0.24, 26, 60);
+  const [fx2, fy2] = dadPt(62, 326);
+  const mouse = stageFx('🐭', Walker.x + W * 0.05, Walker.y - W * 0.5, ms);
+  await anim(mouse, [{ left: mouse.style.left, top: mouse.style.top }, { left: fx2 + 'px', top: (fy2 - ms * 0.3) + 'px' }], { duration: 450, easing: 'ease-in' });
+  cap('Dad looks down…'); await sleep(900);
+  dadProp(null); dadArms('up'); dadFace('shock');
+  const [nx, ny] = dadPt(100, 200);
+  throwThing('📰', nx, ny, nx + 80, ny - 220, { size: 40, dur: 900, quiet: true }).then(e => e.remove());
+  dadJump(); Sound.whoosh();
+  sayFx('AAAAAH!!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
+  setTimeout(() => Sound.say(['AAAAH! A mouse!', 'Eeeeek!']), 200);
+  await anim(mouse, [{ left: fx2 + 'px', transform: 'translate(-50%,-50%) scaleX(1)' }, { left: (stageRect().width + 80) + 'px', transform: 'translate(-50%,-50%) scaleX(-1)' }], { duration: 900, easing: 'ease-in' });
+  mouse.remove();
+  cap('Dad is scared of a teeny tiny mouse! 🐭😂');
+}
+
+// ---- 6. 3 a.m. wake-up ----
+async function prankNight() {
+  STAGE().classList.add('night'); bedMode('night'); bedFace('sleep');
+  const clock = stageFx('🕒 3:00 AM', 0, 0, clampN(window.innerHeight * 0.035, 18, 34), 'say-fx');
+  clock.style.left = '18%'; clock.style.top = '34%';
+  const [hx, hy, sc] = bedPt(88, 92);
+  prankTimers.push(setInterval(() => floatFx(pick(['Z', 'z', 'Zz']), hx + 30 * sc, hy - 30 * sc, 24 + Math.random() * 16, 'say-fx', 1600), 600));
+  cap('It is 3 A.M. Dad is sleeping… 😴'); await sleep(1300);
+  const W = Math.round(100 * sc);
+  await enterCat(W, bedPt(310, 0)[0], 1500);
+  await Walker.jump(bedPt(250, 0)[0], bedPt(0, 98)[1], 600, 60);
+  await Walker.walk(bedPt(155, 0)[0], bedPt(0, 96)[1], 900);
+  for (const [t, size] of [['tap', 22], ['tap tap', 30], ['TAP TAP TAP!', 40]]) {
+    cap(t + ' 🐾'); Walker.nudge(-1); Sound.pop();
+    floatFx(t, hx, hy - 20 * sc, size, 'say-fx', 900);
+    await sleep(850);
+  }
+  cap('Dad is STILL asleep… 😴'); await sleep(900);
+  cap('…so Buddy sits on his FACE.');
+  await Walker.jump(hx, hy + W * 0.25, 600, 50);
+  Sound.meow(); sayFx('MMMPH!', hx + W * 0.7, hy - W * 0.4);
+  await sleep(1300);
+  prankTimers.forEach(t => clearInterval(t)); prankTimers = [];
+  bedFace('shock');
+  await Walker.jump(bedPt(230, 0)[0], bedPt(0, 98)[1], 500, 60);
+  sayFx("IT'S 3 A.M.!!", hx, hy - 50 * sc);
+  cap("Dad's awake! 😱 Buddy wants BREAKFAST.");
+  setTimeout(() => Sound.say(["It's three in the morning!", 'Why? Why now?!']), 300);
+}
+
+// ---- 7. toilet paper mummy ----
+async function prankMummy() {
+  dadArms('hang'); dadFace('normal');
+  cap('Buddy found the toilet paper… 🧻');
+  const [dl, , sc] = dadPt(0, 0), dr = dadPt(200, 0)[0], W = Math.round(70 * sc);
+  await enterCat(W, Math.max(W * 0.6, dl - W * 0.2), 1300);
+  cap('ZOOM ZOOM ZOOM! 🧻💨');
+  const bands = [...document.querySelectorAll('#mummy .mb')];
+  const ys = [318, 295, 270, 245, 220, 195, 170, 145, 120, 85, 43];
+  let goingRight = true;
+  for (let i = 0; i < bands.length; i++) {
+    const y = dadPt(0, ys[i])[1] + W * 0.5;
+    const x = goingRight ? dr + W * 0.2 : dl - W * 0.2;
+    Walker.el.style.zIndex = goingRight ? 3 : 1;
+    Walker.el.style.transform = goingRight ? 'scaleX(1)' : 'scaleX(-1)';
+    await anim(Walker.el, [{ left: (Walker.x - W / 2) + 'px', top: (Walker.y - W) + 'px' }, { left: (x - W / 2) + 'px', top: (y - W) + 'px' }], { duration: 260, easing: 'ease-in-out' });
+    Walker.x = x; Walker.y = y;
+    bands[i].style.display = 'inline'; if (i % 2 === 0) Sound.pop();
+    goingRight = !goingRight;
+  }
+  Walker.el.style.zIndex = 3; Walker.el.style.transform = '';
+  await Walker.jump(Math.max(W * 0.6, dl - W * 0.6), groundY(), 600, 40);
+  dadFace('shock'); dadShock();
+  sayFx('MMMF MMF!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
+  cap('Dad is a MUMMY now! 🧻😂');
+  setTimeout(() => Sound.say(['Mmmf! Mmmf mmmf!', 'Help! I am a mummy!']), 300);
+}
+
+// ---- 8. hairball ----
+async function prankHairball() {
+  dadArms('hand'); dadFace('happy');
+  cap('Dad: "Who\'s a good kitty?" 🥰');
+  const W = baseCat(), sc = dadPt(0, 0)[2];
+  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.45), 1600);
+  for (const t of ['hack…', 'hack… hack…', 'HUAAAACK!! 🤮']) { cap(t); Walker.shake(); Sound.cough(); await sleep(750); }
+  const hb = document.createElement('div'); hb.className = 'hairball';
+  const hs = clampN(24 * sc, 22, 56); hb.style.width = hs + 'px'; hb.style.height = hs + 'px';
+  const [ex, ey] = dadPt(24, 166);
+  const el = await throwThing(hb, Walker.x + W * 0.1, Walker.y - W * 0.5, ex, ey, { dur: 750, spin: 360 });
+  Sound.splat();
+  pulse(el, [{ transform: 'translate(-50%,-50%) scale(1.4,.7)' }, { transform: 'translate(-50%,-50%) scale(1)' }], { duration: 300 });
+  floatFx('💦', ex, ey + 10, 26);
+  dadFace('gross'); dadSkin(true); dadShock();
+  sayFx('EWWW!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
+  cap("A slimy hairball… right in Dad's hand! 🤢");
+  setTimeout(() => Sound.say(["Ewww! It's slimy!", 'Gross! Gross! Gross!']), 300);
+}
+
+// ---- 9. cat hat ----
+async function prankHat() {
+  dadArms('hang'); dadFace('normal');
+  cap('Buddy wants to climb Dad like a tree… 🌳');
+  const [dl, , sc] = dadPt(0, 0), W = Math.round(95 * sc), cx = dadPt(100, 0)[0];
+  await enterCat(W, Math.max(W * 0.6, dl - W * 0.3), 1400);
+  await Walker.jump(cx, dadPt(0, 290)[1], 450, 40);
+  await sleep(150);
+  await Walker.jump(cx, dadPt(0, 190)[1], 450, 40);
+  await sleep(150);
+  await Walker.jump(cx, dadPt(0, 34)[1], 450, 40);
+  Sound.meow(); dadFace('shock'); cap('CAT HAT! 🐱🎩'); await sleep(1100);
+  const [hx, hy] = dadPt(100, 34);
+  $('dadHair').style.display = 'none'; $('baldShine').style.display = '';
+  const hp = document.createElement('div'); hp.className = 'hairpiece'; hp.style.width = (76 * sc) + 'px'; hp.style.height = (30 * sc) + 'px';
+  const el = stageFx(hp, hx, hy, 0); el.style.zIndex = 4;
+  await Walker.jump(Math.max(W * 0.6, dl - W * 0.7), groundY(), 600, 60);
+  await anim(el, [{ top: hy + 'px', transform: 'translate(-50%,-50%) rotate(0)' }, { top: (groundY() - 12) + 'px', left: (hx - 40 * sc) + 'px', transform: 'translate(-50%,-50%) rotate(-160deg)' }], { duration: 650, easing: 'ease-in' });
+  Sound.splat(); dadShock();
+  sayFx('MY HAIR!!', hx, hy - 40 * sc);
+  cap("…and Dad's hair fell off! 👨‍🦲😂");
+  setTimeout(() => Sound.say(['My hair! Give me back my hair!', 'Not my hair!']), 300);
+}
+
+// ---- 10. the fancy bed ----
+async function prankBox() {
+  dadArms('present'); dadFace('happy');
+  const [dl, , sc] = dadPt(0, 0), ground = groundY();
+  const bw = 112 * sc, bh = 40 * sc, bx = dl - bw * 0.95;
+  propBox('fancy-bed', bx, ground - bh, bw, bh, '<span class="price-tag">$200</span>');
+  const xw = 82 * sc, xh = 58 * sc, xx = Math.max(6, bx - xw * 1.25);
+  const box = propBox('cbox', xx, ground - xh, xw, xh);
+  floatFx('✨', bx + bw * 0.5, ground - bh * 1.3, 34);
+  cap('Dad bought Buddy a SUPER fancy bed! ✨👑'); await sleep(1300);
+  const W = Math.round(Math.min(92 * sc, xw * 1.25));
+  await enterCat(W, bx + bw * 0.5, 1700);
+  cap('sniff… sniff… 👃'); Walker.nudge(1); await sleep(700); Walker.nudge(-1); await sleep(700);
+  cap('…nope. 😾'); await sleep(700);
+  await Walker.jump(xx + xw / 2, ground - xh * 0.2, 650, 70);
+  Sound.meow();
+  pulse(box, [{ transform: 'scale(1)' }, { transform: 'scale(1.08,.92)' }, { transform: 'scale(1)' }], { duration: 300 });
+  floatFx('❤️', xx + xw / 2, ground - xh - W * 0.6, 34);
+  dadFace('sad'); dadArms('hang');
+  sayFx('$200?!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
+  cap('Buddy only likes the BOX. 📦😹');
+  setTimeout(() => Sound.say(['That bed cost two hundred dollars!', 'Seriously?!']), 300);
+}
+
+const PRANKS = [
+  { id: 'poop', name: 'Poop Attack', emoji: '💩', run: prankPoop },
+  { id: 'keyboard', name: 'Keyboard Nap', emoji: '⌨️', run: prankKeyboard },
+  { id: 'glass', name: 'The Water Glass', emoji: '🥛', run: prankGlass },
+  { id: 'butt', name: 'Butt in Face', emoji: '🍑', run: prankButt },
+  { id: 'gift', name: 'A "Gift"', emoji: '🐭', run: prankGift },
+  { id: 'night', name: '3 A.M. Wake-Up', emoji: '🌙', run: prankNight },
+  { id: 'mummy', name: 'TP Mummy', emoji: '🧻', run: prankMummy },
+  { id: 'hairball', name: 'Hairball', emoji: '🤮', run: prankHairball },
+  { id: 'hat', name: 'Cat Hat', emoji: '👨‍🦲', run: prankHat },
+  { id: 'box', name: 'The Fancy Bed', emoji: '📦', run: prankBox }
+];
+function choosePrank() {
+  const c = PRANKS.filter(p => p.id !== state.lastPrank);
+  const w = c.map(p => (state.pranksSeen[p.id] ? 1 : 3));
+  let r = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < c.length; i++) { r -= w[i]; if (r <= 0) return c[i]; }
+  return c[c.length - 1];
+}
+async function runPrank(id, replay) {
+  const p = PRANKS.find(x => x.id === id) || PRANKS[0];
+  overlayCount++;
+  dadReset(); $('poopDone').style.display = 'none'; cap(''); sub('');
+  STAGE().classList.add('open');
+  await sleep(60);
+  try { await p.run(); } catch (e) { console.error(e); }
+  if (!replay) {
+    state.dadPooped++; state.pranksSeen[p.id] = (state.pranksSeen[p.id] || 0) + 1; state.lastPrank = p.id;
+    state.meter = 0; state.poopPending = false; save();
+  }
+  const fresh = !replay && state.pranksSeen[p.id] === 1;
+  sub(replay ? `Replay: ${p.emoji} ${p.name}` : `${fresh ? `🆕 New prank: ${p.name}! • ` : ''}Dad has been pranked ${state.dadPooped} ${state.dadPooped === 1 ? 'time' : 'times'}!`);
+  await sleep(800);
   $('poopDone').style.display = 'block';
   await new Promise(res => { $('poopDone').onclick = res; });
-  ov.classList.remove('open');
-  walker.style.left = '-400px'; walker.style.transform = '';
+  STAGE().classList.remove('open');
+  dadReset();
   overlayCount--;
   updateHUD();
 }
+function runPoop() { return runPrank(choosePrank().id, false); }
 
 // ============================================================
 // DIALOGS / MODALS (no alert()/confirm(): they don't work in the iPad app wrapper)
@@ -1456,7 +1964,7 @@ function renderStats() {
     <div class="bar"><div style="width:${pct(c, t)}%;background:${barColor(pct(c, t))}"></div></div></div>`;
   el.innerHTML = `<div class="h2"><span class="e">📊</span> Stats</div>
     <div class="box"><div class="fun-grid">
-      <div class="fun-cell"><div class="n">💩 ${s.dadPooped}</div><div class="l">Dad pooped on</div></div>
+      <div class="fun-cell"><div class="n">😹 ${s.dadPooped}</div><div class="l">Dad pranked</div></div>
       <div class="fun-cell"><div class="n">💥 ${s.broken}</div><div class="l">Things broken</div></div>
       <div class="fun-cell"><div class="n">🐕 ${s.dogsBonked}</div><div class="l">Dogs bonked</div></div>
       <div class="fun-cell"><div class="n">⚡ ${s.zoomBest}</div><div class="l">Zoomies record</div></div>
@@ -1464,6 +1972,21 @@ function renderStats() {
       <div class="fun-cell"><div class="n">🐟 ${s.fishEarned}</div><div class="l">Fish earned</div></div>
     </div></div>
     ${card('Overall', cor, tot)}${card('✕ Times', s.correctMul, s.totalMul)}${card('÷ Divide', s.correctDiv, s.totalDiv)}`;
+
+  // Dad pranks collection
+  const seenN = PRANKS.filter(p => s.pranksSeen[p.id]).length;
+  const pb = document.createElement('div'); pb.className = 'box';
+  pb.innerHTML = `<div class="section-title">🎬 Dad Pranks (${seenN}/${PRANKS.length})</div><div class="sub" style="text-align:left">Fill Buddy's food bowl to see one. Tap one you've unlocked to watch it again!</div>`;
+  const pg = document.createElement('div'); pg.className = 'prank-grid';
+  PRANKS.forEach(p => {
+    const n = s.pranksSeen[p.id] || 0;
+    const t = document.createElement('button'); t.className = 'prank-tile' + (n ? '' : ' locked');
+    t.innerHTML = n ? `<span class="pe">${p.emoji}</span><span class="pn">${p.name}</span><span class="pc">seen ×${n}</span>` : '<span class="pe">❓</span><span class="pn">???</span><span class="pc">locked</span>';
+    if (n) t.onclick = () => runPrank(p.id, true).then(renderStats);
+    pg.appendChild(t);
+  });
+  pb.appendChild(pg);
+  el.children[1].after(pb);
 
   // mastery grid
   const mb = document.createElement('div'); mb.className = 'box';
@@ -1523,7 +2046,7 @@ function openParent() {
 
     // dad clips
     const d = document.createElement('div'); d.className = 'p-section';
-    d.innerHTML = `<div class="p-title">🎙 Dad's reaction sounds</div><div class="p-note">Record up to 3 short clips (5 seconds max), like "NOOOO!" or "Not again!". One plays at random when Dad gets pooped on. With none recorded, the iPad's built-in voice says something instead. Clips stay on this device only.</div>`;
+    d.innerHTML = `<div class="p-title">🎙 Dad's reaction sounds</div><div class="p-note">Record up to 3 short clips (5 seconds max), like "NOOOO!" or "Not again!". One plays at random when Buddy pranks Dad. With none recorded, the iPad's built-in voice says something instead. Clips stay on this device only.</div>`;
     const clips = Clips.list();
     for (let i = 0; i < 3; i++) {
       const row = document.createElement('div'); row.className = 'clip-row';
@@ -1547,8 +2070,8 @@ function openParent() {
       fl.appendChild(fi); row.appendChild(fl);
       d.appendChild(row);
     }
-    const tp = document.createElement('button'); tp.className = 'btn'; tp.textContent = '💩 Test the poop scene';
-    tp.onclick = async () => { closeModal(); const keep = state.meter; await runPoop(); state.dadPooped--; state.meter = keep; state.poopPending = keep >= 10; save(); updateHUD(); };
+    const tp = document.createElement('button'); tp.className = 'btn'; tp.textContent = '🎬 Test a random prank';
+    tp.onclick = async () => { closeModal(); await runPrank(pick(PRANKS).id, true); };
     d.appendChild(tp); box.appendChild(d);
 
     // backup
@@ -1654,12 +2177,13 @@ document.addEventListener('keydown', e => {
 });
 
 buildNumpad();
+layout();
 placeKnockObj();
 updateHUD();
 newProblem();
 if (!state.welcomed) {
   state.welcomed = true; save();
-  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry buddy cat, a hat shop, grumpy dogs, ⚡ Zoomies… and something VERY silly happens when your buddy eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
+  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry buddy cat, a hat shop, grumpy dogs, ⚡ Zoomies… and something VERY silly happens to Dad when your buddy eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
 }
 </script>
 </body>
