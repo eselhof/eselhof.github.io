@@ -65,7 +65,6 @@ body.zooming .nav,body.zooming .mode-toggle,body.zooming #zoomBtn{opacity:.35;po
 .dog{position:absolute;right:6%;bottom:calc(18px*var(--k));display:none;text-align:center;z-index:2}
 .dog.show{display:block}
 .dog-emoji{font-size:calc(54px*var(--k));line-height:1;transform:scaleX(-1)}
-.dog-angry{position:absolute;top:calc(14px*var(--k));left:-6px;font-size:calc(16px*var(--k))}
 .dog-hp{font-size:calc(11px*var(--k));letter-spacing:-1px;margin-bottom:2px}
 .scene-msg{position:absolute;left:50%;transform:translateX(-50%);top:6px;max-width:92%;text-align:center;background:rgba(255,255,255,.92);border-radius:12px;padding:3px 10px;font-weight:700;font-size:calc(13px*var(--k));color:var(--orange);pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;text-shadow:0 1px 0 white,0 -1px 0 white,1px 0 0 white,-1px 0 0 white}
 .scene-msg.show{opacity:1}
@@ -307,7 +306,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
         <div class="table-top"></div><div class="table-leg l"></div><div class="table-leg r"></div>
         <div class="knock-obj" id="knockObj"></div>
         <div class="buddy-wrap" id="buddyWrap"><canvas id="buddyCanvas"></canvas></div>
-        <div class="dog" id="dog"><div class="dog-hp" id="dogHp"></div><div class="dog-angry">💢</div><div class="dog-emoji">🐕</div></div>
+        <div class="dog" id="dog"><div class="dog-hp" id="dogHp"></div><div class="dog-emoji">🐕</div></div>
         <div id="streakBadge" class="streak-badge"></div>
         <div class="scene-msg" id="sceneMsg"></div>
         <div class="meter" id="meter">
@@ -599,7 +598,6 @@ const Sound = {
   wrong() { if (!this.on()) return; this.tone(330, this.ctx.currentTime, 0.25, 'triangle', 0.15, 200); },
   coin() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(988, t, 0.08, 'square', 0.07); this.tone(1319, t + 0.08, 0.22, 'square', 0.07); },
   pop() { if (!this.on()) return; this.tone(500, this.ctx.currentTime, 0.1, 'sine', 0.2, 1100); },
-  bonk() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(420, t, 0.22, 'sine', 0.35, 70); this.burst(t, 0.08, 'lowpass', 1200, 0.3); },
   bark() { if (!this.on()) return; const t = this.ctx.currentTime; for (const dt of [0, 0.22]) { this.tone(330, t + dt, 0.13, 'square', 0.1, 170); this.burst(t + dt, 0.1, 'bandpass', 900, 0.25, 2); } },
   crash() {
     if (!this.on()) return; const t = this.ctx.currentTime;
@@ -1236,38 +1234,44 @@ function knockStep() {
   }, 360);
 }
 
-// ---------- dog boss ----------
+// ---------- puppy playdate (a friendly visitor, not a fight) ----------
 function renderDog() {
   const d = $('dog');
   d.classList.toggle('show', !!state.boss && !zoom);
-  if (state.boss) $('dogHp').textContent = '❤️'.repeat(state.boss.hp) + '🤍'.repeat(5 - state.boss.hp);
+  if (state.boss) { const happy = 5 - state.boss.hp; $('dogHp').textContent = '❤️'.repeat(happy) + '🤍'.repeat(5 - happy); }
 }
 function maybeSpawnBoss() {
   if (state.boss || zoom || state.bossCounter < 12) return;
   state.bossCounter = 0; state.boss = { hp: 5 }; save();
   setTimeout(() => {
     renderDog(); Sound.bark();
-    pulse($('dog'), [{ transform: 'translateY(-160px)' }, { transform: 'translateY(0)' }], { duration: 500, easing: 'cubic-bezier(.34,1.56,.64,1)' });
-    sceneMsg('🐕 A grumpy dog! Get 5 right to bonk it!', 2600);
+    pulse($('dog'), [{ transform: 'translateX(160px)' }, { transform: 'translateX(0)' }], { duration: 600, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+    sceneMsg('🐶 A puppy wants to play! Get 5 right to play fetch!', 2800);
   }, 700);
 }
 function bossHit() {
   state.boss.hp--;
-  const dead = state.boss.hp <= 0;
-  if (dead) { state.boss = null; state.fish += 10; state.fishEarned += 10; state.dogsBonked++; }
+  const done = state.boss.hp <= 0;
+  if (done) { state.boss = null; state.fish += 10; state.fishEarned += 10; state.dogsBonked++; }
   save();
-  setTimeout(() => {
-    Sound.bonk();
-    pulse($('buddyCanvas'), [{ transform: 'translate(0,0)' }, { transform: 'translate(30px,-22px) rotate(15deg)' }, { transform: 'translate(0,0)' }], { duration: 380 });
-    sceneFx('💥', 80, 66 * sceneK(), 34 * sceneK(), [{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.4)', opacity: 0 }], 500);
-    if (dead) {
-      $('dogHp').textContent = '🤍🤍🤍🤍🤍';
-      anim($('dog'), [{ transform: 'translate(0,0) rotate(0)' }, { transform: 'translate(260px,-140px) rotate(720deg)' }], { duration: 750, easing: 'ease-in' })
-        .then(() => { $('dog').style.transform = ''; renderDog(); });
-      sceneMsg('BONK! The dog ran away! +10 🐟', 2400); setTimeout(() => Sound.coin(), 500);
+  setTimeout(async () => {
+    // Buddy tosses the ball, the puppy catches it
+    pulse($('buddyCanvas'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-14deg)' }, { transform: 'rotate(0)' }], { duration: 300 });
+    sceneFx('🎾', 20, 40 * sceneK(), 22 * sceneK(), [{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${$('scene').clientWidth * 0.55}px,${-20 * sceneK()}px)`, opacity: 1, offset: .5 }, { transform: `translate(${$('scene').clientWidth * 0.66}px,${40 * sceneK()}px)`, opacity: 0 }], 650);
+    Sound.pop();
+    await sleep(420);
+    pulse($('dog'), [{ transform: 'translateY(0)' }, { transform: `translateY(${-26 * sceneK()}px)` }, { transform: 'translateY(0)' }], { duration: 420, easing: 'ease-out' });
+    sceneFx('❤️', 82, 50 * sceneK(), 20 * sceneK(), [{ transform: 'translateY(0) scale(.5)', opacity: 1 }, { transform: `translateY(${-30 * sceneK()}px) scale(1.2)`, opacity: 0 }], 800);
+    if (done) {
+      $('dogHp').textContent = '❤️❤️❤️❤️❤️';
+      Sound.bark();
+      sceneMsg('Best friends! The puppy is SO happy! +10 🐟', 2600); setTimeout(() => Sound.coin(), 500);
+      for (let i = 0; i < 4; i++) setTimeout(() => sceneFx('💕', 78 + Math.random() * 10, 60 * sceneK(), 18 * sceneK(), [{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${-50 * sceneK()}px)`, opacity: 0 }], 900), i * 180);
+      await sleep(900);
+      await anim($('dog'), [{ transform: 'translate(0,0)' }, { transform: `translate(0,${-20 * sceneK()}px)`, offset: .2 }, { transform: 'translate(0,0)', offset: .4 }, { transform: 'translate(220px,0)' }], { duration: 1100, easing: 'ease-in' });
+      $('dog').style.transform = ''; renderDog();
     } else {
       renderDog();
-      pulse($('dog'), [{ transform: 'translateX(0)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(0)' }], { duration: 300 });
     }
   }, 450);
 }
@@ -1860,7 +1864,7 @@ function renderCats() {
   const bb = document.createElement('div'); bb.className = 'box buddy-box';
   const bc = document.createElement('canvas'); drawFullCat(bc, buddyId(), 96, { hat: state.hat }); bb.appendChild(bc);
   const bt = document.createElement('div');
-  bt.innerHTML = `<div class="section-title">⭐ Your buddy: ${esc(catName(buddyId()) || 'Buddy')}</div><div class="sub" style="text-align:left">Your buddy eats the food, knocks stuff over, fights dogs… and poops on Dad. Tap any cat below to make it your buddy.</div>`;
+  bt.innerHTML = `<div class="section-title">⭐ Your buddy: ${esc(catName(buddyId()) || 'Buddy')}</div><div class="sub" style="text-align:left">Your buddy eats the food, knocks stuff over, plays with puppies… and pranks Dad. Tap any cat below to make it your buddy.</div>`;
   bb.appendChild(bt); el.appendChild(bb);
 
   // badges
@@ -1929,7 +1933,7 @@ const HATS = [
 ];
 function renderShop() {
   const el = $('shopInner'); el.innerHTML = '';
-  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🛍️</span> Hat Shop</div><div class="fish-big">🐟 ${state.fish}</div><div class="sub">Earn fish by answering problems. Zoomies = double fish! Bonking a dog = +10.</div></div>`);
+  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🛍️</span> Hat Shop</div><div class="fish-big">🐟 ${state.fish}</div><div class="sub">Earn fish by answering problems. Zoomies = double fish! Playing with a puppy = +10.</div></div>`);
   const grid = document.createElement('div'); grid.className = 'shop-grid';
   HATS.forEach(h => {
     const owned = state.hatsOwned.includes(h.id), wearing = state.hat === h.id;
@@ -1966,7 +1970,7 @@ function renderStats() {
     <div class="box"><div class="fun-grid">
       <div class="fun-cell"><div class="n">😹 ${s.dadPooped}</div><div class="l">Dad pranked</div></div>
       <div class="fun-cell"><div class="n">💥 ${s.broken}</div><div class="l">Things broken</div></div>
-      <div class="fun-cell"><div class="n">🐕 ${s.dogsBonked}</div><div class="l">Dogs bonked</div></div>
+      <div class="fun-cell"><div class="n">🐶 ${s.dogsBonked}</div><div class="l">Puppy playdates</div></div>
       <div class="fun-cell"><div class="n">⚡ ${s.zoomBest}</div><div class="l">Zoomies record</div></div>
       <div class="fun-cell"><div class="n">🔥 ${s.bestStreak}</div><div class="l">Best streak</div></div>
       <div class="fun-cell"><div class="n">🐟 ${s.fishEarned}</div><div class="l">Fish earned</div></div>
@@ -2183,7 +2187,7 @@ updateHUD();
 newProblem();
 if (!state.welcomed) {
   state.welcomed = true; save();
-  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry buddy cat, a hat shop, grumpy dogs, ⚡ Zoomies… and something VERY silly happens to Dad when your buddy eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
+  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry buddy cat, a hat shop, playful puppies, ⚡ Zoomies… and something VERY silly happens to Dad when your buddy eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
 }
 </script>
 </body>
