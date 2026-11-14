@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.2';
+const APP_VERSION = 'v4.3';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -429,7 +429,7 @@ function defaultState() {
     boss: null, bossCounter: 0, dogsBonked: 0,
     zoomBest: 0, zoomRuns: 0, zoomIntroSeen: false,
     room: { wall: 'cream', floor: 'wood', styles: [], items: [], nextUid: 1 },
-    facts: {}, welcomed: true
+    facts: {}, cur: null, welcomed: true
   };
 }
 function loadState() {
@@ -974,8 +974,12 @@ function renderInput(cls) {
 }
 function setFeedback(text, hint) { const f = $('feedback'); f.textContent = text || ''; f.className = 'feedback' + (hint ? ' hint' : ''); }
 
-function newProblem() {
-  generateProblem(); input = ''; phase = 'playing';
+function newProblem(fresh) {
+  // An unsolved problem sticks: switching modes, Zoomies or reloading the page brings the same one back.
+  const c = state.cur;
+  if (!fresh && !zoom && c && c.key && Number.isFinite(c.a) && Number.isFinite(c.b) && Number.isFinite(c.answer)) { prob = c; lastKey = c.key; }
+  else { generateProblem(); if (!zoom) { state.cur = prob; save(); } }
+  input = ''; phase = 'playing';
   $('numA').textContent = prob.a; $('numB').textContent = prob.b; $('opSymbol').textContent = prob.op;
   renderInput(); setFeedback('');
   $('playView').style.display = 'flex'; $('rewardView').style.display = 'none';
@@ -1026,6 +1030,7 @@ function collectCat() {
 
 function onCorrect() {
   phase = 'correct';
+  if (!zoom) state.cur = null;
   state.streak++; if (state.streak > state.bestStreak) state.bestStreak = state.streak;
   const catId = collectCat();
   const fishGain = zoom ? 2 : 1;
@@ -3128,7 +3133,7 @@ function openParent() {
     const tg = document.createElement('div'); tg.className = 'table-grid';
     for (let i = 1; i <= MAXN; i++) {
       const b = document.createElement('button'); b.className = 'table-btn' + (i === state.maxTable ? ' active' : ''); b.textContent = i;
-      b.onclick = () => { state.maxTable = i; save(); tg.querySelectorAll('.table-btn').forEach(x => x.classList.toggle('active', +x.textContent === i)); if (!zoom) newProblem(); };
+      b.onclick = () => { state.maxTable = i; save(); tg.querySelectorAll('.table-btn').forEach(x => x.classList.toggle('active', +x.textContent === i)); if (!zoom) newProblem(true); };
       tg.appendChild(b);
     }
     t.appendChild(tg); box.appendChild(t);
@@ -3247,7 +3252,11 @@ document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click
   refreshPage();
   if (currentPage === 'play') updateHUD();
 }));
-document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; save(); updateHUD(); if (phase !== 'correct') newProblem(); }));
+document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => {
+  if (state.mode === b.dataset.mode) return;
+  state.mode = b.dataset.mode; save(); updateHUD();
+  if (phase !== 'correct') toast(`Finish this one first! Next: ${b.textContent.trim()}`);
+}));
 $('nextBtn').addEventListener('click', advance);
 $('zoomBtn').addEventListener('click', startZoomies);
 $('muteBtn').addEventListener('click', () => { state.sound = !state.sound; save(); updateHUD(); if (state.sound) { Sound.init(); Sound.pop(); } else { try { speechSynthesis.cancel(); } catch (e) {} } });
