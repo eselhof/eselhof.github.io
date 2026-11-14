@@ -197,6 +197,7 @@ body.big .shop-grid{grid-template-columns:repeat(3,1fr)}
 .mcell.head{background:none;color:var(--muted);font-weight:700;font-size:11px}
 .m-new{background:#efe9df;color:#b9ad98}.m-learn{background:#ffe08a}.m-tricky{background:#f8a5a5}.m-good{background:#9be3a8}
 .mcell.out{opacity:.3}
+#appVer{position:fixed;right:max(6px,env(safe-area-inset-right));bottom:max(3px,env(safe-area-inset-bottom));font-size:10px;font-weight:500;color:var(--faint);opacity:.8;pointer-events:none;z-index:5;letter-spacing:.3px}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px}
 .legend span{display:inline-flex;align-items:center;gap:3px}
 .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
@@ -342,6 +343,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
   <div class="page" id="page-stats"><div class="inner" id="statsInner"></div></div>
 </div>
 
+<div id="appVer"></div>
 <div id="theater">
   <svg id="thStage" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Cartoon of Buddy pranking Dad">
     <defs><radialGradient id="thVigG" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#3b2a1e" stop-opacity="0"/><stop offset="1" stop-color="#3b2a1e" stop-opacity=".25"/></radialGradient></defs>
@@ -367,6 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
+const APP_VERSION = 'v4.0';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -3236,6 +3239,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Enter') { e.preventDefault(); handlePress('✓'); }
 });
 
+$('appVer').textContent = APP_VERSION;
 buildNumpad();
 layout();
 placeKnockObj();
