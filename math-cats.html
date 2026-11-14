@@ -232,45 +232,17 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
 #toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(60,50,40,.9);color:white;padding:9px 16px;border-radius:14px;font-size:14px;z-index:90;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1}
 
-/* prank stage */
-#poopOverlay{position:fixed;inset:0;z-index:60;display:none;overflow:hidden;background:linear-gradient(#cfe8ff 0%,#eaf4ff 58%,#d9b98c 58%,#caa877 100%)}
-#poopOverlay.open{display:block}
-#poopOverlay.night{background:linear-gradient(#141a3a 0%,#2a2f5e 58%,#3b2f25 58%,#2e241c 100%)}
-.poop-head{position:absolute;top:max(20px,env(safe-area-inset-top));left:0;right:0;z-index:8;pointer-events:none}
-.poop-caption{text-align:center;font-size:clamp(22px,4.2vh,40px);font-weight:700;padding:0 16px;color:var(--ink);text-shadow:0 2px 0 white;z-index:8;line-height:1.15}
-.poop-sub{margin-top:6px;text-align:center;font-size:clamp(14px,2.2vh,20px);color:var(--muted);padding:0 16px;z-index:8}
-.night .poop-caption{color:#fff;text-shadow:0 2px 0 #000}
-.night .poop-sub{color:#c9cbe8}
-.dad{position:absolute;right:5%;bottom:7%;height:min(62%,76vw);aspect-ratio:200/340;z-index:2}
-.dad.shocked{animation:shake .45s 3}
-.bed{position:absolute;right:3%;bottom:6%;width:min(92vw,70vh);aspect-ratio:360/200;z-index:2}
-.pc-walker{position:absolute;left:-999px;top:0;z-index:3}
-.pc-walker canvas{display:block;width:100%!important;height:100%!important}
-.pc-walker.walking canvas{animation:waddle .32s ease-in-out infinite alternate}
-#walkerItem{position:absolute;left:50%;top:42%;transform:translateX(-50%);line-height:1;pointer-events:none}
+/* prank theater */
+#theater{position:fixed;inset:0;z-index:60;display:none;background:#f6e7cf;overflow:hidden;touch-action:none}
+#theater.open{display:block}
+#theater [hidden]{display:none!important}
+#thStage{position:absolute;inset:0;width:100%;height:100%;display:block}
+.th-cap{position:absolute;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));bottom:max(14px,calc(env(safe-area-inset-bottom) + 8px));text-align:center;font-weight:700;font-size:clamp(18px,3.4vmin,34px);line-height:1.2;color:#3b2a1e;text-shadow:0 2px 0 #fffdf7,0 -2px 0 #fffdf7,2px 0 0 #fffdf7,-2px 0 0 #fffdf7;pointer-events:none;text-wrap:balance}
+.th-end{position:absolute;left:0;right:0;top:max(14px,env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
+.th-sub{font-size:clamp(13px,2.1vmin,18px);font-weight:600;color:#3b2a1e;background:rgba(255,253,247,.9);border-radius:12px;padding:4px 12px;text-align:center;max-width:100%}
+#theater .th-done{pointer-events:auto;width:auto;max-width:none;height:auto;padding:14px 34px;font-size:clamp(17px,2.6vmin,24px)}
+.th-skip{position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));border:none;border-radius:999px;background:rgba(255,253,247,.9);color:#3b2a1e;font-weight:700;font-size:15px;padding:8px 14px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
 @keyframes waddle{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-10px) rotate(4deg)}}
-.poop-done{position:relative;margin:12px auto 0;width:auto;height:auto;padding:12px 30px;display:none;pointer-events:auto;font-size:clamp(16px,2.4vh,22px)}
-.fly{position:absolute;font-size:clamp(22px,3vh,34px);z-index:7;animation:orbit 1.1s linear infinite;pointer-events:none}
-@keyframes orbit{from{transform:translate(-50%,-50%) rotate(0deg) translateX(6vh) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg) translateX(6vh) rotate(-360deg)}}
-.sky{position:absolute;font-size:clamp(40px,7vh,80px);opacity:.9;z-index:0}
-.cloud{animation:drift 9s ease-in-out infinite alternate}
-@keyframes drift{from{transform:translateX(0)}to{transform:translateX(40px)}}
-#skyMoon,#skyStars{display:none}
-.night #skyMoon,.night #skyStars{display:block}
-.night #skySun,.night .cloud{display:none}
-.say-fx{font-weight:700;color:#c0392b;white-space:nowrap;text-shadow:0 2px 0 #fff}
-.night .say-fx{color:#ffd166;text-shadow:0 2px 0 #000}
-.prop{position:absolute;z-index:1}
-.side-table{background:linear-gradient(#a0703c 0,#a0703c 12px,transparent 12px)}
-.side-table::before,.side-table::after{content:'';position:absolute;top:12px;bottom:0;width:10px;background:#8a5d2f}
-.side-table::before{left:10%}.side-table::after{right:10%}
-.fancy-bed{border-radius:40% 40% 18px 18px;background:radial-gradient(ellipse at 50% 35%,#d7b8ff 0 38%,#9b6be0 40%,#7d4ac9 100%);border:3px solid #f1c40f;box-shadow:0 4px 0 #c99b00}
-.price-tag{position:absolute;right:-8px;top:-14px;background:#fff;border:2px solid #e0a800;border-radius:6px;padding:0 5px;font-weight:700;font-size:13px;color:#b07d00;transform:rotate(12deg)}
-.cbox{z-index:4;background:#c9a06a;border:3px solid #a57b45;border-radius:4px}
-.cbox::before,.cbox::after{content:'';position:absolute;top:-16%;width:48%;height:22%;background:#d8b07a;border:3px solid #a57b45}
-.cbox::before{left:-6%;transform:rotate(-18deg)}.cbox::after{right:-6%;transform:rotate(18deg)}
-.hairball{border-radius:50%;background:radial-gradient(circle at 35% 35%,#a07850,#5b3d22 70%);box-shadow:0 0 0 3px rgba(91,61,34,.45)}
-.hairpiece{background:#6b4a2f;border-radius:50% 50% 25% 25%}
 .prank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}
 .prank-tile{border:2px solid var(--soft);background:#fff8e7;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}
 .prank-tile .pe{font-size:30px;line-height:1.1}
@@ -279,7 +251,6 @@ textarea.backup{width:100%;height:70px;border:2px solid var(--line);border-radiu
 .prank-tile.locked{background:#f3ede3;border-style:dashed}
 .prank-tile.locked .pe{filter:grayscale(1);opacity:.5}
 
-#mummy .mb{fill:#fbfbf6;stroke:#cfc9b8;stroke-width:2;display:none}
 /* layout wrappers */
 #page-play{overflow:hidden}
 .play-left{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
@@ -371,121 +342,22 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
   <div class="page" id="page-stats"><div class="inner" id="statsInner"></div></div>
 </div>
 
-<div id="poopOverlay">
-  <div class="sky" id="skySun" style="right:8%;top:16%">☀️</div>
-  <div class="sky cloud" style="left:8%;top:20%">☁️</div>
-  <div class="sky cloud" style="left:42%;top:30%;animation-delay:-4s">☁️</div>
-  <div class="sky" id="skyMoon" style="right:10%;top:16%">🌙</div>
-  <div class="sky" id="skyStars" style="left:10%;top:22%;font-size:clamp(20px,3vh,34px);letter-spacing:2em">✨ ⭐ ✨</div>
-  <div class="poop-head"><div class="poop-caption" id="poopCaption"></div><div class="poop-sub" id="poopSub"></div><button class="next-btn poop-done" id="poopDone">Hehehe 😹</button></div>
-  <div id="propLayer"></div>
-  <svg id="dadSvg" class="dad" viewBox="0 0 200 340" preserveAspectRatio="xMidYMid meet">
-    <defs><clipPath id="scrClip"><rect x="61" y="191" width="78" height="42"/></clipPath></defs>
-    <rect x="78" y="230" width="19" height="92" rx="7" fill="#3d5a80"/>
-    <rect x="103" y="230" width="19" height="92" rx="7" fill="#3d5a80"/>
-    <ellipse cx="80" cy="326" rx="21" ry="9" fill="#5a3825"/>
-    <ellipse cx="120" cy="326" rx="21" ry="9" fill="#5a3825"/>
-    <rect x="60" y="108" width="80" height="134" rx="24" fill="#e85d4a"/>
-    <text x="100" y="152" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="24" fill="white">DAD</text>
-    <g id="wetPatch" style="display:none">
-      <ellipse cx="100" cy="244" rx="19" ry="15" fill="#1f3350" opacity=".85"/>
-      <path d="M90 258 Q88 266 91 268 Q94 266 90 258 Z M108 260 Q106 268 109 270 Q112 268 108 260 Z" fill="#7fc8ff"/>
+<div id="theater">
+  <svg id="thStage" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Cartoon of Buddy pranking Dad">
+    <defs><radialGradient id="thVigG" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#3b2a1e" stop-opacity="0"/><stop offset="1" stop-color="#3b2a1e" stop-opacity=".25"/></radialGradient></defs>
+    <rect x="-3000" y="-3000" width="7000" height="7000" fill="#f6e7cf"/>
+    <g id="thCam">
+      <g id="thSetL"></g><g id="thBackL"></g>
+      <g id="thShadowL"><ellipse id="thDadSh" cx="720" cy="622" rx="88" ry="14" fill="#3b2a1e" opacity=".22"/><ellipse id="thCatSh" cx="0" cy="622" rx="60" ry="9" fill="#3b2a1e" opacity="0"/></g>
+      <g id="thCatBackL"></g><g id="thDadL"></g><g id="thMidL"></g><g id="thCatL"></g><g id="thFrontL"></g><g id="thPropsL"></g><g id="thParts"></g>
+      <g id="thBub" opacity="0"><path id="thBubBox" d="" fill="#fffdf7" stroke="#3b2a1e" stroke-width="4" stroke-linejoin="round"/><text id="thBubText" text-anchor="middle" font-family="Fredoka, ui-rounded, sans-serif" font-weight="600" font-size="26" fill="#3b2a1e"></text></g>
     </g>
-    <rect class="skin" x="90" y="90" width="20" height="22" fill="#f2c29b"/>
-    <circle class="skin" cx="62" cy="66" r="8" fill="#f2c29b"/><circle class="skin" cx="138" cy="66" r="8" fill="#f2c29b"/>
-    <circle class="skin" cx="100" cy="62" r="38" fill="#f2c29b"/>
-    <path id="dadHair" d="M63 56 Q62 18 100 20 Q138 18 137 56 Q126 36 100 37 Q74 36 63 56 Z" fill="#6b4a2f"/>
-    <ellipse id="baldShine" cx="86" cy="36" rx="11" ry="5" fill="#fff" opacity=".6" style="display:none"/>
-    <g id="faceNormal">
-      <circle cx="86" cy="62" r="4.5" fill="#2b2b2b"/><circle cx="114" cy="62" r="4.5" fill="#2b2b2b"/>
-      <path d="M80 52 L92 51 M108 51 L120 52" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/>
-      <path d="M86 80 Q100 90 114 80" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </g>
-    <g id="faceShock" style="display:none">
-      <circle cx="85" cy="60" r="10" fill="white" stroke="#2b2b2b" stroke-width="2"/><circle cx="85" cy="61" r="3.5" fill="#2b2b2b"/>
-      <circle cx="115" cy="60" r="10" fill="white" stroke="#2b2b2b" stroke-width="2"/><circle cx="115" cy="61" r="3.5" fill="#2b2b2b"/>
-      <path d="M75 44 L93 40 M107 40 L125 44" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/>
-      <ellipse cx="100" cy="85" rx="8" ry="10" fill="#7a3e2b"/>
-      <path d="M134 40 Q140 50 134 54 Q128 50 134 40 Z" fill="#7fc8ff"/>
-    </g>
-    <g id="faceGross" style="display:none">
-      <path d="M79 56 L91 62 L79 68 M121 56 L109 62 L121 68" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M84 84 Q90 78 96 84 Q102 90 108 84 Q114 78 118 84" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <ellipse cx="105" cy="90" rx="5" ry="6" fill="#e57373"/>
-    </g>
-    <g id="faceSad" style="display:none">
-      <path d="M80 62 Q86 57 92 62 M108 62 Q114 57 120 62" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M80 50 L92 54 M108 54 L120 50" stroke="#6b4a2f" stroke-width="3" stroke-linecap="round"/>
-      <path d="M88 86 Q100 76 112 86" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M84 66 Q79 76 84 80 Q89 76 84 66 Z M116 66 Q111 76 116 80 Q121 76 116 66 Z" fill="#7fc8ff"/>
-    </g>
-    <g id="faceHappy" style="display:none">
-      <path d="M80 63 Q86 56 92 63 M108 63 Q114 56 120 63" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M84 78 Q100 96 116 78 Z" fill="#7a3e2b"/>
-    </g>
-    <path id="armL" class="arm" d="M66 125 Q54 175 60 220" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
-    <path id="armR" class="arm" d="M134 125 Q146 175 140 220" stroke="#f2c29b" stroke-width="14" fill="none" stroke-linecap="round"/>
-    <g id="propPaper" style="display:none">
-      <rect x="48" y="180" width="104" height="58" rx="3" fill="#f4f1e8" stroke="#cfc6b0" stroke-width="2"/>
-      <text x="100" y="198" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="13" fill="#444">NEWS</text>
-      <path d="M58 208 H142 M58 216 H130 M58 224 H138" stroke="#bbb" stroke-width="3"/>
-    </g>
-    <g id="propCoffee" style="display:none">
-      <rect x="27" y="168" width="28" height="32" rx="4" fill="white" stroke="#b9ae9a" stroke-width="2"/>
-      <path d="M55 176 Q66 178 64 188 Q62 194 55 193" stroke="#b9ae9a" stroke-width="3" fill="none"/>
-      <rect x="29" y="171" width="24" height="5" fill="#6f4a2e"/>
-      <path d="M35 160 Q31 152 36 146 M45 160 Q41 152 46 146" stroke="#ccc" stroke-width="2" fill="none"/>
-    </g>
-    <g id="propLaptop" style="display:none">
-      <rect x="56" y="186" width="88" height="52" rx="4" fill="#4a4a4a"/>
-      <rect x="61" y="191" width="78" height="42" rx="2" fill="#9ad3f5"/>
-      <g clip-path="url(#scrClip)" font-family="Menlo, monospace" font-size="7.5" fill="#123">
-        <text id="scr0" x="63" y="200"></text><text id="scr1" x="63" y="209"></text><text id="scr2" x="63" y="218"></text><text id="scr3" x="63" y="227"></text>
-      </g>
-      <path d="M48 238 H152 L160 250 H40 Z" fill="#bdbdbd"/>
-    </g>
-    <g id="mummy">
-      <rect class="mb" x="62" y="311" width="76" height="14" rx="3" transform="rotate(4 100 318)"/>
-      <rect class="mb" x="70" y="288" width="60" height="14" rx="3" transform="rotate(-4 100 295)"/>
-      <rect class="mb" x="70" y="263" width="60" height="14" rx="3" transform="rotate(4 100 270)"/>
-      <rect class="mb" x="58" y="238" width="84" height="14" rx="3" transform="rotate(-4 100 245)"/>
-      <rect class="mb" x="46" y="213" width="108" height="14" rx="3" transform="rotate(4 100 220)"/>
-      <rect class="mb" x="44" y="188" width="112" height="14" rx="3" transform="rotate(-4 100 195)"/>
-      <rect class="mb" x="44" y="163" width="112" height="14" rx="3" transform="rotate(4 100 170)"/>
-      <rect class="mb" x="48" y="138" width="104" height="14" rx="3" transform="rotate(-4 100 145)"/>
-      <rect class="mb" x="54" y="113" width="92" height="14" rx="3" transform="rotate(4 100 120)"/>
-      <rect class="mb" x="60" y="78" width="80" height="14" rx="3" transform="rotate(-4 100 85)"/>
-      <rect class="mb" x="62" y="36" width="76" height="14" rx="3" transform="rotate(4 100 43)"/>
-    </g>
+    <rect x="-3000" y="-3000" width="7000" height="7000" fill="url(#thVigG)" pointer-events="none"/>
+    <rect id="thFlash" x="-3000" y="-3000" width="7000" height="7000" fill="#fff" opacity="0" pointer-events="none"/>
   </svg>
-  <svg id="bedSvg" class="bed" viewBox="0 0 360 200" preserveAspectRatio="xMidYMid meet" style="display:none">
-    <rect id="bedHead" x="8" y="40" width="34" height="150" rx="8" fill="#8a5d2f"/>
-    <rect id="bedFoot" x="330" y="100" width="24" height="90" rx="6" fill="#8a5d2f"/>
-    <rect id="bedMat" x="30" y="118" width="310" height="48" rx="10" fill="#f4f1e8"/>
-    <rect x="40" y="166" width="14" height="26" fill="#6e4a25"/><rect x="316" y="166" width="14" height="26" fill="#6e4a25"/>
-    <ellipse cx="78" cy="114" rx="42" ry="18" fill="#ffffff" stroke="#ddd" stroke-width="2"/>
-    <circle class="skin" cx="88" cy="92" r="30" fill="#f2c29b"/>
-    <path d="M58 88 Q58 60 88 60 Q118 60 118 86 Q106 72 88 72 Q70 72 58 88 Z" fill="#6b4a2f"/>
-    <g id="bFaceSleep">
-      <path d="M74 92 Q80 97 86 92 M94 92 Q100 97 106 92" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <ellipse cx="90" cy="106" rx="4" ry="3" fill="#7a3e2b"/>
-    </g>
-    <g id="bFaceShock" style="display:none">
-      <circle cx="79" cy="90" r="8" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><circle cx="79" cy="91" r="3" fill="#2b2b2b"/>
-      <circle cx="101" cy="90" r="8" fill="#fff" stroke="#2b2b2b" stroke-width="2"/><circle cx="101" cy="91" r="3" fill="#2b2b2b"/>
-      <ellipse cx="90" cy="108" rx="6" ry="8" fill="#7a3e2b"/>
-    </g>
-    <g id="bFaceHappy" style="display:none">
-      <circle cx="80" cy="91" r="3.5" fill="#2b2b2b"/><circle cx="100" cy="91" r="3.5" fill="#2b2b2b"/>
-      <path d="M80 102 Q90 112 100 102" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </g>
-    <g id="bFaceGross" style="display:none">
-      <path d="M73 86 L83 91 L73 96 M107 86 L97 91 L107 96" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M78 106 Q83 101 88 106 Q93 111 98 106 Q102 101 104 106" stroke="#7a3e2b" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </g>
-    <path id="bedBlanket" d="M114 104 Q132 84 170 92 Q220 100 262 96 Q306 90 330 110 L334 152 Q220 160 114 152 Z" fill="#7aa6e0"/>
-  </svg>
-  <div class="pc-walker" id="pcWalker"><canvas id="pcCat"></canvas><div id="walkerItem"></div></div>
+  <div class="th-cap" id="thCap"></div>
+  <div class="th-end" id="thEnd" hidden><div class="th-sub" id="thSub"></div><button class="next-btn th-done" id="thDone">Hehehe 😹</button></div>
+  <button class="th-skip" id="thSkip" type="button">Skip ⏩</button>
 </div>
 
 <div class="overlay" id="modal"><div class="modal" id="modalBox"></div></div>
@@ -1405,442 +1277,1238 @@ async function endZoomies() {
 }
 
 // ============================================================
-// DAD PRANKS (one plays when the food bowl is full)
+// PRANK THEATER — cartoon scenes of Buddy pranking Dad
 // ============================================================
-const STAGE = () => $('poopOverlay');
-function stageRect() { return STAGE().getBoundingClientRect(); }
-function svgPt(id, vbW, vbH, x, y) {
-  const r = $(id).getBoundingClientRect(), st = stageRect();
-  const sc = Math.min(r.width / vbW, r.height / vbH), ox = (r.width - vbW * sc) / 2, oy = (r.height - vbH * sc) / 2;
-  return [r.left - st.left + ox + x * sc, r.top - st.top + oy + y * sc, sc];
-}
-const dadPt = (x, y) => svgPt('dadSvg', 200, 340, x, y);
-const bedPt = (x, y) => svgPt('bedSvg', 360, 200, x, y);
-const groundY = () => stageRect().height * 0.93;
-const baseCat = () => Math.round(Math.min(window.innerWidth * 0.4, window.innerHeight * 0.3));
-const cap = t => { $('poopCaption').textContent = t; };
-const sub = t => { $('poopSub').textContent = t; };
-let prankTimers = [];
-
-function stageFx(content, x, y, size, cls) {
-  const el = document.createElement('div'); el.className = 'fx ' + (cls || '');
-  if (typeof content === 'string') el.textContent = content; else el.appendChild(content);
-  el.style.left = x + 'px'; el.style.top = y + 'px';
-  if (size) el.style.fontSize = size + 'px';
-  el.style.transform = 'translate(-50%,-50%)';
-  STAGE().appendChild(el); return el;
-}
-function floatFx(text, x, y, size, cls, ms) {
-  const el = stageFx(text, x, y, size, cls);
-  pulse(el, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%,-70%) scale(1.1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-160%) scale(1)', opacity: 0 }], { duration: ms || 1400, easing: 'ease-out' }).then(() => el.remove());
-  return el;
-}
-function sayFx(text, x, y) { return floatFx(text, x, y, clampN(window.innerHeight * 0.04, 20, 40), 'say-fx', 1800); }
-function flies(x, y) { for (let i = 0; i < 3; i++) { const f = stageFx('🪰', x, y, 0, 'fly'); f.style.fontSize = ''; f.style.transform = ''; f.style.animationDelay = (-i * 0.37) + 's'; } }
-function propBox(cls, x, y, w, h, html) {
-  const el = document.createElement('div'); el.className = 'prop ' + cls;
-  el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = w + 'px'; el.style.height = h + 'px';
-  if (html) el.innerHTML = html;
-  $('propLayer').appendChild(el); return el;
-}
-async function throwThing(content, sx, sy, ex, ey, opts) {
-  opts = opts || {};
-  const el = stageFx(content, sx, sy, opts.size);
-  const cx = (sx + ex) / 2, cy = Math.min(sy, ey) - (opts.arc != null ? opts.arc : Math.max(120, stageRect().height * 0.2));
-  const fr = [];
-  for (let i = 0; i <= 24; i++) {
-    const p = i / 24, q = 1 - p;
-    fr.push({ left: (q * q * sx + 2 * q * p * cx + p * p * ex) + 'px', top: (q * q * sy + 2 * q * p * cy + p * p * ey) + 'px', transform: `translate(-50%,-50%) rotate(${p * (opts.spin != null ? opts.spin : 720)}deg) scale(${1 + 0.4 * Math.sin(p * Math.PI)})` });
-  }
-  if (!opts.quiet) Sound.whoosh();
-  await anim(el, fr, { duration: opts.dur || 900, easing: 'linear' });
-  return el;
-}
-
-// ---- the cat on stage ----
-const Walker = {
-  get el() { return $('pcWalker'); }, get cv() { return $('pcCat'); },
-  size: 100, x: -999, y: 0, view: 'front', fat: 1,
-  draw(view, size, fat) {
-    this.view = view; if (size) this.size = Math.round(size); if (fat != null) this.fat = fat;
-    this.el.style.width = this.size + 'px'; this.el.style.height = this.size + 'px';
-    (view === 'rear' ? drawCatRear : drawFullCat)(this.cv, buddyId(), this.size, { fat: this.fat, hat: state.hat });
-    $('walkerItem').style.fontSize = (this.size * 0.24) + 'px';
-    this.place(this.x, this.y);
-  },
-  place(x, y) { this.x = x; this.y = y; this.el.style.left = (x - this.size / 2) + 'px'; this.el.style.top = (y - this.size) + 'px'; },
-  async walk(x, y, ms) {
-    this.el.classList.add('walking');
-    await anim(this.el, [{ left: (this.x - this.size / 2) + 'px', top: (this.y - this.size) + 'px' }, { left: (x - this.size / 2) + 'px', top: (y - this.size) + 'px' }], { duration: ms || 1500, easing: 'ease-out' });
-    this.el.classList.remove('walking'); this.x = x; this.y = y;
-  },
-  async jump(x, y, ms, hgt) {
-    const sx = this.x, sy = this.y, peak = Math.min(sy, y) - (hgt != null ? hgt : 90), cx = (sx + x) / 2, fr = [];
-    for (let i = 0; i <= 16; i++) {
-      const p = i / 16, q = 1 - p;
-      fr.push({ left: (q * q * sx + 2 * q * p * cx + p * p * x - this.size / 2) + 'px', top: (q * q * sy + 2 * q * p * peak + p * p * y - this.size) + 'px' });
-    }
-    Sound.pop();
-    await anim(this.el, fr, { duration: ms || 600, easing: 'linear' });
-    this.x = x; this.y = y;
-  },
-  async turn(view) {
-    await anim(this.el, [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }], { duration: 140 });
-    this.draw(view);
-    await anim(this.el, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 140 });
-  },
-  shake() { return pulse(this.el, [{ transform: 'translateX(0) scaleY(1)' }, { transform: 'translateX(-6px) scaleY(.92)' }, { transform: 'translateX(6px) scaleY(1.05)' }, { transform: 'translateX(0) scaleY(1)' }], { duration: 380 }); },
-  nudge(dir) { return pulse(this.el, [{ transform: 'rotate(0)' }, { transform: `rotate(${12 * dir}deg) translateX(${10 * dir}px)` }, { transform: 'rotate(0)' }], { duration: 320 }); },
-  item(t) { $('walkerItem').textContent = t || ''; }
+const SVGNS = 'http://www.w3.org/2000/svg';
+const FLOOR = 622;
+const thLerp = (a, b, p) => a + (b - a) * p;
+const thClamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const thF = v => (Math.round(v * 10) / 10);
+const TH_EASE = {
+  linear: p => p,
+  inOut: p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2,
+  out: p => 1 - Math.pow(1 - p, 3),
+  in: p => p * p * p,
+  back: p => { const c = 1.9; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }
 };
-
-// ---- Dad ----
-const ARMS = {
-  hang: ['M66 125 Q54 175 60 220', 'M134 125 Q146 175 140 220'],
-  paper: ['M66 125 Q46 160 56 205', 'M134 125 Q154 160 144 205'],
-  coffee: ['M66 125 Q38 150 42 182', 'M134 125 Q154 175 142 218'],
-  laptop: ['M66 125 Q50 175 60 240', 'M134 125 Q150 175 140 240'],
-  facepalm: ['M66 125 Q50 175 60 240', 'M134 125 Q164 98 124 64'],
-  up: ['M66 125 Q40 95 44 50', 'M134 125 Q160 95 156 50'],
-  hand: ['M66 125 Q38 160 26 170', 'M134 125 Q146 175 140 220'],
-  present: ['M66 125 Q36 150 20 168', 'M134 125 Q146 175 140 220']
+const TH = {
+  tweens: [], clock: 0, ts: 1, last: null, raf: 0, open: false, ff: false,
+  parts: [], props: [], emit: [], sim: null, onDrop: null, onFloorDrop: null,
+  cat: null, dad: null, cam: { x: 560, y: 380, z: 1, shake: 0 }, ce: {}, de: {}, inited: false,
+  vw: 1000, vh: 700, zEff: 1, view: null, blinkC: 1500, blinkD: 2200, flash: 0, catMouth: 'w'
 };
-function dadArms(n) { $('armL').setAttribute('d', ARMS[n][0]); $('armR').setAttribute('d', ARMS[n][1]); }
-function dadProp(n) { [['paper', 'propPaper'], ['coffee', 'propCoffee'], ['laptop', 'propLaptop']].forEach(([k, id]) => { $(id).style.display = k === n ? '' : 'none'; }); }
-function dadFace(n) { ['Normal', 'Shock', 'Gross', 'Sad', 'Happy'].forEach(f => { $('face' + f).style.display = f.toLowerCase() === n ? '' : 'none'; }); }
-function bedFace(n) { ['Sleep', 'Shock', 'Happy', 'Gross'].forEach(f => { $('bFace' + f).style.display = f.toLowerCase() === n ? '' : 'none'; }); }
-function dadSkin(green) {
-  const c = green ? '#b5d99c' : '#f2c29b';
-  document.querySelectorAll('#poopOverlay .skin').forEach(e => e.setAttribute('fill', c));
-  document.querySelectorAll('#poopOverlay .arm').forEach(e => e.setAttribute('stroke', c));
-}
-function bedMode(m) {
-  const couch = m === 'couch';
-  $('bedHead').setAttribute('fill', couch ? '#3f8f86' : '#8a5d2f');
-  $('bedFoot').setAttribute('fill', couch ? '#3f8f86' : '#8a5d2f');
-  $('bedMat').setAttribute('fill', couch ? '#5bb5a9' : '#f4f1e8');
-  $('bedBlanket').setAttribute('fill', couch ? '#e85d4a' : '#7aa6e0');
-  $('dadSvg').style.display = 'none'; $('bedSvg').style.display = '';
-}
-function setScreen(lines) { for (let i = 0; i < 4; i++) $('scr' + i).textContent = lines[i] || ''; }
-function dadReset() {
-  dadArms('hang'); dadProp(null); dadFace('normal'); bedFace('sleep'); dadSkin(false);
-  $('dadHair').style.display = ''; $('baldShine').style.display = 'none'; $('wetPatch').style.display = 'none';
-  document.querySelectorAll('#mummy .mb').forEach(b => { b.style.display = 'none'; });
-  setScreen([]);
-  const d = $('dadSvg'); d.style.display = ''; d.style.transform = ''; d.classList.remove('shocked');
-  $('bedSvg').style.display = 'none';
-  STAGE().classList.remove('night');
-  $('propLayer').innerHTML = '';
-  STAGE().querySelectorAll('.fx').forEach(e => e.remove());
-  Walker.item(''); Walker.el.style.zIndex = 3; Walker.el.style.transform = ''; Walker.el.classList.remove('walking');
-  Walker.fat = 1; Walker.place(-999, 0);
-  prankTimers.forEach(t => clearInterval(t)); prankTimers = [];
-}
-function dadJump() {
-  return pulse($('dadSvg'), [{ transform: 'translateY(0)' }, { transform: 'translateY(-22%)', offset: .3 }, { transform: 'translateY(0)', offset: .55 }, { transform: 'translateY(-12%)', offset: .75 }, { transform: 'translateY(0)' }], { duration: 1100, easing: 'ease-out' });
-}
-function dadShock() { const d = $('dadSvg'); d.classList.remove('shocked'); void d.getBoundingClientRect(); d.classList.add('shocked'); }
-function puff(x, y) {
-  const p = stageFx('💨', x, y, clampN(window.innerHeight * 0.05, 34, 60));
-  pulse(p, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: 'translate(-90%,-60%) scale(1.6)', opacity: 0 }], { duration: 900 }).then(() => p.remove());
-}
-const emojiSize = () => clampN(window.innerHeight * 0.07, 42, 84);
-async function enterCat(size, stopX, ms) {
-  Walker.fat = 1; Walker.place(-size, groundY()); Walker.draw('front', size, 1);
-  await Walker.walk(stopX, groundY(), ms || 1600);
-}
-const dadLeft = () => dadPt(0, 0)[0];
+const thE = id => document.getElementById(id);
+const thS = (n, ...a) => { if (!TH.ff && Sound[n]) { try { Sound[n](...a); } catch (e) {} } };
+const thSpeak = text => { if (!TH.ff) Sound.say([text]); };
+const thSay = t => { thE('thCap').textContent = t; };
 
-// ---- 1. poop ----
-const DAD_TARGETS = { head: [100, 26], shoe: [80, 320], coffee: [41, 168], laptop: [100, 244] };
-const POOP_LINES = {
-  head: ["RIGHT ON DAD'S HEAD!! 💩", "Bullseye! Dad's head! 🎯"],
-  shoe: ['Dad stepped in it! 🦶💩', "Splat! Right on Dad's shoe!"],
-  coffee: ["Into Dad's coffee! ☕💩", "Dad's coffee is RUINED!"],
-  laptop: ["All over Dad's laptop! 💻💩", "Dad's computer is POOPY now!"]
-};
-async function prankPoop() {
-  let v; do { v = pick(['head', 'shoe', 'coffee', 'laptop']); } while (v === state.lastPoopVariant);
-  state.lastPoopVariant = v;
-  const prop = v === 'coffee' ? 'coffee' : v === 'laptop' ? 'laptop' : 'paper';
-  dadProp(prop); dadArms(prop);
-  cap('Buddy ate SO much food…');
-  const W = baseCat();
-  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.35), 1800);
-  Sound.meow(); cap('…uh oh 😳'); await sleep(900);
-  await Walker.turn('rear'); await sleep(350);
-  const sx = Walker.x, sy = Walker.y - W * 0.34;
-  cap('💨 PFFFRRRT!'); Sound.fart(); puff(sx - W * 0.3, sy); await sleep(550);
-  const [ex, ey] = dadPt(...DAD_TARGETS[v]);
-  cap('');
-  const pr = await throwThing('💩', sx, sy, ex, ey, { size: emojiSize() });
-  Sound.splat();
-  pulse(pr, [{ transform: 'translate(-50%,-50%) scale(1.8,0.6)' }, { transform: 'translate(-50%,-50%) scale(1)' }], { duration: 300 });
-  dadFace('shock'); dadShock();
-  floatFx('SPLAT!', ex, ey - 40, clampN(window.innerHeight * 0.045, 26, 44), 'say-fx');
-  if (v === 'coffee') floatFx('💦', ex - 20, ey - 10, 34);
-  flies(ex, ey);
-  cap(pick(POOP_LINES[v]));
-  setTimeout(() => Sound.say(['Nooooo!', 'Not again!', 'Ewwww! Gross!', 'Oh come on, cat!']), 350);
-}
-
-// ---- 2. keyboard nap ----
-async function prankKeyboard() {
-  dadProp('laptop'); dadArms('laptop'); dadFace('normal');
-  setScreen(['Dear Boss,', 'The big report', 'is almost don', '']);
-  cap('Dad is working on his laptop… 💻');
-  const sc = dadPt(0, 0)[2], W = Math.round(88 * sc);
-  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.3), 1500);
-  await sleep(300); Sound.meow(); cap('Buddy looks sleepy… 😼'); await sleep(700);
-  const [kx, ky] = dadPt(132, 246);
-  await Walker.jump(kx, ky, 650, 80);
-  cap('FLOP! 💤');
-  let n = 0; const lines = ['Dear Boss,', 'The big report', 'is almost don', ''];
-  await new Promise(res => {
-    const t = setInterval(() => {
-      n++;
-      lines[2] = 'is almost don' + 'j'.repeat(n);
-      lines[3] = 'j'.repeat(Math.max(0, n - 6) * 1);
-      setScreen(lines);
-      if (n % 2) Sound.clack();
-      if (n % 5 === 0) cap('j'.repeat(Math.min(24, n)));
-      if (n >= 36) { clearInterval(t); res(); }
-    }, 55);
-    prankTimers.push(t);
+function thTween(obj, to, dur, ease, onUpdate) {
+  return new Promise(res => {
+    const from = {}; for (const k in to) from[k] = obj[k];
+    TH.tweens.push({ obj, from, to, dur: Math.max(1, dur), el: 0, ease: TH_EASE[ease || 'inOut'], res, onUpdate });
   });
-  floatFx('💤', Walker.x + Walker.size * 0.3, Walker.y - Walker.size * 0.9, 34);
-  dadArms('facepalm'); dadFace('shock'); dadShock();
-  sayFx('MY REPORT!', dadPt(100, 10)[0], dadPt(100, 10)[1]);
-  cap("Buddy took a nap on Dad's keyboard! ⌨️😴");
-  setTimeout(() => Sound.say(['Get off my keyboard!', 'My report! Nooo!']), 300);
 }
+const thWait = ms => thTween({}, {}, ms, 'linear');
+function thSlow(v, ms) { const o = { v: TH.ts }; return thTween(o, { v }, ms || 150, 'out', () => { TH.ts = o.v; }); }
+const thCamTo = (x, y, z, ms, ease) => thTween(TH.cam, { x, y, z }, ms, ease || 'inOut');
+const thShake = v => { TH.cam.shake = Math.max(TH.cam.shake, v); };
+const thFlash = v => { TH.flash = v; };
+function thBlink(o) { if (!o) return; const b = { v: 0 }; thTween(b, { v: 1 }, 70, 'linear', () => { o.blink = b.v; }).then(() => thTween(b, { v: 0 }, 90, 'linear', () => { o.blink = b.v; })); }
 
-// ---- 3. the water glass ----
-async function prankGlass() {
-  dadArms('hang'); dadFace('normal');
-  const [dl, , sc] = dadPt(0, 0), topY = dadPt(0, 205)[1];
-  const tw = Math.max(110, 120 * sc), right = dl + 8 * sc, left = Math.max(6, right - tw), ground = groundY();
-  propBox('side-table', left, topY, right - left, ground - topY);
-  const gs = clampN(30 * sc, 30, 64);
-  const glass = stageFx('🥛', right - gs * 0.7, topY - gs * 0.5, gs);
-  glass.style.zIndex = 2;
-  cap('Dad put his drink on the table…');
-  const W = Math.round(Math.min(90 * sc, (right - left) * 0.75));
-  await enterCat(W, left + W * 0.45, 1500);
-  await Walker.jump(left + W * 0.45, topY + 2, 550, 60);
-  cap('Buddy is staring at Dad. 👀'); await sleep(900);
-  let gx = right - gs * 0.7;
-  for (let i = 1; i <= 3; i++) {
-    cap('👀' + ' .'.repeat(i * 2));
-    Walker.nudge(1); Sound.clack();
-    gx += gs * 0.25; glass.style.left = gx + 'px';
-    await sleep(850);
+// ---------- extra synthesized sounds ----------
+Object.assign(Sound, {
+  boing() { if (!this.on()) return; this.tone(220, this.ctx.currentTime, .35, 'sine', .3, 660); },
+  thud() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(120, t, .2, 'sine', .4, 50); this.burst(t, .12, 'lowpass', 400, .3); },
+  step() { if (!this.on()) return; this.burst(this.ctx.currentTime, .05, 'lowpass', 500, .06); },
+  tink() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(2600, t, .12, 'sine', .14); this.tone(3900, t + .02, .1, 'sine', .07); },
+  dun() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(110, t, .35, 'sawtooth', .14, 104); this.tone(104, t + .45, .7, 'sawtooth', .16, 92); },
+  squeak() { if (!this.on()) return; const t = this.ctx.currentTime; this.tone(2300, t, .07, 'sine', .14, 3000); this.tone(2500, t + .1, .09, 'sine', .12, 3300); },
+  chime() { if (!this.on()) return; const t = this.ctx.currentTime; [1568, 1976, 2349, 3136].forEach((f, i) => this.tone(f, t + i * .08, .35, 'sine', .1)); },
+  rip() { if (!this.on()) return; const t = this.ctx.currentTime; for (let i = 0; i < 6; i++) this.burst(t + i * .035, .03, 'highpass', 2200, .18); },
+  snore() { if (!this.on()) return; const t = this.ctx.currentTime; this.burst(t, 1.1, 'lowpass', 260, .22); this.tone(70, t, 1, 'sawtooth', .05, 60); },
+  send() { if (!this.on()) return; this.whoosh(); const t = this.ctx.currentTime; this.tone(1320, t + .45, .25, 'sine', .14); this.tone(1760, t + .55, .4, 'sine', .12); },
+  wahwah() { if (!this.on()) return; const t = this.ctx.currentTime; [[392, .38], [370, .38], [349, .38], [330, .95]].forEach(([f, d], i) => this.tone(f, t + i * .42, d, 'triangle', .2, i === 3 ? 300 : 0)); },
+  buzz() {
+    if (!this.on()) return; const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), l = c.createOscillator(), lg = c.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 130; l.type = 'square'; l.frequency.value = 23; lg.gain.value = .12; l.connect(lg); lg.connect(g.gain);
+    g.gain.setValueAtTime(.13, t); g.gain.setValueAtTime(.13, t + .5); g.gain.exponentialRampToValueAtTime(.0001, t + .75);
+    o.connect(g); g.connect(this.out); o.start(t); l.start(t); o.stop(t + .8); l.stop(t + .8);
+    for (let i = 0; i < 5; i++) this.burst(t + Math.random() * .5, .05, 'highpass', 3000, .25);
+  },
+  purr(sec) {
+    if (!this.on()) return; const c = this.ctx, t = c.currentTime, d = sec || 2.5;
+    const n = c.createBufferSource(); n.buffer = this.noise(); n.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 240;
+    const g = c.createGain(); g.gain.value = .22; const lfo = c.createOscillator(); lfo.frequency.value = 24; const lg = c.createGain(); lg.gain.value = .2; lfo.connect(lg); lg.connect(g.gain);
+    const env = c.createGain(); env.gain.setValueAtTime(.0001, t); env.gain.exponentialRampToValueAtTime(1, t + .3); env.gain.setValueAtTime(1, t + d - .4); env.gain.exponentialRampToValueAtTime(.0001, t + d);
+    n.connect(f); f.connect(g); g.connect(env); env.connect(this.out); n.start(t); lfo.start(t); n.stop(t + d + .1); lfo.stop(t + d + .1);
   }
-  cap('…PUSH. 😼');
-  Walker.nudge(1);
-  const [cx, cy] = dadPt(100, 244);
-  const fr = []; const sx = gx, sy = topY - gs * 0.5;
-  for (let i = 0; i <= 16; i++) { const p = i / 16; fr.push({ left: (sx + (cx - sx) * p) + 'px', top: (sy + (cy - sy) * p * p - Math.sin(p * Math.PI) * 30) + 'px', transform: `translate(-50%,-50%) rotate(${p * 150}deg)` }); }
-  await anim(glass, fr, { duration: 420, easing: 'linear' });
-  Sound.splash();
-  $('wetPatch').style.display = '';
-  floatFx('💦', cx - 20, cy - 10, gs * 1.2); floatFx('💦', cx + 22, cy, gs);
-  dadFace('shock'); dadShock();
-  await anim(glass, [{ top: cy + 'px' }, { top: (ground - gs * 0.4) + 'px', transform: 'translate(-50%,-50%) rotate(260deg)' }], { duration: 300, easing: 'ease-in' });
-  Sound.crash(); glass.textContent = '💥';
-  cap('SPLASH! 💦');
-  await sleep(1000);
-  glass.remove();
-  cap('Now it looks like Dad peed his pants! 😂');
-  setTimeout(() => Sound.say(['I did NOT pee my pants!', 'Oh no, my pants!']), 200);
-}
+});
 
-// ---- 4. butt in face ----
-async function prankButt() {
-  bedMode('couch'); bedFace('happy');
-  cap('Dad is relaxing on the couch… 🛋️');
-  const sc = bedPt(0, 0)[2], W = Math.round(118 * sc);
-  const [hx, hy] = bedPt(88, 92);
-  await enterCat(W, bedPt(250, 0)[0], 1500);
-  await Walker.jump(bedPt(230, 0)[0], bedPt(0, 100)[1], 600, 60);
-  await sleep(300);
-  await Walker.walk(bedPt(150, 0)[0], bedPt(0, 98)[1], 900);
-  cap('…oh no. Not the butt. 😳'); await sleep(700);
-  await Walker.turn('rear');
-  Walker.el.classList.add('walking');
-  await anim(Walker.el, [{ left: (Walker.x - W / 2) + 'px', top: (Walker.y - W) + 'px' }, { left: (hx - W / 2) + 'px', top: (hy + W * 0.34 - W) + 'px' }], { duration: 700, easing: 'ease-in-out' });
-  Walker.el.classList.remove('walking'); Walker.x = hx; Walker.y = hy + W * 0.34;
-  Sound.fart(); puff(hx - W * 0.35, hy); puff(hx + W * 0.35, hy - W * 0.1);
-  bedFace('gross'); dadSkin(true);
-  floatFx('🤢', hx - W * 0.6, hy - W * 0.2, 40);
-  sayFx('MMMPHH!!', hx + W * 0.7, hy - W * 0.3);
-  cap('BUTT. IN. FACE. 🍑😂');
-  setTimeout(() => Sound.say(['Get your butt out of my face!', 'Ugh! Cat butt!']), 500);
+// ---------- frame / camera / loop ----------
+function thFrame() {
+  const W = window.innerWidth, H = window.innerHeight, ar = W / Math.max(1, H);
+  let w, h;
+  if (ar >= 1000 / 700) { h = 700; w = 700 * ar; } else { w = Math.max(560, 700 * ar); h = w / ar; }
+  TH.vw = w; TH.vh = h;
+  thE('thStage').setAttribute('viewBox', `${500 - w / 2} ${350 - h / 2} ${w} ${h}`);
 }
-
-// ---- 5. the "gift" ----
-async function prankGift() {
-  dadProp('paper'); dadArms('paper'); dadFace('normal');
-  cap('Buddy has a surprise for Dad… 🎁');
-  const W = baseCat();
-  Walker.item('🐭');
-  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.25), 1700);
-  cap('😼 "A present for you, Dad!"'); Sound.meow(); await sleep(900);
-  Walker.item('');
-  const ms = clampN(W * 0.24, 26, 60);
-  const [fx2, fy2] = dadPt(62, 326);
-  const mouse = stageFx('🐭', Walker.x + W * 0.05, Walker.y - W * 0.5, ms);
-  await anim(mouse, [{ left: mouse.style.left, top: mouse.style.top }, { left: fx2 + 'px', top: (fy2 - ms * 0.3) + 'px' }], { duration: 450, easing: 'ease-in' });
-  cap('Dad looks down…'); await sleep(900);
-  dadProp(null); dadArms('up'); dadFace('shock');
-  const [nx, ny] = dadPt(100, 200);
-  throwThing('📰', nx, ny, nx + 80, ny - 220, { size: 40, dur: 900, quiet: true }).then(e => e.remove());
-  dadJump(); Sound.whoosh();
-  sayFx('AAAAAH!!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
-  setTimeout(() => Sound.say(['AAAAH! A mouse!', 'Eeeeek!']), 200);
-  await anim(mouse, [{ left: fx2 + 'px', transform: 'translate(-50%,-50%) scaleX(1)' }, { left: (stageRect().width + 80) + 'px', transform: 'translate(-50%,-50%) scaleX(-1)' }], { duration: 900, easing: 'ease-in' });
-  mouse.remove();
-  cap('Dad is scared of a teeny tiny mouse! 🐭😂');
+function thStep(ts) {
+  if (!TH.open) { TH.raf = 0; return; }
+  if (TH.last === null) TH.last = ts;
+  const real = Math.min(50, ts - TH.last); TH.last = ts;
+  let dt = real * (TH.ff ? 40 : TH.ts);
+  while (dt > 0) { const d = Math.min(16, dt); dt -= d; thAdvance(d); }
+  thReal(real);
+  thRender();
+  TH.raf = requestAnimationFrame(thStep);
 }
-
-// ---- 6. 3 a.m. wake-up ----
-async function prankNight() {
-  STAGE().classList.add('night'); bedMode('night'); bedFace('sleep');
-  const clock = stageFx('🕒 3:00 AM', 0, 0, clampN(window.innerHeight * 0.035, 18, 34), 'say-fx');
-  clock.style.left = '18%'; clock.style.top = '34%';
-  const [hx, hy, sc] = bedPt(88, 92);
-  prankTimers.push(setInterval(() => floatFx(pick(['Z', 'z', 'Zz']), hx + 30 * sc, hy - 30 * sc, 24 + Math.random() * 16, 'say-fx', 1600), 600));
-  cap('It is 3 A.M. Dad is sleeping… 😴'); await sleep(1300);
-  const W = Math.round(100 * sc);
-  await enterCat(W, bedPt(310, 0)[0], 1500);
-  await Walker.jump(bedPt(250, 0)[0], bedPt(0, 98)[1], 600, 60);
-  await Walker.walk(bedPt(155, 0)[0], bedPt(0, 96)[1], 900);
-  for (const [t, size] of [['tap', 22], ['tap tap', 30], ['TAP TAP TAP!', 40]]) {
-    cap(t + ' 🐾'); Walker.nudge(-1); Sound.pop();
-    floatFx(t, hx, hy - 20 * sc, size, 'say-fx', 900);
-    await sleep(850);
+function thAdvance(d) {
+  TH.clock += d;
+  for (const t of TH.tweens.slice()) {
+    t.el += d; const p = Math.min(1, t.el / t.dur), e = t.ease(p);
+    for (const k in t.to) t.obj[k] = thLerp(t.from[k], t.to[k], e);
+    if (t.onUpdate) t.onUpdate(e, p);
+    if (p >= 1) { TH.tweens.splice(TH.tweens.indexOf(t), 1); t.res(); }
   }
-  cap('Dad is STILL asleep… 😴'); await sleep(900);
-  cap('…so Buddy sits on his FACE.');
-  await Walker.jump(hx, hy + W * 0.25, 600, 50);
-  Sound.meow(); sayFx('MMMPH!', hx + W * 0.7, hy - W * 0.4);
-  await sleep(1300);
-  prankTimers.forEach(t => clearInterval(t)); prankTimers = [];
-  bedFace('shock');
-  await Walker.jump(bedPt(230, 0)[0], bedPt(0, 98)[1], 500, 60);
-  sayFx("IT'S 3 A.M.!!", hx, hy - 50 * sc);
-  cap("Dad's awake! 😱 Buddy wants BREAKFAST.");
-  setTimeout(() => Sound.say(["It's three in the morning!", 'Why? Why now?!']), 300);
-}
-
-// ---- 7. toilet paper mummy ----
-async function prankMummy() {
-  dadArms('hang'); dadFace('normal');
-  cap('Buddy found the toilet paper… 🧻');
-  const [dl, , sc] = dadPt(0, 0), dr = dadPt(200, 0)[0], W = Math.round(70 * sc);
-  await enterCat(W, Math.max(W * 0.6, dl - W * 0.2), 1300);
-  cap('ZOOM ZOOM ZOOM! 🧻💨');
-  const bands = [...document.querySelectorAll('#mummy .mb')];
-  const ys = [318, 295, 270, 245, 220, 195, 170, 145, 120, 85, 43];
-  let goingRight = true;
-  for (let i = 0; i < bands.length; i++) {
-    const y = dadPt(0, ys[i])[1] + W * 0.5;
-    const x = goingRight ? dr + W * 0.2 : dl - W * 0.2;
-    Walker.el.style.zIndex = goingRight ? 3 : 1;
-    Walker.el.style.transform = goingRight ? 'scaleX(1)' : 'scaleX(-1)';
-    await anim(Walker.el, [{ left: (Walker.x - W / 2) + 'px', top: (Walker.y - W) + 'px' }, { left: (x - W / 2) + 'px', top: (y - W) + 'px' }], { duration: 260, easing: 'ease-in-out' });
-    Walker.x = x; Walker.y = y;
-    bands[i].style.display = 'inline'; if (i % 2 === 0) Sound.pop();
-    goingRight = !goingRight;
+  const c = TH.cat;
+  if (c && c.walk) { const b = Math.floor(c.phase / Math.PI); c.phase += d * .016 * c.speed; if (Math.floor(c.phase / Math.PI) !== b) thS('step'); }
+  if (TH.sim) TH.sim(d);
+  for (const p of TH.props) if (p.phys) thPropPhys(p, d);
+  for (const p of TH.parts) {
+    p.life -= d;
+    switch (p.t) {
+      case 'dust': p.r += d * .05; break;
+      case 'drop': case 'splash': case 'shard': case 'spark':
+        p.vy += (p.t === 'spark' ? .0005 : .0016) * d; p.x += p.vx * d; p.y += p.vy * d; if (p.vr) p.rot += p.vr * d;
+        if (p.t === 'drop') {
+          if (TH.onDrop && TH.onDrop(p)) { p.life = 0; break; }
+          const fl = p.floor || FLOOR + 4;
+          if (p.y > fl) { p.life = 0; thSplash(p.x, fl, 2, .25, p.col); if (TH.onFloorDrop) TH.onFloorDrop(p); }
+        } else if (p.t === 'shard' && p.y > FLOOR + 4) { p.y = FLOOR + 4; p.vy *= -.3; p.vx *= .6; p.vr *= .5; }
+        break;
+      case 'txt': p.y += p.vy * d; p.x += (p.vx || 0) * d; break;
+      case 'puff': p.x += p.vx * d; p.y += p.vy * d; p.r += d * .03; break;
+      case 'stink': p.y -= d * .05; break;
+      case 'heart': p.x += p.vx * d; p.y += p.vy * d; break;
+      case 'fly': p.a += d * .012; break;
+    }
   }
-  Walker.el.style.zIndex = 3; Walker.el.style.transform = '';
-  await Walker.jump(Math.max(W * 0.6, dl - W * 0.6), groundY(), 600, 40);
-  dadFace('shock'); dadShock();
-  sayFx('MMMF MMF!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
-  cap('Dad is a MUMMY now! 🧻😂');
-  setTimeout(() => Sound.say(['Mmmf! Mmmf mmmf!', 'Help! I am a mummy!']), 300);
+  TH.parts = TH.parts.filter(p => p.life > 0);
+  TH.cam.shake *= Math.pow(.992, d);
+  TH.flash = Math.max(0, TH.flash - d * .003);
+}
+function thReal(real) {
+  TH.blinkC -= real; TH.blinkD -= real;
+  if (TH.blinkC < 0) { TH.blinkC = 2200 + Math.random() * 2600; thBlink(TH.cat); }
+  if (TH.blinkD < 0) { TH.blinkD = 2000 + Math.random() * 2800; thBlink(TH.dad); }
+  for (const em of TH.emit) { em.t -= real; if (em.t <= 0) { em.t = em.every; try { em.fn(); } catch (e) {} } }
+}
+function thEmit(every, fn) { const em = { every, t: 0, fn }; TH.emit.push(em); return em; }
+function thStopEmit(em) { TH.emit = TH.emit.filter(x => x !== em); }
+
+function thRender() {
+  const c = TH.cam, z = 1 + (c.z - 1) * (TH.vw >= 900 ? 1 : .6);
+  TH.zEff = z;
+  const sx = (Math.random() - .5) * c.shake * 2, sy = (Math.random() - .5) * c.shake * 2;
+  thE('thCam').setAttribute('transform', `translate(${thF(500 + sx)} ${thF(350 + sy)}) scale(${z.toFixed(4)}) translate(${thF(-c.x)} ${thF(-c.y)})`);
+  TH.view = { l: c.x - TH.vw / 2 / z, r: c.x + TH.vw / 2 / z, t: c.y - TH.vh / 2 / z, b: c.y + TH.vh / 2 / z };
+  const now = performance.now();
+  const sec = thE('thSec'); if (sec) sec.setAttribute('transform', `rotate(${Math.floor(now / 1000) * 6})`);
+  const cl = thE('thClouds'); if (cl) cl.setAttribute('transform', `translate(${thF((now / 120) % 260 - 60)} 0)`);
+  const sw = Math.sin(now / 1400) * 1.2;
+  for (const [id, s] of [['thCurtL', 1], ['thCurtR', -1]]) { const e = thE(id); if (e) e.setAttribute('transform', `rotate(${(sw * s).toFixed(2)} ${e.dataset.px} ${e.dataset.py})`); }
+  thRenderCat(); thRenderDad(); thRenderProps(); thRenderParts();
+  thE('thFlash').setAttribute('opacity', TH.flash.toFixed(2));
 }
 
-// ---- 8. hairball ----
-async function prankHairball() {
-  dadArms('hand'); dadFace('happy');
-  cap('Dad: "Who\'s a good kitty?" 🥰');
-  const W = baseCat(), sc = dadPt(0, 0)[2];
-  await enterCat(W, Math.max(W * 0.6, dadLeft() - W * 0.45), 1600);
-  for (const t of ['hack…', 'hack… hack…', 'HUAAAACK!! 🤮']) { cap(t); Walker.shake(); Sound.cough(); await sleep(750); }
-  const hb = document.createElement('div'); hb.className = 'hairball';
-  const hs = clampN(24 * sc, 22, 56); hb.style.width = hs + 'px'; hb.style.height = hs + 'px';
-  const [ex, ey] = dadPt(24, 166);
-  const el = await throwThing(hb, Walker.x + W * 0.1, Walker.y - W * 0.5, ex, ey, { dur: 750, spin: 360 });
-  Sound.splat();
-  pulse(el, [{ transform: 'translate(-50%,-50%) scale(1.4,.7)' }, { transform: 'translate(-50%,-50%) scale(1)' }], { duration: 300 });
-  floatFx('💦', ex, ey + 10, 26);
-  dadFace('gross'); dadSkin(true); dadShock();
-  sayFx('EWWW!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
-  cap("A slimy hairball… right in Dad's hand! 🤢");
-  setTimeout(() => Sound.say(["Ewww! It's slimy!", 'Gross! Gross! Gross!']), 300);
+// world position of a marker <g transform="translate(..)"> inside the camera
+function thPt(id) {
+  const el = thE(id); if (!el) return [0, 0];
+  const m = thE('thCam').getScreenCTM().inverse().multiply(el.getScreenCTM());
+  return [m.e, m.f];
+}
+function thPtSync(id) { thRenderCat(); thRenderDad(); return thPt(id); }
+const thOffL = () => (TH.view ? TH.view.l : -300) - 170;
+const thOffR = () => (TH.view ? TH.view.r : 1300) + 170;
+
+// ---------- particles ----------
+const thPart = p => { TH.parts.push(p); return p; };
+function thDust(x, y, n) { for (let i = 0; i < n; i++) thPart({ t: 'dust', x: x + (Math.random() - .5) * 40, y: y - Math.random() * 8, r: 6 + Math.random() * 6, life: 520, max: 520 }); }
+function thSplash(x, y, n, sp, col) { for (let i = 0; i < n; i++) thPart({ t: 'splash', x, y, vx: (Math.random() - .5) * sp, vy: -Math.random() * sp * 1.4, r: 2 + Math.random() * 2.5, life: 500, col }); }
+function thTxt(text, x, y, size, col, life, vy) { thPart({ t: 'txt', text, x, y, size, col: col || '#3b2a1e', life: life || 1400, max: life || 1400, vy: vy == null ? -.05 : vy }); }
+function thPuffs(x, y, n, col) { for (let i = 0; i < n; i++) thPart({ t: 'puff', x: x + (Math.random() - .5) * 24, y: y + (Math.random() - .5) * 18, r: 8 + Math.random() * 9, vx: (Math.random() - .5) * .08, vy: -.03 - Math.random() * .03, life: 950, max: 950, col: col || '#f4f1e8' }); }
+function thStink(x, y) { thPart({ t: 'stink', x: x + (Math.random() - .5) * 34, y, life: 1500, max: 1500, ph: Math.random() * 6 }); }
+function thHeart(x, y) { thPart({ t: 'heart', x, y, life: 1300, max: 1300, vx: (Math.random() - .5) * .04, vy: -.06, s: .9 + Math.random() * .6 }); }
+function thSparkle(x, y) { thPart({ t: 'sparkle', x, y, life: 700, max: 700, r: 8 + Math.random() * 10 }); }
+function thFlies(x, y) { for (let i = 0; i < 3; i++) thPart({ t: 'fly', cx: x, cy: y, a: i * 2.1, rad: 26 + i * 8, life: 1e9 }); }
+function thRenderParts() {
+  let h = '';
+  for (const p of TH.parts) {
+    const fade = p.max ? thClamp(p.life / p.max, 0, 1) : 1;
+    switch (p.t) {
+      case 'drop': h += `<circle cx="${thF(p.x)}" cy="${thF(p.y)}" r="${thF(p.r)}" fill="${p.col || '#6fc3f0'}" opacity=".9"/>`; break;
+      case 'splash': h += `<circle cx="${thF(p.x)}" cy="${thF(p.y)}" r="${thF(p.r)}" fill="${p.col || '#6fc3f0'}" opacity="${thClamp(p.life / 500, 0, 1).toFixed(2)}"/>`; break;
+      case 'shard': h += `<path d="M0 ${-p.r} L${p.r * .7} ${p.r * .6} L${-p.r * .6} ${p.r * .4} Z" transform="translate(${thF(p.x)} ${thF(p.y)}) rotate(${thF(p.rot)})" fill="#dff3ff" stroke="#7fb5d2" stroke-width="1.5" opacity="${thClamp(p.life / 800, 0, 1).toFixed(2)}"/>`; break;
+      case 'spark': h += `<path d="M${thF(p.x)} ${thF(p.y)} l${thF(-p.vx * 26)} ${thF(-p.vy * 26)}" stroke="#ffd93b" stroke-width="3" stroke-linecap="round" opacity="${fade.toFixed(2)}"/>`; break;
+      case 'dust': h += `<circle cx="${thF(p.x)}" cy="${thF(p.y)}" r="${thF(p.r)}" fill="#e9d7bd" opacity="${fade.toFixed(2)}"/>`; break;
+      case 'txt': h += `<text x="${thF(p.x)}" y="${thF(p.y)}" text-anchor="middle" font-family="Fredoka,ui-rounded,sans-serif" font-weight="700" font-size="${p.size}" fill="${p.col}" stroke="#fffdf7" stroke-width="5" paint-order="stroke" opacity="${Math.min(1, fade * 2.5).toFixed(2)}">${esc(p.text)}</text>`; break;
+      case 'puff': h += `<circle cx="${thF(p.x)}" cy="${thF(p.y)}" r="${thF(p.r)}" fill="${p.col}" opacity="${(fade * .85).toFixed(2)}"/>`; break;
+      case 'stink': { const w = Math.sin(TH.clock * .006 + p.ph) * 5; h += `<path d="M${thF(p.x + w)} ${thF(p.y)} q7 -9 0 -18 q-7 -9 0 -18" stroke="#8bc34a" stroke-width="4" fill="none" stroke-linecap="round" opacity="${fade.toFixed(2)}"/>`; break; }
+      case 'heart': h += `<path transform="translate(${thF(p.x)} ${thF(p.y)}) scale(${p.s})" d="M0 7 C-14 -4 -9 -16 0 -9 C9 -16 14 -4 0 7 Z" fill="#ff5c8a" opacity="${Math.min(1, fade * 2).toFixed(2)}"/>`; break;
+      case 'sparkle': { const r = p.r * Math.sin(fade * Math.PI); h += `<path transform="translate(${thF(p.x)} ${thF(p.y)})" d="M0 ${-r} L${r * .22} ${-r * .22} L${r} 0 L${r * .22} ${r * .22} L0 ${r} L${-r * .22} ${r * .22} L${-r} 0 L${-r * .22} ${-r * .22} Z" fill="#ffd93b"/>`; break; }
+      case 'fly': { const x = p.cx + Math.cos(p.a) * p.rad, y = p.cy + Math.sin(p.a * 1.3) * p.rad * .5; h += `<g transform="translate(${thF(x)} ${thF(y)})"><ellipse cx="-3" cy="-4" rx="4" ry="2.5" fill="#d8eeff" opacity=".85"/><ellipse cx="3" cy="-4" rx="4" ry="2.5" fill="#d8eeff" opacity=".85"/><ellipse rx="4" ry="3" fill="#222"/></g>`; break; }
+      case 'line': h += `<path d="M${thF(p.x)} ${thF(p.y)} h${thF(p.len * p.dir)}" stroke="#fffdf7" stroke-width="4" stroke-linecap="round" opacity="${(fade * .9).toFixed(2)}"/>`; break;
+    }
+  }
+  thE('thParts').innerHTML = h;
 }
 
-// ---- 9. cat hat ----
-async function prankHat() {
-  dadArms('hang'); dadFace('normal');
-  cap('Buddy wants to climb Dad like a tree… 🌳');
-  const [dl, , sc] = dadPt(0, 0), W = Math.round(95 * sc), cx = dadPt(100, 0)[0];
-  await enterCat(W, Math.max(W * 0.6, dl - W * 0.3), 1400);
-  await Walker.jump(cx, dadPt(0, 290)[1], 450, 40);
-  await sleep(150);
-  await Walker.jump(cx, dadPt(0, 190)[1], 450, 40);
-  await sleep(150);
-  await Walker.jump(cx, dadPt(0, 34)[1], 450, 40);
-  Sound.meow(); dadFace('shock'); cap('CAT HAT! 🐱🎩'); await sleep(1100);
-  const [hx, hy] = dadPt(100, 34);
-  $('dadHair').style.display = 'none'; $('baldShine').style.display = '';
-  const hp = document.createElement('div'); hp.className = 'hairpiece'; hp.style.width = (76 * sc) + 'px'; hp.style.height = (30 * sc) + 'px';
-  const el = stageFx(hp, hx, hy, 0); el.style.zIndex = 4;
-  await Walker.jump(Math.max(W * 0.6, dl - W * 0.7), groundY(), 600, 60);
-  await anim(el, [{ top: hy + 'px', transform: 'translate(-50%,-50%) rotate(0)' }, { top: (groundY() - 12) + 'px', left: (hx - 40 * sc) + 'px', transform: 'translate(-50%,-50%) rotate(-160deg)' }], { duration: 650, easing: 'ease-in' });
-  Sound.splat(); dadShock();
-  sayFx('MY HAIR!!', hx, hy - 40 * sc);
-  cap("…and Dad's hair fell off! 👨‍🦲😂");
-  setTimeout(() => Sound.say(['My hair! Give me back my hair!', 'Not my hair!']), 300);
+// ---------- props ----------
+function thProp(markup, layer, o) {
+  const g = document.createElementNS(SVGNS, 'g'); g.innerHTML = markup; thE(layer || 'thPropsL').appendChild(g);
+  const p = Object.assign({ x: 0, y: 0, r: 0, s: 1, sy: null, o: 1, el: g, phys: false, vx: 0, vy: 0, vr: 0, g: .0016, floor: FLOOR, bounce: .3, fric: .6, onLand: null, follow: null, fx: 0, fy: 0, landed: false, restR: null, draw: null }, o || {});
+  TH.props.push(p); return p;
+}
+function thPropPhys(p, d) {
+  p.vy += p.g * d; p.x += p.vx * d; p.y += p.vy * d; p.r += p.vr * d;
+  if (p.y >= p.floor) {
+    p.y = p.floor;
+    if (!p.landed) { p.landed = true; if (p.onLand) p.onLand(p); }
+    p.vy *= -p.bounce; p.vx *= p.fric; p.vr *= .5;
+    if (Math.abs(p.vy) < .06) { p.vy = 0; p.vx = 0; p.vr = 0; p.phys = false; if (p.restR != null) p.r = p.restR; }
+  }
+}
+function thRenderProps() {
+  for (const p of TH.props) {
+    if (p.follow) { const [x, y] = thPt(p.follow); p.x = x + p.fx; p.y = y + p.fy; }
+    p.el.setAttribute('transform', `translate(${thF(p.x)} ${thF(p.y)}) rotate(${thF(p.r)}) scale(${p.s.toFixed(3)} ${(p.sy == null ? p.s : p.sy).toFixed(3)})`);
+    p.el.setAttribute('opacity', p.o);
+    if (p.draw) p.draw(p);
+  }
+}
+function thArc(p, ex, ey, ms, lift, spin, s1) {
+  const sx = p.x, sy = p.y, s0 = p.s, r0 = p.r, cx = (sx + ex) / 2, cy = Math.min(sy, ey) - lift, o = { k: 0 };
+  return thTween(o, { k: 1 }, ms, 'linear', () => {
+    const k = o.k, q = 1 - k;
+    p.x = q * q * sx + 2 * q * k * cx + k * k * ex; p.y = q * q * sy + 2 * q * k * cy + k * k * ey;
+    p.r = r0 + spin * k; p.s = thLerp(s0, s1 == null ? s0 : s1, k);
+  });
 }
 
-// ---- 10. the fancy bed ----
-async function prankBox() {
-  dadArms('present'); dadFace('happy');
-  const [dl, , sc] = dadPt(0, 0), ground = groundY();
-  const bw = 112 * sc, bh = 40 * sc, bx = dl - bw * 0.95;
-  propBox('fancy-bed', bx, ground - bh, bw, bh, '<span class="price-tag">$200</span>');
-  const xw = 82 * sc, xh = 58 * sc, xx = Math.max(6, bx - xw * 1.25);
-  const box = propBox('cbox', xx, ground - xh, xw, xh);
-  floatFx('✨', bx + bw * 0.5, ground - bh * 1.3, 34);
-  cap('Dad bought Buddy a SUPER fancy bed! ✨👑'); await sleep(1300);
-  const W = Math.round(Math.min(92 * sc, xw * 1.25));
-  await enterCat(W, bx + bw * 0.5, 1700);
-  cap('sniff… sniff… 👃'); Walker.nudge(1); await sleep(700); Walker.nudge(-1); await sleep(700);
-  cap('…nope. 😾'); await sleep(700);
-  await Walker.jump(xx + xw / 2, ground - xh * 0.2, 650, 70);
-  Sound.meow();
-  pulse(box, [{ transform: 'scale(1)' }, { transform: 'scale(1.08,.92)' }, { transform: 'scale(1)' }], { duration: 300 });
-  floatFx('❤️', xx + xw / 2, ground - xh - W * 0.6, 34);
-  dadFace('sad'); dadArms('hang');
-  sayFx('$200?!', dadPt(100, 0)[0], dadPt(100, 0)[1]);
-  cap('Buddy only likes the BOX. 📦😹');
-  setTimeout(() => Sound.say(['That bed cost two hundred dollars!', 'Seriously?!']), 300);
+// ---------- speech bubble ----------
+function thBubble(lines, ax, ay, side) {
+  const b = thE('thBub');
+  if (!lines) { b.setAttribute('opacity', 0); return; }
+  const lh = 31, w = Math.max(...lines.map(l => l.length)) * 13.4 + 46, h = lines.length * lh + 22;
+  let cx = ax + (side || -1) * (w / 2 - 34), bottom = ay - 40;
+  const v = TH.view;
+  if (v) { cx = thClamp(cx, v.l + w / 2 + 14, v.r - w / 2 - 14); bottom = thClamp(bottom, v.t + h + 14, v.b - 24); }
+  const L = cx - w / 2, R = cx + w / 2, T = bottom - h, B = bottom, r = 16;
+  const a1 = thClamp(ax - 12, L + 22, R - 46), a2 = a1 + 24, tipY = Math.max(ay, B + 14);
+  thE('thBubBox').setAttribute('d', `M${L + r} ${T} H${R - r} Q${R} ${T} ${R} ${T + r} V${B - r} Q${R} ${B} ${R - r} ${B} H${a2} L${ax} ${tipY} L${a1} ${B} H${L + r} Q${L} ${B} ${L} ${B - r} V${T + r} Q${L} ${T} ${L + r} ${T} Z`);
+  const t = thE('thBubText'); t.textContent = '';
+  lines.forEach((ln, k) => { const sp = document.createElementNS(SVGNS, 'tspan'); sp.setAttribute('x', cx); sp.setAttribute('y', T + 11 + lh * (k + 1) - 8); sp.textContent = ln; t.appendChild(sp); });
+  const o = { s: .2 }, oy = T + h / 2;
+  b.setAttribute('opacity', 1);
+  thTween(o, { s: 1 }, 260, 'back', () => b.setAttribute('transform', `translate(${cx} ${oy}) scale(${o.s.toFixed(3)}) translate(${-cx} ${-oy})`));
+}
+function thDadSays(lines, speech) { const [fx, fy] = thPtSync('tdFace'); thBubble(lines, fx - 36, fy - 66, -1); if (speech) thSpeak(speech); }
+function thCatSays(lines) { const [mx, my] = thPtSync('tcMouthPt'); thBubble(lines, mx, my - 34, TH.cat.face >= 0 ? 1 : -1); }
+
+// ---------- Buddy (side view, built from the buddy's traits) ----------
+const TH_FUR = {
+  orange: { a: '#f6ad5c', b: '#e48f3a', da: '#d88a3d', db: '#c47530', st: '#c97a2e', ol: '#9a5a22', belly: '#fbd9b0', mouth: '#7a4317' },
+  gray: { a: '#c9c9c9', b: '#a6a6a6', da: '#949494', db: '#7c7c7c', st: '#777777', ol: '#5a5a5a', belly: '#efefef', mouth: '#4a4a4a' },
+  black: { a: '#525252', b: '#363636', da: '#2e2e2e', db: '#222222', st: '#6a6a6a', ol: '#141414', belly: '#606060', mouth: '#e0cbb8' },
+  white: { a: '#ffffff', b: '#ebe8df', da: '#d8d4c9', db: '#c8c3b6', st: '#cfc9ba', ol: '#9b9586', belly: '#ffffff', mouth: '#7a6a5a' },
+  calico: { a: '#fffaf1', b: '#efe4d2', da: '#ddd2c0', db: '#cec2ad', st: '#c9a27a', ol: '#9b876a', belly: '#ffffff', mouth: '#7a4317' }
+};
+const TH_EYES = { green: '#7cc84a', blue: '#5aa9f0', amber: '#f5b82e', brown: '#a0703f' };
+function thHatSVG(h) {
+  switch (h) {
+    case 'party': return `<path d="M70 -138 L102 -140 L88 -198 Z" fill="#ff6b9d" stroke="#d94a7f" stroke-width="2" stroke-linejoin="round"/><circle cx="82" cy="-156" r="3.5" fill="#ffe066"/><circle cx="92" cy="-172" r="3" fill="#ffe066"/><circle cx="93" cy="-150" r="3" fill="#4ecdc4"/><circle cx="88" cy="-200" r="7" fill="#4ecdc4"/>`;
+    case 'bow': return `<g transform="translate(110 -142) rotate(18)"><path d="M0 0 L-16 -11 L-16 11 Z M0 0 L16 -11 L16 11 Z" fill="#ff4f8b"/><circle r="5" fill="#d81b60"/></g>`;
+    case 'shades': return `<rect x="64" y="-122" width="24" height="16" rx="6" fill="#1d1d1d"/><rect x="90" y="-122" width="22" height="16" rx="6" fill="#1d1d1d"/><path d="M86 -117 H92 M64 -117 L54 -121" stroke="#1d1d1d" stroke-width="3"/><rect x="68" y="-119" width="7" height="3" fill="#fff" opacity=".55"/><rect x="94" y="-119" width="7" height="3" fill="#fff" opacity=".55"/>`;
+    case 'nerd': return `<circle cx="76" cy="-114" r="11" fill="none" stroke="#222" stroke-width="3"/><circle cx="100" cy="-114" r="11" fill="none" stroke="#222" stroke-width="3"/><path d="M87 -115 Q88 -119 89 -115 M65 -116 L54 -120" stroke="#222" stroke-width="3" fill="none"/>`;
+    case 'mustache': return `<path d="M105 -95 Q96 -101 88 -94 Q84 -90 80 -96 Q82 -85 93 -88 Q100 -88 105 -93 Q110 -88 117 -88 Q127 -86 129 -96 Q125 -90 121 -94 Q113 -101 105 -95 Z" fill="#4a2f1a"/>`;
+    case 'mask': return `<path fill-rule="evenodd" d="M58 -125 Q86 -131 116 -123 L116 -105 Q86 -99 58 -107 Z M68 -114 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0 Z M91 -114 a8 6.5 0 1 0 16 0 a8 6.5 0 1 0 -16 0 Z" fill="#e74c3c"/><path d="M58 -120 Q40 -126 28 -116 M58 -111 Q42 -107 32 -98" stroke="#e74c3c" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    case 'flowers': { let s = ''; const cols = ['#ff7eb6', '#ffd166', '#9b8cff', '#7ed6a7', '#ff9f68']; for (let i = 0; i < 6; i++) { const a = Math.PI * (1.12 + i * .155), x = 86 + Math.cos(a) * 33, y = -110 + Math.sin(a) * 33; s += `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">`; for (let p = 0; p < 5; p++) { const pa = p * 1.2566; s += `<circle cx="${(Math.cos(pa) * 4.5).toFixed(1)}" cy="${(Math.sin(pa) * 4.5).toFixed(1)}" r="4" fill="${cols[i % 5]}"/>`; } s += `<circle r="2.8" fill="#fff3a8"/></g>`; } return s; }
+    case 'tophat': return `<rect x="68" y="-190" width="36" height="48" fill="#222"/><ellipse cx="86" cy="-142" rx="30" ry="6" fill="#222"/><rect x="68" y="-156" width="36" height="7" fill="#c0392b"/>`;
+    case 'chef': return `<rect x="68" y="-160" width="36" height="20" fill="#fff" stroke="#ddd" stroke-width="2"/><circle cx="73" cy="-166" r="11" fill="#fff"/><circle cx="88" cy="-175" r="13" fill="#fff"/><circle cx="101" cy="-166" r="11" fill="#fff"/><path d="M62 -168 Q73 -182 86 -186 Q101 -184 112 -168" stroke="#ddd" stroke-width="2" fill="none"/>`;
+    case 'cowboy': return `<ellipse cx="86" cy="-142" rx="46" ry="8" fill="#8B5A2B"/><path d="M68 -144 Q66 -178 80 -173 Q86 -166 92 -173 Q106 -178 104 -144 Z" fill="#8B5A2B"/><rect x="67" y="-152" width="38" height="6" fill="#5a3a1a"/>`;
+    case 'pirate': return `<path d="M48 -136 Q86 -194 124 -136 Q86 -150 48 -136 Z" fill="#222"/><circle cx="86" cy="-158" r="6" fill="#fff"/><circle cx="84" cy="-159" r="1.3" fill="#222"/><circle cx="88" cy="-159" r="1.3" fill="#222"/><path d="M80 -148 L92 -152 M80 -152 L92 -148" stroke="#fff" stroke-width="2"/>`;
+    case 'headphones': return `<path d="M54 -116 Q54 -160 86 -160 Q118 -160 120 -124" stroke="#333" stroke-width="7" fill="none"/><ellipse cx="55" cy="-110" rx="9" ry="15" fill="#e74c3c"/><ellipse cx="58" cy="-110" rx="4" ry="11" fill="#333"/>`;
+    case 'wizard': return `<path d="M64 -140 L78 -218 L108 -140 Z" fill="#5C3B9E"/><ellipse cx="86" cy="-140" rx="38" ry="7" fill="#5C3B9E"/><text x="78" y="-166" font-size="13" fill="#FFD700">★</text><text x="89" y="-148" font-size="10" fill="#FFD700">★</text><text x="76" y="-190" font-size="9" fill="#FFD700">★</text>`;
+    case 'viking': return `<path d="M60 -134 Q36 -140 40 -176 Q50 -152 64 -146 Z" fill="#f3e5c0"/><path d="M112 -134 Q136 -140 132 -176 Q122 -152 108 -146 Z" fill="#f3e5c0"/><path d="M58 -132 Q58 -168 86 -168 Q114 -168 114 -132 Z" fill="#9aa4ad"/><rect x="56" y="-138" width="60" height="9" rx="3" fill="#7d868e"/>`;
+    case 'crown': return `<path d="M64 -140 L64 -172 L75 -154 L86 -176 L97 -154 L108 -172 L108 -140 Z" fill="#FFD54F" stroke="#E0A800" stroke-width="2" stroke-linejoin="round"/><circle cx="75" cy="-148" r="3.5" fill="#e74c3c"/><circle cx="86" cy="-148" r="3.5" fill="#3498db"/><circle cx="97" cy="-148" r="3.5" fill="#2ecc71"/>`;
+    case 'unicorn': return `<path d="M94 -140 L118 -194 L106 -136 Z" fill="#ffd1f0" stroke="#f6b93b" stroke-width="2" stroke-linejoin="round"/><path d="M99 -150 L110 -152 M103 -162 L113 -165 M107 -174 L115 -177" stroke="#f6b93b" stroke-width="2"/><circle cx="72" cy="-140" r="5" fill="#a29bfe"/><circle cx="84" cy="-144" r="5" fill="#74b9ff"/>`;
+    case 'halo': return `<ellipse cx="86" cy="-182" rx="27" ry="7" fill="none" stroke="#ffe680" stroke-width="10" opacity=".5"/><ellipse cx="86" cy="-182" rx="27" ry="7" fill="none" stroke="#f6c90e" stroke-width="5"/>`;
+    default: return '';
+  }
+}
+function thCatSVG(t, hat) {
+  const F = TH_FUR[t.fur] || TH_FUR.orange, P = t.pattern;
+  const tux = P === 'tuxedo', sia = P === 'siamese', cal = t.fur === 'calico';
+  const contrast = t.fur === 'white' ? '#3a3a3a' : '#fbfbf5';
+  const PT = '#6d4c41', PT2 = '#55392f';
+  const paw = tux ? contrast : sia ? PT : F.belly;
+  const legN = sia ? PT : 'url(#tcFur)', legF = sia ? PT2 : 'url(#tcFurD)';
+  const ol = F.ol, earFill = sia ? PT : 'url(#tcFur)', earIn = sia ? '#9c7a6c' : '#ffb3c1';
+  const eL = t.eyes === 'heterochromia' ? TH_EYES.blue : (TH_EYES[t.eyes] || TH_EYES.green);
+  const eR = t.eyes === 'heterochromia' ? TH_EYES.green : eL;
+  const whisk = (t.fur === 'black' || sia) ? '#d9d2c8' : '#8a6a50';
+  const EARS = {
+    pointed: ['M62 -130 L66 -164 L88 -140 Z', 'M67 -136 L69 -154 L80 -140 Z', 'M92 -140 L112 -162 L112 -128 Z', 'M97 -139 L108 -152 L108 -134 Z'],
+    tufted: ['M62 -130 L66 -164 L88 -140 Z', 'M67 -136 L69 -154 L80 -140 Z', 'M92 -140 L112 -162 L112 -128 Z', 'M97 -139 L108 -152 L108 -134 Z'],
+    tall: ['M62 -130 L63 -182 L88 -140 Z', 'M67 -137 L66 -167 L80 -141 Z', 'M92 -140 L117 -180 L112 -128 Z', 'M97 -139 L111 -166 L108 -134 Z'],
+    rounded: ['M62 -130 Q56 -172 88 -140 Z', 'M67 -136 Q64 -160 80 -140 Z', 'M92 -140 Q124 -174 112 -128 Z', 'M97 -139 Q114 -160 108 -134 Z'],
+    folded: ['M62 -134 Q64 -156 90 -147 Q80 -140 68 -127 Z', '', 'M92 -145 Q112 -158 118 -134 Q108 -134 96 -136 Z', '']
+  };
+  const ears = EARS[t.ears] || EARS.pointed, folded = t.ears === 'folded';
+  const earSvg = `<path d="${ears[0]}" fill="${earFill}" stroke="${ol}" stroke-width="2" stroke-linejoin="round"/>${ears[1] ? `<path d="${ears[1]}" fill="${earIn}"/>` : ''}<path d="${ears[2]}" fill="${earFill}" stroke="${ol}" stroke-width="2" stroke-linejoin="round"/>${ears[3] ? `<path d="${ears[3]}" fill="${earIn}"/>` : ''}`
+    + (t.ears === 'tufted' ? `<path d="M66 -164 L63 -177 M66 -164 L70 -176 M112 -162 L110 -176 M112 -162 L117 -174" stroke="${ol}" stroke-width="2.5" stroke-linecap="round"/>` : '');
+  let bodyPat = '', headPat = '';
+  if (P === 'striped') {
+    bodyPat = `<g stroke="${F.st}" stroke-width="7" stroke-linecap="round" fill="none"><path d="M-58 -90 Q-54 -78 -60 -68"/><path d="M-40 -95 Q-36 -79 -44 -66"/><path d="M-18 -97 Q-14 -80 -20 -68"/><path d="M4 -97 Q8 -82 2 -70"/><path d="M26 -94 Q30 -82 24 -73"/></g>`;
+    headPat = `<path d="M70 -142 Q72 -132 68 -126 M86 -144 V-132 M100 -142 Q100 -132 104 -127 M53 -106 L64 -104 M53 -97 L64 -97" stroke="${F.st}" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+  } else if (P === 'spotted') {
+    bodyPat = `<g fill="${F.st}" opacity=".6"><circle cx="-44" cy="-80" r="7"/><circle cx="-18" cy="-88" r="6"/><circle cx="8" cy="-82" r="7"/><circle cx="-30" cy="-60" r="5"/><circle cx="26" cy="-70" r="5"/></g>`;
+    headPat = `<g fill="${F.st}" opacity=".6"><circle cx="70" cy="-136" r="4.5"/><circle cx="60" cy="-112" r="4"/><circle cx="96" cy="-140" r="3.5"/></g>`;
+  } else if (tux) {
+    bodyPat = `<ellipse cx="14" cy="-42" rx="48" ry="17" fill="${contrast}"/>`;
+    headPat = `<path d="M86 -142 L82 -118 L95 -114 Z" fill="${contrast}"/>`;
+  } else if (sia) {
+    headPat = `<ellipse cx="98" cy="-100" rx="25" ry="21" fill="${PT}" opacity=".55"/>`;
+  }
+  if (cal) {
+    bodyPat += `<ellipse cx="-36" cy="-82" rx="30" ry="18" fill="#3a3a3a" opacity=".85"/><ellipse cx="16" cy="-74" rx="24" ry="15" fill="#e48f3a" opacity=".9"/>`;
+    headPat += `<ellipse cx="68" cy="-128" rx="18" ry="14" fill="#3a3a3a" opacity=".85"/><ellipse cx="102" cy="-138" rx="12" ry="9" fill="#e48f3a" opacity=".9"/>`;
+  }
+  const muzzle = tux ? contrast : F.belly;
+  const tailTip = sia ? PT : tux ? contrast : F.db;
+  const pawN = c => `<ellipse cx="3" cy="42" rx="11" ry="6.5" fill="${c}" stroke="${ol}" stroke-width="1.5"/>`;
+  return `<defs>
+<linearGradient id="tcFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${F.a}"/><stop offset="1" stop-color="${F.b}"/></linearGradient>
+<linearGradient id="tcFurD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${F.da}"/><stop offset="1" stop-color="${F.db}"/></linearGradient>
+<clipPath id="tcBodyClip"><ellipse cx="-6" cy="-64" rx="70" ry="33"/></clipPath>
+<clipPath id="tcHeadClip"><circle cx="86" cy="-110" r="34"/></clipPath>
+<clipPath id="tcEyeLc"><ellipse cx="76" cy="-114" rx="8.5" ry="10"/></clipPath>
+<clipPath id="tcEyeRc"><ellipse cx="99" cy="-114" rx="8.5" ry="10"/></clipPath>
+</defs>
+<g id="tcInner">
+ <g id="tcLegBF"><ellipse cx="0" cy="6" rx="16" ry="20" fill="${legF}"/><rect x="-8" y="0" width="16" height="44" rx="8" fill="${legF}"/><ellipse cx="3" cy="42" rx="11" ry="6.5" fill="${paw}" opacity=".85"/></g>
+ <g id="tcBody">
+  <g id="tcLegFF"><rect x="-8" y="0" width="16" height="44" rx="8" fill="${legF}"/><ellipse cx="3" cy="42" rx="11" ry="6.5" fill="${paw}" opacity=".85"/></g>
+  <path id="tcTail" d="" stroke="url(#tcFur)" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  ${P === 'striped' ? `<path id="tcTailSt" d="" stroke="${F.st}" stroke-width="14" fill="none" stroke-dasharray="5 10"/>` : '<path id="tcTailSt" d=""/>'}
+  <path id="tcTailTip" d="" stroke="${tailTip}" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-6" cy="-64" rx="70" ry="33" fill="url(#tcFur)" stroke="${ol}" stroke-width="2"/>
+  ${tux ? '' : `<ellipse cx="4" cy="-46" rx="44" ry="13" fill="${F.belly}" opacity=".9"/>`}
+  <g clip-path="url(#tcBodyClip)">${bodyPat}</g>
+  <g id="tcLegFN"><rect x="-8" y="0" width="16" height="44" rx="8" fill="${legN}" stroke="${ol}" stroke-width="1.5"/>${pawN(paw)}<g id="tcPaw" transform="translate(3 44)"/></g>
+  <ellipse cx="50" cy="-84" rx="28" ry="26" fill="url(#tcFur)"/>
+  <path d="M42 -62 Q56 -50 72 -62 Q62 -80 46 -76 Z" fill="${tux ? contrast : F.belly}"/>
+  <g id="tcHead">
+   ${folded ? '' : earSvg}
+   <circle cx="86" cy="-110" r="34" fill="url(#tcFur)" stroke="${ol}" stroke-width="2"/>
+   <g clip-path="url(#tcHeadClip)"><ellipse cx="96" cy="-95" rx="21" ry="14" fill="${muzzle}"/>${headPat}</g>
+   ${folded ? earSvg : ''}
+   <ellipse cx="76" cy="-114" rx="8.5" ry="10" fill="#fff"/><ellipse cx="99" cy="-114" rx="8.5" ry="10" fill="#fff"/>
+   <circle cx="77" cy="-114" r="7" fill="${eL}"/><circle cx="100" cy="-114" r="7" fill="${eR}"/>
+   <ellipse id="tcPupL" cx="78" cy="-114" rx="4.5" ry="6" fill="#1b1b1b"/><ellipse id="tcPupR" cx="101" cy="-114" rx="4.5" ry="6" fill="#1b1b1b"/>
+   <circle cx="75" cy="-118" r="2" fill="#fff"/><circle cx="98" cy="-118" r="2" fill="#fff"/>
+   <g clip-path="url(#tcEyeLc)"><rect id="tcLidL" x="64" y="-126" width="26" height="0" fill="${sia ? '#b08a78' : 'url(#tcFur)'}"/><path id="tcLidLineL" d="" stroke="${ol}" stroke-width="2.5"/></g>
+   <g clip-path="url(#tcEyeRc)"><rect id="tcLidR" x="87" y="-126" width="26" height="0" fill="${sia ? '#b08a78' : 'url(#tcFur)'}"/><path id="tcLidLineR" d="" stroke="${ol}" stroke-width="2.5"/></g>
+   <path d="M101 -103 L109 -103 L105 -98 Z" fill="#ff8fa3"/>
+   <path id="tcMouth" d="" stroke="${F.mouth}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+   <ellipse id="tcMouthO" cx="106" cy="-89" rx="5" ry="6" fill="#6b2e1e" display="none"/>
+   <ellipse id="tcTongue" cx="106" cy="-88" rx="4" ry="5.5" fill="#ff7f9a" display="none"/>
+   <ellipse id="tcBlep" cx="106" cy="-89.5" rx="2.6" ry="3.6" fill="#ff7f9a" display="none"/>
+   <path id="tcFangs" d="M100 -92 L101.5 -87 L103 -92 Z M108 -92 L109.5 -87 L111 -92 Z" fill="#fff" display="none"/>
+   <g stroke="${whisk}" stroke-width="1.4" opacity=".75"><path d="M108 -98 L130 -102 M108 -95 L131 -94 M108 -92 L129 -86"/></g>
+   <g id="tcMouthPt" transform="translate(108 -90)"/>
+   <g id="tcHeadPt" transform="translate(86 -150)"/>
+   ${thHatSVG(hat)}
+  </g>
+  <g id="tcButt" transform="translate(-72 -58)"/>
+ </g>
+ <g id="tcLegBN"><ellipse cx="0" cy="6" rx="18" ry="22" fill="${legN}" stroke="${ol}" stroke-width="1.5"/><rect x="-8" y="0" width="16" height="44" rx="8" fill="${legN}"/>${pawN(paw)}</g>
+</g>`;
+}
+function thCatDefaults() {
+  return { x: -300, y: FLOOR, surf: FLOOR, face: 1, sx: 1, sy: 1, scale: 1, o: 1, walk: 0, phase: 0, speed: 1, tilt: 0, fold: 0, reach: 0, paw: 0, wig: 0, head: 0, lid: 0, blink: 0, slit: 0, tailUp: 58, swish: 1, lick: 0, loaf: 0, knead: 0, mouth: null, layer: 'front' };
+}
+function thCatLayer(where) {
+  const g = thE('tcat'); if (!g) return;
+  thE(where === 'back' ? 'thCatBackL' : 'thCatL').appendChild(g); TH.cat.layer = where;
+}
+const TC_W = 'M98 -93 Q102 -89 105 -93 Q108 -89 112 -93', TC_LINE = 'M99 -92 H111', TC_SMIRK = 'M98 -92 Q106 -88 114 -95';
+function thRenderCat() {
+  const c = TH.cat, E = TH.ce; if (!c || !E.tcat) return;
+  const t = TH.clock, ph = c.phase, sw = c.walk ? 26 : 0;
+  let fN = Math.sin(ph) * sw, bN = Math.sin(ph + Math.PI) * sw, fF = Math.sin(ph + Math.PI) * sw, bF = Math.sin(ph) * sw;
+  fN = thLerp(fN, -c.tilt, c.fold); fF = thLerp(fF, -c.tilt, c.fold);
+  bN = thLerp(bN, -78, c.fold); bF = thLerp(bF, -78, c.fold);
+  let bS = 1 - .5 * c.fold;
+  fN = thLerp(fN, -80, c.reach); let fNs = 1 + .42 * c.reach;
+  fN = thLerp(fN, -150, c.paw); fNs = thLerp(fNs, .8, c.paw);
+  const kn = Math.sin(t * .012) * 18 * c.knead;
+  let fS = thLerp(thLerp(1, .16, c.loaf), .5, c.knead);
+  bS = thLerp(bS, .16, c.loaf);
+  const bob = c.walk ? -Math.abs(Math.sin(ph)) * 3 : 0, S = c.scale;
+  E.tcat.setAttribute('transform', `translate(${thF(c.x)} ${thF(c.y + bob)}) scale(${(c.face * c.sx * S).toFixed(3)} ${(c.sy * S).toFixed(3)})`);
+  E.tcat.setAttribute('opacity', c.o);
+  E.tcInner.setAttribute('transform', `translate(0 ${thF(34 * c.loaf)})`);
+  E.tcLegBF.setAttribute('transform', `translate(-46 -44) rotate(${thF(bF)}) scale(1 ${bS.toFixed(3)})`);
+  E.tcLegBN.setAttribute('transform', `translate(-52 -40) rotate(${thF(bN)}) scale(1 ${bS.toFixed(3)})`);
+  const wig = c.wig * Math.sin(t * .035) * 6;
+  E.tcBody.setAttribute('transform', `rotate(${thF(c.tilt)} -52 -40) rotate(${thF(wig)} 40 -40)`);
+  E.tcLegFF.setAttribute('transform', `translate(40 -44) rotate(${thF(fF - kn)}) scale(1 ${fS.toFixed(3)})`);
+  E.tcLegFN.setAttribute('transform', `translate(32 -42) rotate(${thF(fN + kn)}) scale(1 ${(fNs * fS).toFixed(3)})`);
+  E.tcHead.setAttribute('transform', `rotate(${thF(c.head + Math.sin(t * .002) * 1.5)} 50 -82)`);
+  const lid = Math.max(c.lid, c.blink), lh = 22 * lid;
+  E.tcLidL.setAttribute('height', thF(lh)); E.tcLidR.setAttribute('height', thF(lh));
+  E.tcLidLineL.setAttribute('d', lid > .05 ? `M64 ${thF(-126 + lh)} H90` : ''); E.tcLidLineR.setAttribute('d', lid > .05 ? `M87 ${thF(-126 + lh)} H113` : '');
+  const prx = thLerp(4.5, 1.6, c.slit); E.tcPupL.setAttribute('rx', prx.toFixed(2)); E.tcPupR.setAttribute('rx', prx.toFixed(2));
+  const m = c.mouth || TH.catMouth;
+  E.tcMouth.setAttribute('d', m === 'smirk' ? TC_SMIRK : m === 'blep' ? TC_LINE : m === 'open' ? '' : TC_W);
+  E.tcMouthO.setAttribute('display', m === 'open' ? 'inline' : 'none');
+  E.tcTongue.setAttribute('display', (m === 'tongue' || c.lick > .5) ? 'inline' : 'none');
+  E.tcBlep.setAttribute('display', m === 'blep' ? 'inline' : 'none');
+  E.tcFangs.setAttribute('display', m === 'fangs' ? 'inline' : 'none');
+  let ang = c.tailUp + Math.sin(t * .004) * 9 * c.swish + c.wig * Math.sin(t * .05) * 10, px = -70, py = -72;
+  const pts = [[px, py]];
+  for (let i = 0; i < 3; i++) {
+    const a = ang * Math.PI / 180; px += -Math.cos(a) * 27; py += -Math.sin(a) * 27; pts.push([thF(px), thF(py)]);
+    ang += 26 + Math.sin(t * .004 - (i + 1) * .8) * (10 + i * 5) * c.swish;
+  }
+  const td = `M${pts[0]} C${pts[1]} ${pts[2]} ${pts[3]}`;
+  E.tcTail.setAttribute('d', td); E.tcTailSt.setAttribute('d', td);
+  const tip = [thF(thLerp(pts[2][0], pts[3][0], .55)), thF(thLerp(pts[2][1], pts[3][1], .55))];
+  E.tcTailTip.setAttribute('d', `M${tip} L${pts[3]}`);
+  const sh = thE('thCatSh'), hgt = Math.max(0, c.surf - c.y);
+  sh.setAttribute('cx', thF(c.x - 4 * c.face)); sh.setAttribute('cy', thF(c.surf));
+  sh.setAttribute('rx', thF(62 * S * thClamp(1 - hgt / 300, .35, 1))); sh.setAttribute('opacity', (c.o * (c.layer === 'back' ? .12 : .22)).toFixed(2));
 }
 
+// ---------- Dad ----------
+const TD_BANDS = [[-14, 92], [-50, 92], [-88, 94], [-126, 98], [-164, 152], [-200, 158], [-238, 160], [-276, 158], [-312, 152], [-352, 130], [-430, 128], [-458, 100]];
+function thDadSVG() {
+  const bands = TD_BANDS.map(([y, w], i) => `<rect class="tdBand" x="${-w / 2}" y="${y - 12}" width="${w}" height="24" rx="5" transform="rotate(${i % 2 ? 3 : -3} 0 ${y})" fill="#fbfbf6" stroke="#d6d0bf" stroke-width="2" display="none"/>`).join('');
+  return `<defs>
+<linearGradient id="tdShirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fa7a0"/><stop offset="1" stop-color="#2d8a84"/></linearGradient>
+<linearGradient id="tdPants" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b5d86"/><stop offset="1" stop-color="#3a4a6e"/></linearGradient>
+<radialGradient id="tdSkin" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#ffd9b8"/><stop offset="1" stop-color="#eab087"/></radialGradient>
+<clipPath id="tdEyeLc"><ellipse cx="-23" cy="-398" rx="13" ry="15"/></clipPath>
+<clipPath id="tdEyeRc"><ellipse cx="23" cy="-398" rx="13" ry="15"/></clipPath>
+</defs>
+<g id="tdLegL"><rect x="-16" y="0" width="32" height="160" rx="12" fill="url(#tdPants)"/><ellipse cx="-8" cy="166" rx="30" ry="14" fill="#5a3825"/><ellipse cx="-16" cy="161" rx="10" ry="4" fill="#7a5038"/></g>
+<g id="tdLegR"><rect x="-16" y="0" width="32" height="160" rx="12" fill="url(#tdPants)"/><ellipse cx="8" cy="166" rx="30" ry="14" fill="#5a3825"/><ellipse cx="0" cy="161" rx="10" ry="4" fill="#7a5038"/><g id="tdShoeR" transform="translate(8 154)"/></g>
+<g id="tdTorso">
+ <path d="M-60 -215 H60 L58 -150 Q0 -138 -58 -150 Z" fill="url(#tdPants)"/>
+ <path d="M-66 -212 Q-74 -300 -42 -332 L42 -332 Q74 -300 66 -212 Q0 -200 -66 -212 Z" fill="url(#tdShirt)"/>
+ <path d="M-40 -330 L-6 -300 L-14 -332 Z M40 -330 L6 -300 L14 -332 Z" fill="#e9f7f5"/>
+ <path d="M0 -310 V-226" stroke="#24746f" stroke-width="2" opacity=".6"/><circle cx="0" cy="-290" r="3" fill="#e9f7f5"/><circle cx="0" cy="-268" r="3" fill="#e9f7f5"/>
+ <rect x="24" y="-292" width="26" height="22" rx="3" fill="#36978f"/>
+ <rect x="-62" y="-218" width="124" height="12" rx="4" fill="#5a3825"/><rect x="-9" y="-219" width="18" height="14" rx="3" fill="#f2c14e"/>
+ <g id="tdBelly" transform="translate(0 -250)"/>
+ <rect x="-11" y="-346" width="22" height="20" fill="#eab087"/>
+ <g id="tdHead">
+  <circle cx="-62" cy="-392" r="12" fill="#eab087"/><circle cx="62" cy="-392" r="12" fill="#eab087"/>
+  <circle cx="0" cy="-396" r="62" fill="url(#tdSkin)"/>
+  <circle id="tdGreen" cx="0" cy="-396" r="62" fill="#9ccc65" opacity="0"/>
+  <path d="M-60 -404 Q-66 -462 -10 -466 Q28 -476 52 -452 Q70 -432 62 -404 Q52 -432 22 -436 Q-4 -420 -30 -434 Q-50 -428 -60 -404 Z" fill="#6b4a2f"/>
+  <ellipse cx="-34" cy="-372" rx="11" ry="6" fill="#ff8a7a" opacity=".35"/><ellipse cx="34" cy="-372" rx="11" ry="6" fill="#ff8a7a" opacity=".35"/>
+  <g id="tdEyesO">
+   <ellipse cx="-23" cy="-398" rx="13" ry="15" fill="#fff"/><ellipse cx="23" cy="-398" rx="13" ry="15" fill="#fff"/>
+   <g id="tdPupils"><circle cx="-23" cy="-396" r="6.5" fill="#3b2a1e"/><circle cx="23" cy="-396" r="6.5" fill="#3b2a1e"/><circle cx="-21" cy="-399" r="2" fill="#fff"/><circle cx="25" cy="-399" r="2" fill="#fff"/></g>
+   <g clip-path="url(#tdEyeLc)"><rect id="tdLidL" x="-40" y="-414" width="34" height="0" fill="#eab087"/></g>
+   <g clip-path="url(#tdEyeRc)"><rect id="tdLidR" x="6" y="-414" width="34" height="0" fill="#eab087"/></g>
+  </g>
+  <path id="tdEyesX" d="M-32 -407 L-14 -389 M-14 -407 L-32 -389 M14 -407 L32 -389 M32 -407 L14 -389" stroke="#3b2a1e" stroke-width="5" stroke-linecap="round" display="none"/>
+  <path id="tdEyesH" d="M-34 -393 Q-23 -408 -12 -393 M12 -393 Q23 -408 34 -393" stroke="#3b2a1e" stroke-width="5" fill="none" stroke-linecap="round" display="none"/>
+  <path id="tdBrowL" d="M-38 -424 Q-24 -432 -10 -426" stroke="#5a3825" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path id="tdBrowR" d="M10 -426 Q24 -432 38 -424" stroke="#5a3825" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M0 -392 Q-8 -376 -2 -372 Q6 -372 8 -376" stroke="#c98a62" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <g id="tdMouths">
+   <path data-m="smile" d="M-18 -360 Q0 -344 18 -360" stroke="#6b2e1e" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+   <path data-m="flat" d="M-14 -356 H14" stroke="#6b2e1e" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+   <ellipse data-m="o" cx="0" cy="-354" rx="8" ry="10" fill="#6b2e1e"/>
+   <ellipse data-m="snore" cx="0" cy="-354" rx="5" ry="6" fill="#6b2e1e"/>
+   <g data-m="scream"><ellipse cx="0" cy="-350" rx="17" ry="22" fill="#6b2e1e"/><rect x="-11" y="-371" width="22" height="7" rx="3" fill="#fff"/><ellipse cx="0" cy="-336" rx="10" ry="6" fill="#ff8a8a"/></g>
+   <path data-m="frown" d="M-16 -348 Q0 -362 16 -348" stroke="#6b2e1e" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+   <g data-m="gross"><path d="M-18 -354 Q-12 -362 -6 -354 Q0 -346 6 -354 Q12 -362 18 -354" stroke="#6b2e1e" stroke-width="4.5" fill="none" stroke-linecap="round"/><ellipse cx="7" cy="-346" rx="6" ry="7" fill="#e57373"/></g>
+   <path data-m="happy" d="M-20 -362 Q0 -332 20 -362 Z" fill="#6b2e1e"/>
+  </g>
+  <g id="tdFoam" display="none"><circle cx="-12" cy="-352" r="6" fill="#fff"/><circle cx="2" cy="-348" r="7" fill="#fff"/><circle cx="14" cy="-354" r="5" fill="#fff"/><circle cx="6" cy="-340" r="4" fill="#fff"/></g>
+  <g id="tdTears" opacity="0"><path d="M-28 -384 Q-33 -360 -27 -334" stroke="#7fd0ff" stroke-width="7" fill="none" stroke-linecap="round" opacity=".85"/><path d="M28 -384 Q33 -360 27 -334" stroke="#7fd0ff" stroke-width="7" fill="none" stroke-linecap="round" opacity=".85"/></g>
+  <path id="tdSweat" d="M58 -440 Q66 -424 58 -418 Q50 -424 58 -440 Z" fill="#7fd0ff" opacity="0"/>
+  <g id="tdFace" transform="translate(0 -396)"/><g id="tdHeadTop" transform="translate(0 -466)"/><g id="tdNose" transform="translate(0 -376)"/>
+ </g>
+ <g id="tdArmR"><rect x="-14" y="-6" width="28" height="56" rx="13" fill="url(#tdShirt)"/><rect x="-11" y="40" width="22" height="32" rx="11" fill="#eab087"/>
+  <g id="tdArmRF"><rect x="-11" y="-6" width="22" height="64" rx="11" fill="#eab087"/><g id="tdPropR"></g><circle cx="0" cy="62" r="14" fill="#f2c29b"/><g id="tdHandR" transform="translate(0 64)"/></g></g>
+ <g id="tdArmL"><rect x="-14" y="-6" width="28" height="56" rx="13" fill="url(#tdShirt)"/><rect x="-11" y="40" width="22" height="32" rx="11" fill="#eab087"/>
+  <g id="tdArmLF"><rect x="-11" y="-6" width="22" height="64" rx="11" fill="#eab087"/><g id="tdPropL"></g><circle cx="0" cy="62" r="14" fill="#f2c29b"/><g id="tdHandL" transform="translate(0 64)"/></g></g>
+</g>
+<g id="tdMummy">${bands}</g>`;
+}
+const TD_PROPS = {
+  phone: `<rect x="-16" y="-30" width="32" height="54" rx="6" fill="#26303a"/><rect id="tdPhoneScr" x="-12" y="-25" width="24" height="42" rx="3" fill="#8ee6ff"/><g id="tdPropPt" transform="translate(0 -4)"/>`,
+  mug: `<path d="M-14 -26 L14 -26 L12 6 L-12 6 Z" fill="#fff" stroke="#c9bfae" stroke-width="2"/><path d="M14 -18 Q26 -16 24 -6 Q22 2 13 0" stroke="#c9bfae" stroke-width="4" fill="none"/><ellipse cx="0" cy="-26" rx="14" ry="3.5" fill="#6f4a2e"/><text x="0" y="-6" text-anchor="middle" font-size="9" font-weight="700" fill="#e8743b" font-family="Fredoka,sans-serif">DAD</text><path d="M-5 -34 Q-9 -42 -4 -48 M5 -34 Q1 -42 6 -48" stroke="#ccc" stroke-width="2" fill="none"/><g id="tdPropPt" transform="translate(0 -30)"/>`,
+  paper: `<g transform="translate(52 -6) rotate(-4)"><rect x="-64" y="-46" width="128" height="88" rx="3" fill="#f4f1e8" stroke="#cfc6b0" stroke-width="2"/><path d="M0 -46 V42" stroke="#d8d0bc" stroke-width="2"/><text x="-32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">DAILY</text><text x="32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">NEWS</text><path d="M-56 -14 H-8 M-56 -4 H-12 M-56 6 H-8 M-56 16 H-16 M-56 26 H-10 M8 -14 H56 M8 -4 H52 M8 6 H56 M8 16 H48 M8 26 H56" stroke="#bbb" stroke-width="3"/><g id="tdPropPt" transform="translate(-10 -40)"/></g>`,
+  brush: `<g transform="rotate(-80)"><rect x="-3.5" y="-52" width="7" height="58" rx="3.5" fill="#4ecdc4"/><rect x="-6" y="-66" width="12" height="16" rx="3" fill="#fff" stroke="#ccc" stroke-width="1.5"/></g>`
+};
+function thDadProp(side, kind) { thE(side === 'L' ? 'tdPropL' : 'tdPropR').innerHTML = kind ? TD_PROPS[kind] : ''; }
+function thDadDefaults() {
+  return { x: 720, y: FLOOR, rot: 0, lift: 0, crouch: 0, head: 0, lookX: -3, lookY: 4, pupil: 1, lid: 0, blink: 0, brow: 0, browIn: 0, mouth: 'smile', eyes: 'o', tap: 0, sweat: 0, green: 0, cry: 0, jit: 0, aLU: 8, aLF: -6, aRU: -8, aRF: 6, propL: 1, propR: 1, wrap: 0, foam: 0, brush: 0, o: 1 };
+}
+function thRenderDad() {
+  const d = TH.dad, E = TH.de; if (!d || !E.tdad) return;
+  const t = TH.clock, br = Math.sin(t * .0028) * .012, jx = d.jit ? Math.sin(t * .09) * 4 * d.jit : 0;
+  E.tdad.setAttribute('transform', `translate(${thF(d.x + jx)} ${thF(d.y - d.lift)}) rotate(${thF(d.rot)})`);
+  E.tdad.setAttribute('opacity', d.o);
+  const ls = 1 - d.crouch * .24, ky = 170 * (1 - ls);
+  E.tdLegL.setAttribute('transform', `translate(-22 ${thF(-170 * ls)}) scale(1 ${ls.toFixed(3)})`);
+  E.tdLegR.setAttribute('transform', `translate(22 ${thF(-170 * ls)}) scale(1 ${ls.toFixed(3)})`);
+  E.tdTorso.setAttribute('transform', `translate(0 ${thF(ky)}) translate(0 -175) scale(${(1 - br * .5).toFixed(4)} ${(1 + br).toFixed(4)}) translate(0 175)`);
+  const tapW = d.tap ? Math.sin(t * .0045) * 2.5 : 0, brushW = d.brush ? Math.sin(t * .03) * 8 : 0;
+  E.tdArmL.setAttribute('transform', `translate(-60 -315) rotate(${thF(d.aLU)})`);
+  E.tdArmLF.setAttribute('transform', `translate(0 68) rotate(${thF(d.aLF + tapW)})`);
+  E.tdPropL.setAttribute('transform', `translate(0 68) rotate(${thF(-(d.aLU + d.aLF + tapW))}) scale(${d.propL})`);
+  E.tdArmR.setAttribute('transform', `translate(60 -315) rotate(${thF(d.aRU)})`);
+  E.tdArmRF.setAttribute('transform', `translate(0 68) rotate(${thF(d.aRF + brushW)})`);
+  E.tdPropR.setAttribute('transform', `translate(0 68) rotate(${thF(-(d.aRU + d.aRF + brushW))}) scale(${d.propR})`);
+  E.tdHead.setAttribute('transform', `rotate(${thF(d.head)} 0 -335)`);
+  E.tdPupils.setAttribute('transform', `translate(${thF(d.lookX)} ${thF(d.lookY)}) translate(0 -396) scale(${d.pupil.toFixed(3)}) translate(0 396)`);
+  const lh = 30 * Math.max(d.lid, d.blink);
+  E.tdLidL.setAttribute('height', thF(lh)); E.tdLidR.setAttribute('height', thF(lh));
+  E.tdBrowL.setAttribute('transform', `translate(0 ${thF(-d.brow)}) rotate(${thF(d.browIn)} -24 -428)`);
+  E.tdBrowR.setAttribute('transform', `translate(0 ${thF(-d.brow)}) rotate(${thF(-d.browIn)} 24 -428)`);
+  for (const m of E.mouths) m.setAttribute('display', m.dataset.m === d.mouth ? 'inline' : 'none');
+  E.tdEyesO.setAttribute('display', d.eyes === 'o' ? 'inline' : 'none');
+  E.tdEyesX.setAttribute('display', d.eyes === 'x' ? 'inline' : 'none');
+  E.tdEyesH.setAttribute('display', d.eyes === 'h' ? 'inline' : 'none');
+  E.tdGreen.setAttribute('opacity', (d.green * .5).toFixed(2));
+  E.tdTears.setAttribute('opacity', d.cry.toFixed(2));
+  E.tdSweat.setAttribute('opacity', d.sweat.toFixed(2));
+  E.tdFoam.setAttribute('display', d.foam ? 'inline' : 'none');
+  E.bands.forEach((b, i) => b.setAttribute('display', i < d.wrap ? 'inline' : 'none'));
+  const ps = thE('tdPhoneScr'); if (ps && d.tap) ps.setAttribute('fill', Math.floor(performance.now() / 700) % 2 ? '#8ee6ff' : '#b3f0ff');
+  const sh = thE('thDadSh');
+  sh.setAttribute('cx', thF(d.x)); sh.setAttribute('rx', thF(88 * (1 - d.lift / 260))); sh.setAttribute('opacity', d.rot ? 0 : (.22 * d.o).toFixed(2));
+}
+
+// ---------- prop art ----------
+const TH_ART = {
+  poop: `<ellipse cx="0" cy="-4" rx="20" ry="9" fill="#7a4a24"/><ellipse cx="0" cy="-14" rx="15" ry="8" fill="#8b5a2b"/><ellipse cx="1" cy="-23" rx="10" ry="6.5" fill="#9c6633"/><path d="M1 -29 Q7 -38 -1 -41 Q4 -33 -3 -29 Z" fill="#9c6633"/><circle cx="-5" cy="-15" r="2.8" fill="#fff"/><circle cx="5" cy="-15" r="2.8" fill="#fff"/><circle cx="-4.5" cy="-15" r="1.3" fill="#222"/><circle cx="5.5" cy="-15" r="1.3" fill="#222"/><path d="M-4 -9 Q0 -6 4 -9" stroke="#3b2a1e" stroke-width="1.5" fill="none"/><ellipse cx="-5" cy="-24" rx="3" ry="1.5" fill="#c8915a" opacity=".7"/>`,
+  mouse: `<path d="M-16 -4 Q-34 -6 -40 -15 Q-44 -23 -36 -25" stroke="#c98e9a" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-9" rx="17" ry="11" fill="#a4a4b0"/><ellipse cx="14" cy="-12" rx="9" ry="7.5" fill="#a4a4b0"/><circle cx="9" cy="-20" r="6" fill="#a4a4b0"/><circle cx="9" cy="-20" r="3.5" fill="#f2b8c6"/><circle cx="17" cy="-13" r="1.8" fill="#222"/><circle cx="23" cy="-11" r="2" fill="#f2879e"/><path d="M22 -10 L31 -12 M22 -9 L31 -6" stroke="#666" stroke-width=".8"/><ellipse cx="-6" cy="1" rx="4" ry="2" fill="#8d8d99"/><ellipse cx="8" cy="1" rx="4" ry="2" fill="#8d8d99"/>`,
+  hairball: `<ellipse cx="0" cy="-10" rx="15" ry="11" fill="#7b5a3c"/><path d="M-14 -11 q4 -10 10 -6 M-6 -19 q6 -4 10 2 M4 -17 q8 0 8 8 M-10 -3 q8 4 16 -2" stroke="#5a3e26" stroke-width="2" fill="none"/><ellipse cx="-4" cy="-15" rx="5" ry="2.5" fill="#cfe9a6" opacity=".75"/><path d="M6 -1 q2 8 -1 10 q-3 -3 1 -10" fill="#b8e08a" opacity=".9"/>`,
+  phoneDead: `<g transform="rotate(0)"><rect x="-16" y="-27" width="32" height="54" rx="6" fill="#26303a"/><rect x="-12" y="-22" width="24" height="42" rx="3" fill="#141414"/><path d="M-8 -16 L0 -4 L-5 4 L6 14 M0 -4 L9 -10" stroke="#e8f4ff" stroke-width="1.6" fill="none"/></g>`,
+  paperFly: `<g transform="rotate(-4)"><rect x="-64" y="-46" width="128" height="88" rx="3" fill="#f4f1e8" stroke="#cfc6b0" stroke-width="2"/><path d="M0 -46 V42" stroke="#d8d0bc" stroke-width="2"/><text x="-32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">DAILY</text><text x="32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">NEWS</text><path d="M-56 -14 H-8 M-56 -4 H-12 M-56 6 H-8 M8 -14 H56 M8 -4 H52 M8 6 H56" stroke="#bbb" stroke-width="3"/></g>`,
+  brushFly: `<rect x="-3.5" y="-30" width="7" height="58" rx="3.5" fill="#4ecdc4"/><rect x="-6" y="-44" width="12" height="16" rx="3" fill="#fff" stroke="#ccc" stroke-width="1.5"/>`,
+  fancyBed: `<ellipse cx="0" cy="-4" rx="84" ry="12" fill="#3b2a1e" opacity=".18"/><ellipse cx="0" cy="-26" rx="78" ry="27" fill="#7d4ac9"/><ellipse cx="0" cy="-35" rx="63" ry="16" fill="#d7b8ff"/><ellipse cx="-12" cy="-38" rx="24" ry="6" fill="#ecdcff" opacity=".8"/><path d="M-78 -26 Q0 8 78 -26" stroke="#f1c40f" stroke-width="5" fill="none"/><path d="M-13 -6 L-10 -18 L-4 -11 L0 -21 L4 -11 L10 -18 L13 -6 Z" fill="#f1c40f"/><path d="M62 -36 L90 -66" stroke="#8a6a50" stroke-width="1.5"/><g transform="translate(96 -74) rotate(18)"><path d="M-18 -11 H14 L22 0 L14 11 H-18 Z" fill="#fff8e1" stroke="#e0a800" stroke-width="2"/><circle cx="14" cy="0" r="2.5" fill="#e0a800"/><text x="-3" y="5" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="13" fill="#b07d00">$200</text></g>`,
+  boxBack: `<rect x="-62" y="-84" width="124" height="84" fill="#9c7342"/><rect x="-56" y="-80" width="112" height="70" fill="#7f5a31"/>`,
+  boxFront: `<path d="M-64 -66 L-98 -92 L-66 -98 L-40 -70 Z" fill="#d8b07a" stroke="#a57b45" stroke-width="3" stroke-linejoin="round"/><path d="M64 -66 L98 -92 L66 -98 L40 -70 Z" fill="#d8b07a" stroke="#a57b45" stroke-width="3" stroke-linejoin="round"/><rect x="-64" y="-68" width="128" height="68" rx="3" fill="#c9a06a" stroke="#a57b45" stroke-width="3"/><rect x="-10" y="-68" width="20" height="68" fill="#e6cf9e" opacity=".7"/><text x="-30" y="-24" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="12" fill="#c0392b" transform="rotate(-8 -30 -28)">FRAGILE</text><text x="34" y="-20" text-anchor="middle" font-size="18" fill="#7f5a31">↑↑</text>`
+};
+// ---------- sets ----------
+function thBoards(rows, col) {
+  let s = '';
+  rows.forEach(y => { s += `<path d="M-900 ${y} H1900"/>`; });
+  for (let i = 0; i < rows.length - 1; i++) for (let x = -880 + (i % 2) * 130; x < 1900; x += 260) s += `<path d="M${x} ${rows[i]} V${rows[i + 1]}"/>`;
+  return `<g stroke="${col}" stroke-width="2" opacity=".5">${s}</g>`;
+}
+function thWindow(x, y, night) {
+  return `<g transform="translate(${x} ${y})">
+  <rect x="-14" y="-14" width="204" height="224" rx="8" fill="#fffaf2" stroke="#d9b48c" stroke-width="3"/>
+  <g clip-path="url(#thWinClip)">
+   <rect x="0" y="0" width="176" height="196" fill="${night ? 'url(#thNightSky)' : 'url(#thSky)'}"/>
+   ${night ? `<circle cx="118" cy="52" r="30" fill="#fff4c2"/><circle cx="108" cy="44" r="6" fill="#efe3a8"/><circle cx="126" cy="62" r="4" fill="#efe3a8"/><g fill="#fff"><circle cx="30" cy="30" r="2"/><circle cx="60" cy="80" r="1.6"/><circle cx="150" cy="120" r="2"/><circle cx="40" cy="140" r="1.4"/><circle cx="90" cy="20" r="1.5"/></g><path d="M0 196 V160 L30 150 L30 130 L56 130 L56 158 L90 158 L90 120 L120 120 L120 162 L150 150 L176 156 V196 Z" fill="#141a3a"/><g fill="#ffe680"><rect x="38" y="138" width="5" height="6"/><rect x="98" y="130" width="5" height="6"/><rect x="106" y="146" width="5" height="6"/></g>`
+      : `<circle cx="140" cy="40" r="22" fill="#ffe066"/><g id="thClouds"><ellipse cx="42" cy="62" rx="34" ry="13" fill="#fff"/><ellipse cx="64" cy="54" rx="22" ry="13" fill="#fff"/><ellipse cx="182" cy="102" rx="30" ry="11" fill="#fff"/></g><path d="M0 196 V150 Q42 124 88 142 Q132 122 176 140 V196 Z" fill="#86c76a"/><path d="M32 196 V134 M32 134 Q12 122 20 104 Q32 88 48 104 Q58 124 32 134 Z" fill="#5fa64a" stroke="#6b4a2a" stroke-width="5"/>`}
+  </g>
+  <path d="M88 0 V196 M0 98 H176" stroke="#fffaf2" stroke-width="8"/>
+  <rect x="-22" y="202" width="220" height="16" rx="5" fill="#f2dcc0" stroke="#d9b48c" stroke-width="2"/>
+  <path id="thCurtL" data-px="${x + 2}" data-py="${y - 24}" d="M-26 -24 Q12 -24 32 -22 Q14 92 32 216 L-26 216 Z" fill="${night ? '#5b4a8a' : '#e8743b'}" opacity=".92"/>
+  <path id="thCurtR" data-px="${x + 174}" data-py="${y - 24}" d="M202 -24 Q164 -24 144 -22 Q162 92 144 216 L202 216 Z" fill="${night ? '#5b4a8a' : '#e8743b'}" opacity=".92"/>
+  <rect x="-34" y="-32" width="244" height="10" rx="5" fill="#8a5a30"/>
+ </g>`;
+}
+const TH_DEFS = `<defs>
+ <linearGradient id="thSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0ff"/><stop offset="1" stop-color="#d9f1ff"/></linearGradient>
+ <linearGradient id="thNightSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1433"/><stop offset="1" stop-color="#2a3474"/></linearGradient>
+ <linearGradient id="thWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a86b3c"/><stop offset="1" stop-color="#7f4f2a"/></linearGradient>
+ <radialGradient id="thLampG" cx=".5" cy=".3" r=".6"><stop offset="0" stop-color="#fff6c9" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c9" stop-opacity="0"/></radialGradient>
+ <clipPath id="thWinClip"><rect x="0" y="0" width="176" height="196"/></clipPath>
+</defs>`;
+function thTable(x) {
+  return `<g transform="translate(${x} 0)"><rect x="-78" y="438" width="14" height="184" fill="url(#thWood)"/><rect x="64" y="438" width="14" height="184" fill="url(#thWood)"/><rect x="-82" y="446" width="164" height="54" rx="4" fill="#9a6236"/><rect x="-40" y="458" width="80" height="30" rx="4" fill="#ad7444" stroke="#7f4f2a" stroke-width="2"/><circle cx="0" cy="473" r="5" fill="#f2c14e"/><rect x="-96" y="424" width="192" height="18" rx="7" fill="#b87a45"/><rect x="-90" y="426" width="180" height="4" rx="2" fill="#d79a62" opacity=".8"/></g>`;
+}
+function thLiving(o) {
+  o = o || {};
+  let wain = ''; for (let x = -820; x < 1800; x += 210) wain += `<rect x="${x}" y="396" width="180" height="58" rx="6"/>`;
+  const set = `${TH_DEFS}<defs><pattern id="lvStr" width="44" height="44" patternUnits="userSpaceOnUse"><rect width="44" height="44" fill="#f5d6b8"/><rect width="18" height="44" fill="#f0c9a4" opacity=".6"/><circle cx="31" cy="22" r="2.2" fill="#e5b083" opacity=".7"/></pattern>
+  <linearGradient id="lvFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9824e"/><stop offset="1" stop-color="#9c6a3c"/></linearGradient></defs>
+  <rect x="-900" y="-800" width="2800" height="1180" fill="url(#lvStr)"/>
+  <rect x="-900" y="380" width="2800" height="90" fill="#e7b88e"/><rect x="-900" y="372" width="2800" height="12" rx="3" fill="#fbe9d3"/>
+  <g stroke="#d6a57a" stroke-width="3" fill="none" opacity=".7">${wain}</g>
+  <rect x="-900" y="462" width="2800" height="14" fill="#fbe9d3"/>
+  <rect x="-900" y="476" width="2800" height="1000" fill="url(#lvFloor)"/>
+  ${thBoards([506, 542, 584, 634, 694, 770, 860], '#8a5a30')}
+  ${thWindow(118, 128)}
+  <g transform="translate(470 175)"><circle r="40" fill="#fffaf2" stroke="#8a5a30" stroke-width="6"/><g stroke="#3b2a1e" stroke-width="3" stroke-linecap="round"><path d="M0 -30 V-25 M30 0 H25 M0 30 V25 M-30 0 H-25"/></g><path d="M0 0 L0 -20" stroke="#3b2a1e" stroke-width="5" stroke-linecap="round" transform="rotate(30)"/><path d="M0 0 L0 -27" stroke="#3b2a1e" stroke-width="3.5" stroke-linecap="round" transform="rotate(300)"/><path id="thSec" d="M0 6 L0 -30" stroke="#e8743b" stroke-width="2"/><circle r="4" fill="#3b2a1e"/></g>
+  <g transform="translate(870 165)"><rect x="-62" y="-50" width="124" height="96" rx="4" fill="#c99b5e" stroke="#8a5a30" stroke-width="4"/><rect x="-50" y="-38" width="100" height="72" fill="#cfeafb"/><path d="M-24 0 Q0 -22 24 0 Q0 22 -24 0 Z M24 0 L40 -12 V12 Z" fill="#f39c12"/><circle cx="-10" cy="-4" r="3" fill="#3b2a1e"/></g>
+  <g transform="translate(1000 0)"><ellipse cx="0" cy="250" rx="140" ry="140" fill="url(#thLampG)"/><rect x="-4" y="250" width="8" height="368" fill="#5b4636"/><ellipse cx="0" cy="620" rx="34" ry="8" fill="#5b4636"/><path d="M-46 250 L46 250 L30 190 L-30 190 Z" fill="#fbe3a6" stroke="#d9a74a" stroke-width="3"/></g>
+  <ellipse cx="610" cy="642" rx="300" ry="46" fill="#c0563a"/><ellipse cx="610" cy="642" rx="262" ry="34" fill="none" stroke="#f6c58f" stroke-width="5" stroke-dasharray="14 10"/>
+  <g transform="translate(20 0)"><path d="M-26 560 L26 560 L20 618 L-20 618 Z" fill="#d97a4a"/><g fill="#4f9a45"><path d="M0 560 Q-50 520 -40 470 Q-10 500 0 560"/><path d="M0 560 Q40 510 30 460 Q8 500 0 560"/><path d="M0 560 Q-14 500 4 440 Q20 500 0 560"/></g></g>
+  <ellipse id="thPuddle" cx="690" cy="632" rx="0" ry="0" fill="#7fcdf4" opacity=".8"/>`;
+  let back = '';
+  if (o.table) back += `<ellipse cx="470" cy="622" rx="110" ry="12" fill="#3b2a1e" opacity=".2"/>` + thTable(470);
+  if (o.couch) back += `<ellipse cx="540" cy="620" rx="330" ry="14" fill="#3b2a1e" opacity=".2"/><g>
+   <rect x="232" y="388" width="616" height="150" rx="36" fill="#3f8f86"/>
+   <rect x="268" y="404" width="268" height="84" rx="24" fill="#4aa197"/><rect x="544" y="404" width="268" height="84" rx="24" fill="#4aa197"/>
+   <rect x="250" y="490" width="580" height="56" rx="18" fill="#5bb5a9"/><path d="M540 494 V544" stroke="#4aa197" stroke-width="3"/>
+   <rect x="208" y="432" width="84" height="136" rx="32" fill="#3f8f86"/><rect x="788" y="432" width="84" height="136" rx="32" fill="#3f8f86"/>
+   <rect x="222" y="540" width="636" height="38" rx="10" fill="#357a72"/>
+   <rect x="246" y="576" width="16" height="40" rx="4" fill="#5b4636"/><rect x="818" y="576" width="16" height="40" rx="4" fill="#5b4636"/>
+   <g transform="translate(770 462) rotate(14)"><rect x="-30" y="-28" width="60" height="56" rx="14" fill="#f6c58f"/><circle r="10" fill="#e8743b" opacity=".6"/></g>
+  </g>`;
+  return { set, back };
+}
+function thOffice() {
+  let books = '';
+  const cols = ['#e8743b', '#3fa7a0', '#f2c14e', '#7d4ac9', '#c0392b', '#4b5d86', '#86c76a'];
+  [300, 400, 500].forEach((sy, r) => { let x = 70; let k = r * 3; while (x < 200) { const w = 12 + (k * 7) % 10, h = 60 + (k * 13) % 26; books += `<rect x="${x}" y="${sy - h}" width="${w}" height="${h}" rx="2" fill="${cols[k % cols.length]}"/>`; x += w + 3; k++; } });
+  const set = `${TH_DEFS}<defs><pattern id="ofWall" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#dde8f1"/><path d="M0 0 V60" stroke="#cfdce8" stroke-width="3"/></pattern></defs>
+  <rect x="-900" y="-800" width="2800" height="1276" fill="url(#ofWall)"/>
+  <rect x="-900" y="462" width="2800" height="14" fill="#f6f9fc"/>
+  <rect x="-900" y="476" width="2800" height="1000" fill="#7d8ea3"/>
+  <g fill="#8fa0b4" opacity=".6">${Array.from({ length: 40 }, (_, i) => `<circle cx="${-800 + (i * 137) % 2600}" cy="${500 + (i * 53) % 300}" r="3"/>`).join('')}</g>
+  ${thWindow(800, 130)}
+  <g><rect x="50" y="200" width="170" height="422" rx="6" fill="#8a5d2f"/><rect x="62" y="212" width="146" height="398" fill="#6e4a25"/>${[300, 400, 500].map(y => `<rect x="58" y="${y}" width="154" height="10" fill="#8a5d2f"/>`).join('')}${books}<rect x="58" y="600" width="154" height="10" fill="#8a5d2f"/><path d="M120 200 Q100 170 110 150 Q124 172 130 198 Q140 166 160 160 Q150 186 136 200 Z" fill="#4f9a45"/></g>
+  <g transform="translate(640 175)"><rect x="-74" y="-52" width="148" height="100" rx="4" fill="#c99b5e" stroke="#8a5a30" stroke-width="4"/><rect x="-62" y="-40" width="124" height="76" fill="#fffaf0"/><text x="0" y="-14" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#8a5a30">CERTIFICATE</text><text x="0" y="6" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="13" fill="#3b2a1e">WORLD'S OKAYEST</text><text x="0" y="24" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="15" fill="#e8743b">DAD</text></g>
+  <g transform="translate(470 120)"><circle r="34" fill="#fffaf2" stroke="#4b5d86" stroke-width="5"/><path id="thSec" d="M0 5 L0 -26" stroke="#e8743b" stroke-width="2"/><path d="M0 0 L0 -18" stroke="#3b2a1e" stroke-width="4" stroke-linecap="round" transform="rotate(60)"/><circle r="3.5" fill="#3b2a1e"/></g>`;
+  const back = `<ellipse cx="450" cy="622" rx="150" ry="12" fill="#3b2a1e" opacity=".2"/>
+  <rect x="338" y="410" width="14" height="210" fill="#5b6470"/><rect x="548" y="410" width="14" height="210" fill="#5b6470"/><rect x="330" y="606" width="40" height="10" rx="3" fill="#4a525c"/><rect x="530" y="606" width="40" height="10" rx="3" fill="#4a525c"/>
+  <rect x="318" y="398" width="264" height="16" rx="5" fill="#c49a6c"/><rect x="324" y="400" width="252" height="4" rx="2" fill="#dcb688" opacity=".8"/>
+  <rect x="442" y="350" width="16" height="48" fill="#3a3f47"/><ellipse cx="450" cy="398" rx="34" ry="5" fill="#3a3f47"/>
+  <rect x="358" y="224" width="184" height="134" rx="8" fill="#2b2f36"/>
+  <rect id="thScreen" x="366" y="232" width="168" height="114" rx="3" fill="#eef7ff"/>
+  <rect x="366" y="232" width="168" height="16" rx="3" fill="#cfe3f5"/><circle cx="376" cy="240" r="3" fill="#ff6b6b"/><circle cx="386" cy="240" r="3" fill="#ffd166"/><circle cx="396" cy="240" r="3" fill="#6bd17a"/>
+  <g font-family="Menlo,Consolas,monospace" font-size="12" fill="#23324a"><text id="thScr0" x="374" y="266"></text><text id="thScr1" x="374" y="282"></text><text id="thScr2" x="374" y="298"></text><text id="thScr3" x="374" y="314"></text><text id="thScr4" x="374" y="330"></text></g>
+  <g id="thSent" display="none"><rect x="392" y="270" width="116" height="44" rx="10" fill="#2ecc71"/><text x="450" y="299" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="20" fill="#fff">SENT ✓</text></g>
+  <rect x="404" y="389" width="144" height="10" rx="3" fill="#3d434b"/><g fill="#6b737d">${Array.from({ length: 12 }, (_, i) => `<rect x="${409 + i * 11.5}" y="391" width="8" height="3" rx="1"/>`).join('')}</g>
+  <g transform="translate(346 398)"><path d="M-12 -30 L12 -30 L10 0 L-10 0 Z" fill="#fff" stroke="#c9bfae" stroke-width="2"/><path d="M12 -22 Q22 -20 20 -10 Q18 -4 11 -5" stroke="#c9bfae" stroke-width="3" fill="none"/><ellipse cx="0" cy="-30" rx="12" ry="3" fill="#6f4a2e"/></g>`;
+  return { set, back };
+}
+function thBedroom() {
+  const set = `${TH_DEFS}<defs><pattern id="brWall" width="70" height="70" patternUnits="userSpaceOnUse"><rect width="70" height="70" fill="#2d3561"/><circle cx="18" cy="20" r="2" fill="#4a5390"/><circle cx="52" cy="50" r="1.6" fill="#4a5390"/><path d="M48 14 l2 5 5 0 -4 3 2 5 -5 -3 -5 3 2 -5 -4 -3 5 0 Z" fill="#3c4682"/></pattern>
+  <linearGradient id="brBeam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c9" stop-opacity=".2"/><stop offset="1" stop-color="#fff6c9" stop-opacity="0"/></linearGradient></defs>
+  <rect x="-900" y="-800" width="2800" height="1276" fill="url(#brWall)"/>
+  <rect x="-900" y="462" width="2800" height="14" fill="#3e4677"/>
+  <rect x="-900" y="476" width="2800" height="1000" fill="#4a3a30"/>
+  ${thBoards([506, 542, 584, 634, 694, 770, 860], '#2c221c')}
+  ${thWindow(60, 140, true)}
+  <path d="M90 340 L240 340 L520 640 L60 640 Z" fill="url(#brBeam)"/>
+  <g transform="translate(650 230)"><rect x="-64" y="-46" width="128" height="92" rx="4" fill="#6e4a7e" stroke="#4d3359" stroke-width="4"/><rect x="-52" y="-34" width="104" height="68" fill="#1a2148"/><circle cx="20" cy="-8" r="14" fill="#fff4c2"/><path d="M-40 26 Q-20 0 0 26 Q16 6 40 26 Z" fill="#3c4682"/></g>
+  <g transform="translate(300 0)"><rect x="-44" y="470" width="88" height="152" rx="6" fill="#5e4434"/><rect x="-36" y="500" width="72" height="40" rx="4" fill="#6f523f" stroke="#4a3528" stroke-width="2"/><circle cx="0" cy="520" r="4" fill="#d9b25f"/><rect x="-48" y="462" width="96" height="12" rx="4" fill="#6f523f"/>
+   <rect x="-30" y="424" width="60" height="38" rx="8" fill="#222"/><text id="thAlarm" x="0" y="452" text-anchor="middle" font-family="Menlo,monospace" font-weight="700" font-size="20" fill="#ff4d4d">3:00</text></g>`;
+  const back = `<rect x="362" y="296" width="40" height="326" rx="8" fill="#5a3d6b"/><rect x="368" y="288" width="28" height="16" rx="6" fill="#6e4a7e"/>
+  <rect x="384" y="506" width="530" height="70" rx="10" fill="#5a3d6b"/><rect x="396" y="574" width="16" height="44" fill="#4d3359"/><rect x="884" y="574" width="16" height="44" fill="#4d3359"/>
+  <rect x="384" y="458" width="522" height="58" rx="16" fill="#e8e4f4"/>
+  <rect x="890" y="404" width="34" height="218" rx="8" fill="#5a3d6b"/>
+  <ellipse cx="452" cy="446" rx="64" ry="24" fill="#ffffff"/><ellipse cx="440" cy="440" rx="40" ry="10" fill="#f2eefc"/>`;
+  const mid = `<path id="thBlanket" d="M478 420 Q482 384 528 382 Q620 376 700 398 Q800 410 908 418 L912 524 Q700 540 478 524 Z" fill="#7f8fe0"/><path d="M478 420 Q482 384 528 382 Q620 376 700 398 Q800 410 908 418" stroke="#9eabf0" stroke-width="10" fill="none"/><g fill="#9eabf0" opacity=".7"><circle cx="600" cy="460" r="8"/><circle cx="700" cy="480" r="8"/><circle cx="800" cy="456" r="8"/><circle cx="650" cy="505" r="8"/><circle cx="850" cy="498" r="8"/></g>`;
+  return { set, back, mid };
+}
+function thBathroom() {
+  const set = `${TH_DEFS}<defs><pattern id="baTile" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#fff"/><rect x="2" y="2" width="36" height="36" rx="3" fill="#d7eff5"/></pattern>
+  <pattern id="baFloor" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#f4f8fa"/><rect width="40" height="40" fill="#bcd6df"/><rect x="40" y="40" width="40" height="40" fill="#bcd6df"/></pattern>
+  <linearGradient id="baMirror" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9f7ff"/><stop offset="1" stop-color="#b8dcef"/></linearGradient></defs>
+  <rect x="-900" y="-800" width="2800" height="1276" fill="url(#baTile)"/>
+  <rect x="-900" y="462" width="2800" height="14" fill="#9fc7d4"/>
+  <rect x="-900" y="476" width="2800" height="1000" fill="url(#baFloor)"/>
+  <g transform="translate(470 140)"><rect x="-80" y="0" width="160" height="170" rx="18" fill="#c9a77a"/><rect x="-68" y="12" width="136" height="146" rx="12" fill="url(#baMirror)"/><path d="M-40 30 L-10 30 L-56 120 L-60 90 Z" fill="#fff" opacity=".5"/></g>
+  <g transform="translate(900 0)"><rect x="-56" y="318" width="112" height="8" rx="4" fill="#9aa4ad"/><rect x="-46" y="322" width="92" height="120" rx="6" fill="#ff9fb6"/><g fill="#fff" opacity=".7"><rect x="-46" y="352" width="92" height="8"/><rect x="-46" y="372" width="92" height="8"/></g></g>
+  <ellipse cx="730" cy="636" rx="130" ry="26" fill="#7ec8e3"/><ellipse cx="730" cy="636" rx="112" ry="19" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>`;
+  const back = `<g transform="translate(170 0)"><rect x="-56" y="360" width="112" height="90" rx="12" fill="#fff" stroke="#cfd8dc" stroke-width="3"/><rect x="-20" y="352" width="40" height="10" rx="4" fill="#cfd8dc"/><path d="M-66 470 H66 Q66 540 20 556 L20 610 H-20 L-20 556 Q-66 540 -66 470 Z" fill="#fff" stroke="#cfd8dc" stroke-width="3"/><ellipse cx="0" cy="468" rx="70" ry="14" fill="#f0f4f6" stroke="#cfd8dc" stroke-width="3"/><rect x="-26" y="606" width="52" height="12" rx="4" fill="#e6ecef"/></g>
+  <g transform="translate(470 0)"><rect x="-74" y="404" width="148" height="26" rx="8" fill="#fff" stroke="#cfd8dc" stroke-width="3"/><path d="M-56 430 Q-50 470 0 474 Q50 470 56 430 Z" fill="#f0f4f6" stroke="#cfd8dc" stroke-width="3"/><rect x="-16" y="472" width="32" height="146" rx="8" fill="#fff" stroke="#cfd8dc" stroke-width="3"/><rect x="-6" y="384" width="12" height="22" rx="3" fill="#9aa4ad"/><path d="M0 386 Q0 374 14 374 L22 374" stroke="#9aa4ad" stroke-width="6" fill="none" stroke-linecap="round"/>
+   <g transform="translate(46 404)"><ellipse cx="0" cy="-8" rx="12" ry="9" fill="#ffd93b"/><circle cx="8" cy="-18" r="7" fill="#ffd93b"/><path d="M14 -18 L20 -16 L14 -14 Z" fill="#f39c12"/><circle cx="10" cy="-20" r="1.5" fill="#222"/></g></g>
+  <g transform="translate(300 0)"><rect x="-4" y="386" width="8" height="18" fill="#9aa4ad"/><rect x="-30" y="396" width="60" height="6" rx="3" fill="#9aa4ad"/>
+   <path id="thSheet" d="M24 420 L24 420" stroke="#fbfbf6" stroke-width="20" fill="none"/>
+   <g id="thRoll" transform="translate(0 420)"><circle id="thRollPaper" r="24" fill="#fbfbf6" stroke="#d6d0bf" stroke-width="2"/><path id="thRollLine" d="M0 -24 A24 24 0 0 1 20 -13" stroke="#e6e0d0" stroke-width="2" fill="none"/><circle r="9" fill="#d9c3a5" stroke="#b89a74" stroke-width="2"/></g></g>`;
+  return { set, back };
+}
+function thStage(s) {
+  thE('thSetL').innerHTML = s.set || ''; thE('thBackL').innerHTML = s.back || ''; thE('thMidL').innerHTML = s.mid || ''; thE('thFrontL').innerHTML = s.front || '';
+}
+// ---------- scene helpers ----------
+async function thWalk(x, ms, speed) { const c = TH.cat; c.walk = 1; c.speed = speed || 1; await thTween(c, { x }, ms, 'out'); c.walk = 0; }
+async function thWalkTo(x, y, ms, speed) { const c = TH.cat; c.walk = 1; c.speed = speed || 1; await thTween(c, { x, y, surf: y }, ms, 'inOut'); c.walk = 0; }
+function thJump(tx, ty, ms, h) {
+  const c = TH.cat, sx = c.x, sy = c.y, peak = Math.min(sy, ty) - h, o = { p: 0 };
+  thS('boing');
+  return thTween(o, { p: 1 }, ms, 'linear', () => {
+    const p = o.p, q = 1 - p;
+    c.x = thLerp(sx, tx, p); c.y = q * q * sy + 2 * q * p * peak + p * p * ty;
+    c.sx = 1 - .12 * Math.sin(p * Math.PI); c.sy = 1 + .16 * Math.sin(p * Math.PI);
+  });
+}
+async function thLand(dust) {
+  const c = TH.cat; c.surf = c.y; thS('thud'); if (dust !== false) thDust(c.x, c.y, 5);
+  await thTween(c, { sx: 1.18, sy: .8 }, 90, 'out'); await thTween(c, { sx: 1, sy: 1 }, 260, 'back');
+}
+const thTurn = (face, ms) => thTween(TH.cat, { face }, ms || 220);
+function thStart(x, y, z) { Object.assign(TH.cam, { x, y: y || 380, z: z || 1, shake: 0 }); thRender(); TH.cat.x = TH.cat.face > 0 ? thOffL() : thOffR(); }
+function thDadShock(arms) {
+  const d = TH.dad; Object.assign(d, { pupil: .5, brow: 14, browIn: 0, mouth: 'scream', sweat: 1, eyes: 'o', tap: 0 });
+  if (arms) thTween(d, { aLU: 150, aLF: 20, aRU: -150, aRF: -20 }, 350, 'out');
+}
+function thShatter(x, y) {
+  thS('crash'); thShake(10); thFlash(.35);
+  for (let i = 0; i < 16; i++) thPart({ t: 'shard', x, y: y - 6, vx: (Math.random() - .5) * .9, vy: -.25 - Math.random() * .55, rot: Math.random() * 360, vr: (Math.random() - .5) * 1.2, r: 4 + Math.random() * 7, life: 2400 + Math.random() * 1200 });
+  thSplash(x, y, 10, .6);
+}
+function thCatZ() { return thEmit(850, () => { const [x, y] = thPt('tcHeadPt'); thTxt(Math.random() < .5 ? 'z' : 'Z', x + 12 * TH.cat.face, y - 8, 20 + Math.random() * 12, '#5b7bd5', 1700, -.05); }); }
+
+// ---------- 1. The Water Glass (Dad's phone gets soaked) ----------
+async function thSceneGlass() {
+  thStage(thLiving({ table: true }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 700, aLU: 22, aLF: -98, tap: 1, lookX: -2, lookY: 9 });
+  thDadProp('L', 'phone');
+  thStart(560, 380, 1.05);
+  const G = thProp(`<defs><clipPath id="thGlassClip"><path d="M-17 -58 L17 -58 L14 0 L-14 0 Z"/></clipPath></defs><g transform="translate(-14 0)"><g clip-path="url(#thGlassClip)"><rect id="thWater" x="-20" y="-44" width="40" height="46" fill="#6fc3f0" opacity=".75"/><rect id="thIce" x="-9" y="-48" width="13" height="12" rx="3" fill="#e9f8ff" stroke="#bfe3f7" transform="rotate(14 -2 -42)"/></g><path d="M-17 -58 L17 -58 L14 0 L-14 0 Z" fill="#dff3ff" fill-opacity=".25" stroke="#7fb5d2" stroke-width="2.5" stroke-linejoin="round"/><path d="M-11 -50 L-9 -8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></g>`,
+    'thMidL', { x: 536, y: 424, water: 1, free: false, draw: p => { const w = thE('thWater'); w.setAttribute('y', thF(-44 * p.water)); w.setAttribute('height', thF(44 * p.water + 2)); thE('thIce').setAttribute('opacity', p.water > .2 ? 1 : 0); } });
+  let wet = 0, fizzed = false, puddle = 0, phonePt = null;
+  const pud = thE('thPuddle'), updPud = () => { pud.setAttribute('rx', thF(95 * puddle)); pud.setAttribute('ry', thF(13 * puddle)); };
+  const rim = () => { const a = G.r * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a); return [G.x + 3 * cs + 58 * sn, G.y + 3 * sn - 58 * cs]; };
+  const drop = falling => { const [x, y] = rim(); thPart(falling ? { t: 'drop', x: x + Math.random() * 6 - 3, y, vx: .02 + Math.random() * .08, vy: .02, r: 3 + Math.random() * 3, life: 3000 } : { t: 'drop', x: x + Math.random() * 6 - 3, y, vx: .28 + Math.random() * .1, vy: -.3 - Math.random() * .12, r: 3 + Math.random() * 3.5, life: 3000 }); };
+  TH.sim = dt => {
+    if (G.free) {
+      G.vy += .0016 * dt; G.x += G.vx * dt; G.y += G.vy * dt; G.r += G.vr * dt;
+      if (G.water > 0) { G.water = Math.max(0, G.water - dt * .0022); if (Math.random() < dt / 8) drop(true); }
+      if (G.y >= FLOOR - 2 && G.o) { G.o = 0; G.free = false; thShatter(G.x - 14, FLOOR); }
+    } else if (G.r > 55 && G.water > 0) { G.water = Math.max(0, G.water - dt * .002); if (Math.random() < dt / 7) drop(false); }
+  };
+  TH.onDrop = p => {
+    if (!fizzed && phonePt && Math.abs(p.x - phonePt[0]) < 30 && Math.abs(p.y - phonePt[1]) < 40) { wet++; thSplash(p.x, p.y, 3, .35); if (wet >= 6) fizz(); return true; }
+    return false;
+  };
+  TH.onFloorDrop = () => { puddle = Math.min(1, puddle + .02); updPud(); };
+  async function fizz() {
+    if (fizzed) return; fizzed = true; d.tap = 0; thS('buzz');
+    const [px, py] = thPtSync('tdPropPt');
+    for (let i = 0; i < 16; i++) thPart({ t: 'spark', x: px, y: py - 8, vx: (Math.random() - .5) * .7, vy: -.1 - Math.random() * .45, life: 320, max: 320 });
+    thSay('BZZZT! ⚡📱'); d.mouth = 'o';
+    const cols = ['#ff5ea8', '#ffe066', '#111', '#7fffd4', '#111', '#fff'];
+    for (const col of cols) { const s = thE('tdPhoneScr'); if (s) s.setAttribute('fill', col); await thWait(28); }
+    const [hx, hy] = thPtSync('tdPropPt');
+    d.propL = 0;
+    thProp(TH_ART.phoneDead, 'thPropsL', { x: hx, y: hy + 4, phys: true, vx: .03, vy: .03, vr: .28, floor: FLOOR + 6, restR: 90, onLand: p => { thS('splash'); thSplash(p.x, FLOOR + 4, 10, .55); puddle = Math.max(puddle, .6); updPud(); } });
+    d.mouth = 'scream';
+    thTween(d, { aLU: 150, aLF: 20, aRU: -150, aRF: -20 }, 400, 'out');
+  }
+  async function nudge(amount) {
+    await thTween(c, { reach: 1 }, 260, 'out'); thS('tink');
+    thTween(G, { x: G.x + amount }, 220, 'out');
+    const w = { k: 0 }; thTween(w, { k: 1 }, 380, 'linear', () => { G.r = Math.sin(w.k * Math.PI * 3) * 6 * (1 - w.k); });
+    await thWait(260); await thTween(c, { reach: 0 }, 300);
+  }
+  thSay('Dad is busy on his phone… 📱');
+  await thWait(1600);
+  thSay('Here comes Buddy…');
+  await thWalk(305, 2600);
+  thS('meow'); await thTween(c, { head: -22 }, 350);
+  thSay('He has spotted the glass. 🥛'); await thWait(700);
+  thSay('Wiggle… wiggle…');
+  await thTween(c, { head: -12, sy: .9, sx: 1.06 }, 250);
+  c.wig = 1; await thWait(1100); c.wig = 0;
+  await thTween(c, { sy: .78, sx: 1.12 }, 140, 'out');
+  await thJump(432, 424, 620, 150); await thLand();
+  c.walk = 1; c.speed = .8; await thTween(c, { x: 452, head: 0 }, 500); c.walk = 0;
+  await thTween(c, { tilt: -24, fold: 1 }, 380, 'out');
+  thSay(''); thS('dun');
+  await Promise.all([thCamTo(c.x + 70, 330, 2.2, 700), thTween(c, { lid: .48, slit: 1, tailUp: 40 }, 500)]);
+  thSay('👀'); await thWait(1200);
+  await thCamTo(700, 260, 2.1, 650);
+  thSay('Dad has NO idea. 😊'); await thWait(1300);
+  await thCamTo(560, 380, 1.25, 650);
+  thSay('Tap.'); await nudge(6);
+  await thWait(650);
+  thSay('Tap… tap.'); await nudge(7);
+  d.tap = 0; d.mouth = 'flat'; await thTween(d, { lookX: -10, lookY: 0, brow: 6, head: -6 }, 300);
+  thDadSays(['Buddy…', "don't you dare."], "Buddy. Don't you dare.");
+  await thWait(1900); thBubble(null);
+  thSay('…'); await thTween(c, { head: -6 }, 300); await thWait(900);
+  thSay('PUSH. 😼'); c.mouth = 'smirk';
+  await thTween(c, { reach: 1 }, 220, 'out');
+  thS('whoosh');
+  thTween(G, { x: G.x + 30 }, 300, 'in'); await thTween(G, { r: 40 }, 300, 'in');
+  thSlow(.22, 140);
+  thSay('Nooooooo…');
+  Object.assign(d, { pupil: .55, brow: 14, mouth: 'o', sweat: 1, lookX: -8, lookY: 6 });
+  phonePt = thPtSync('tdPropPt');
+  thTween(c, { reach: 0 }, 300);
+  thCamTo(645, 460, 1.4, 900);
+  await thTween(G, { r: 92 }, 600, 'in');
+  G.free = true; G.vx = .1; G.vy = .05; G.vr = .45;
+  thS('splash'); await thWait(500);
+  if (!fizzed) fizz();
+  await thWait(450);
+  thShake(6); await thSlow(1, 260);
+  thTween(d, { lift: 34 }, 160, 'out').then(() => thTween(d, { lift: 0 }, 300, 'in'));
+  await thWait(1300);
+  await thCamTo(640, 380, 1.15, 600);
+  thSay('Dad slowly looks down at his phone…'); d.mouth = 'o';
+  await thTween(d, { aLU: 10, aLF: -8, aRU: -10, aRF: 8, head: 4, lookX: -2, lookY: 11, pupil: .8, sweat: 0 }, 700);
+  await thWait(900);
+  await thCamTo(660, 320, 1.7, 600);
+  await thTween(d, { head: 0, lookX: 0, lookY: 0, pupil: 1, lid: .38, brow: -2, browIn: 8 }, 500);
+  d.mouth = 'flat';
+  thSay("Dad's phone went for a swim! 📱💦"); await thWait(600);
+  thDadSays(['That phone was', 'brand new.'], 'That phone was brand new.');
+  await thWait(2000); thBubble(null);
+  await thCamTo(540, 380, 1.1, 700);
+  thSay('Buddy is not sorry. 😼'); c.mouth = null;
+  await thTween(c, { paw: 1, head: 14, lid: .3 }, 400);
+  for (let i = 0; i < 3; i++) { c.lick = 1; await thWait(220); c.lick = 0; await thWait(200); }
+  await thTween(c, { paw: 0, head: 0 }, 400); thS('meow');
+}
+
+// ---------- 2. Poop Attack ----------
+async function thScenePoop() {
+  let v; do { v = pick(['head', 'shoe', 'coffee', 'paper']); } while (v === state.lastPoopVariant);
+  state.lastPoopVariant = v;
+  thStage(thLiving({}));
+  const d = TH.dad, c = TH.cat;
+  d.x = 740;
+  if (v === 'coffee') { thDadProp('L', 'mug'); Object.assign(d, { aLU: 30, aLF: -118, lookX: -3, lookY: 7 }); }
+  else if (v === 'paper') { thDadProp('L', 'paper'); Object.assign(d, { aLU: 18, aLF: -128, aRU: -18, aRF: 128, lookX: 0, lookY: 8 }); }
+  else { thDadProp('L', 'phone'); Object.assign(d, { aLU: 22, aLF: -98, tap: 1, lookX: -2, lookY: 9 }); }
+  thStart(560, 380, 1);
+  thSay('Buddy ate SO much food… 🍽️');
+  await thWait(1200);
+  await thWalk(430, 2400);
+  thS('meow'); await thTween(c, { head: -14 }, 300);
+  thSay('…uh oh. 😳'); await thWait(700);
+  await thTurn(-1);
+  await thTween(c, { tailUp: 96, sy: .9, sx: 1.06, head: 0 }, 420);
+  await thCamTo(520, 420, 1.55, 600);
+  thSay(''); await thWait(500);
+  thSay('💨 PFFFRRRT!'); thS('fart');
+  const [bx, by] = thPtSync('tcButt');
+  thPuffs(bx + 10, by, 7, '#e8f5d0');
+  await thTween(c, { sy: 1.08, sx: .96 }, 120, 'out');
+  const tgt = v === 'head' ? 'tdHeadTop' : v === 'shoe' ? 'tdShoeR' : 'tdPropPt';
+  const pp = thProp(TH_ART.poop, 'thPropsL', { x: bx, y: by, s: .3 });
+  thCamTo(620, 360, 1.05, 900);
+  thS('whoosh'); thSlow(.35, 150);
+  let [ex, ey] = thPtSync(tgt);
+  if (v === 'head') ey += 10; if (v === 'shoe') ey += 4;
+  await thArc(pp, ex, ey, 1000, 230, 540, 1.25);
+  thSlow(1, 120);
+  pp.r = 0; thS('splat'); thShake(9); thFlash(.25);
+  thTween(pp, { sy: .7 }, 80, 'out').then(() => thTween(pp, { sy: 1.25 }, 260, 'back'));
+  pp.follow = tgt; const [mx, my] = thPtSync(tgt); pp.fx = ex - mx; pp.fy = ey - my;
+  thTxt('SPLAT!', ex, ey - 48, 34, '#8B5A2B', 1300, -.06);
+  thFlies(ex, ey - 16);
+  thDadShock(v === 'head');
+  if (v === 'shoe') thTween(d, { lookY: 14, head: 6 }, 300);
+  if (v === 'coffee' || v === 'paper') thTween(d, { lookX: -6, lookY: 10 }, 300);
+  thSay({ head: "RIGHT ON DAD'S HEAD!! 💩", shoe: 'Dad stepped in it! 🦶💩', coffee: "Into Dad's coffee! ☕💩", paper: "All over Dad's newspaper! 📰💩" }[v]);
+  await thWait(700);
+  const L = { head: [['Is that…', 'ON MY HEAD?!'], 'Is that on my head?!'], shoe: [['My new', 'shoes!'], 'My new shoes!'], coffee: [['My COFFEE!'], 'My coffee!'], paper: [['I was READING', 'that!'], 'I was reading that!'] }[v];
+  thDadSays(L[0], L[1]);
+  await thTween(c, { tailUp: 70, sy: 1, sx: 1 }, 400);
+  await thWait(1500); thBubble(null);
+  thSay('Buddy feels MUCH better now. 😌');
+  await thWalk(thOffL(), 2600, .9);
+}
+
+// ---------- 3. Keyboard Nap ----------
+async function thSceneKeyboard() {
+  thStage(thOffice());
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 676, aLU: 42, aLF: -6, aRU: -10, aRF: 8, tap: 1, head: -6, lookX: -9, lookY: 0 });
+  const lines = ['Dear Boss,', '', 'The big report', 'is almost don', ''];
+  const show = () => lines.forEach((l, i) => { thE('thScr' + i).textContent = l; });
+  show();
+  thStart(540, 380, 1.05);
+  thSay('Dad is writing an important email… 💻');
+  for (const ch of 'e!') { await thWait(420); lines[3] += ch; show(); thS('clack'); }
+  await thWait(300);
+  thSay('Here comes Buddy…');
+  await thWalk(250, 2300);
+  await thTween(c, { head: -24 }, 300); thS('meow');
+  thSay('Buddy wants attention. 😼'); await thWait(800);
+  c.wig = 1; await thWait(800); c.wig = 0;
+  await thJump(372, 398, 620, 140); await thLand(false);
+  c.walk = 1; c.speed = .7; await thTween(c, { x: 470, head: 0 }, 900); c.walk = 0;
+  thSay('FLOP. 💤');
+  c.scale = 1; await thTween(c, { loaf: 1, y: 392, lid: 1, tailUp: 20 }, 420, 'out');
+  thS('thud');
+  const zz = thCatZ();
+  d.tap = 0;
+  let n = 0;
+  while (n < 72) {
+    n++;
+    lines[1] = 'j'.repeat(Math.min(18, n));
+    lines[2] = n > 18 ? 'j'.repeat(Math.min(18, n - 18)) : 'The big report';
+    lines[3] = n > 36 ? 'j'.repeat(Math.min(18, n - 36)) : 'is almost done!';
+    lines[4] = n > 54 ? 'j'.repeat(Math.min(18, n - 54)) : '';
+    show(); if (n % 2) thS('clack');
+    if (n % 9 === 0) thSay('j'.repeat(Math.min(26, n / 3 + 6)));
+    await thWait(45);
+  }
+  thSay('…and Buddy\'s paw hit SEND. 📨');
+  thE('thSent').setAttribute('display', 'inline'); thS('send');
+  await thWait(500);
+  thDadShock(true); d.head = 0; d.lookX = -6;
+  await thCamTo(600, 320, 1.4, 600);
+  thDadSays(['Did you just', 'email my BOSS?!'], 'Did you just email my boss?!');
+  await thWait(2200); thBubble(null);
+  Object.assign(d, { mouth: 'frown', sweat: 0, pupil: 1, brow: -2, lid: .3, eyes: 'o' });
+  await thTween(d, { aRU: 162, aRF: -22, aLU: 8, aLF: -6, head: 6 }, 500);
+  thS('thud');
+  thSay("Buddy sent Dad's boss a LOT of j's. ⌨️😴");
+  await thCamTo(540, 380, 1.05, 700);
+  await thWait(1400);
+  thStopEmit(zz);
+}
+
+// ---------- 4. Butt in Face ----------
+async function thSceneButt() {
+  thStage(thLiving({ couch: true }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 712, y: 452, rot: -90, head: 72, aLU: 6, aLF: -14, aRU: -6, aRF: 14, lid: .45, mouth: 'smile', lookX: 0, lookY: 2 });
+  c.face = -1;
+  thStart(560, 380, 1);
+  thSay('Dad is relaxing on the couch… 🛋️');
+  await thWait(1500);
+  await thWalk(930, 2200);
+  await thJump(668, 414, 640, 90); await thLand(false);
+  thSay('Buddy climbs aboard…');
+  await thWalkTo(528, 392, 1200, .8);
+  d.lid = 0; d.mouth = 'happy'; d.eyes = 'h';
+  thDadSays(['Aww, hi', 'Buddy!'], 'Aww, hi Buddy!');
+  thS('meow'); await thWait(1500); thBubble(null);
+  thSay('…oh no. Not the butt. 😳');
+  d.eyes = 'o'; d.mouth = 'o'; d.lookX = 6; d.pupil = .8;
+  await thTurn(1, 260);
+  c.fold = 1; c.tilt = -24;
+  const [b0x, b0y] = thPtSync('tcButt'), [fx, fy] = thPtSync('tdFace');
+  const tx = c.x + (fx + 4 - b0x), ty = c.y + (fy + 6 - b0y);
+  c.fold = 0; c.tilt = 0;
+  c.walk = 1; c.speed = .6;
+  await thTween(c, { x: tx, y: ty, fold: 1, tilt: -24 }, 1000, 'inOut'); c.walk = 0;
+  await thCamTo(430, 360, 1.5, 500);
+  thSay('💨'); thS('fart'); thShake(4);
+  const [bx, by] = thPtSync('tcButt'); thPuffs(bx, by, 8, '#d9ecb5');
+  const stink = thEmit(260, () => thStink(fx + (Math.random() - .5) * 40, fy - 30));
+  Object.assign(d, { eyes: 'x', mouth: 'gross' }); thTween(d, { green: 1, jit: .6 }, 500);
+  await thWait(400);
+  thTxt('MMMPHH!!', fx + 60, fy - 80, 30, '#3b7d2a', 1600, -.04);
+  thSay('BUTT. IN. FACE. 🍑😂');
+  await thTween(c, { head: -16, lid: .45, mouth: null }, 400); c.mouth = 'smirk';
+  await thWait(2400);
+  await thCamTo(560, 380, 1, 700);
+  thStopEmit(stink); d.jit = 0;
+}
+
+// ---------- 5. A "Gift" ----------
+async function thSceneGift() {
+  thStage(thLiving({}));
+  const d = TH.dad, c = TH.cat;
+  d.x = 740; thDadProp('L', 'paper'); Object.assign(d, { aLU: 18, aLF: -128, aRU: -18, aRF: 128, lookX: 0, lookY: 8 });
+  thStart(560, 380, 1);
+  const mouse = thProp(TH_ART.mouse, 'thPropsL', { follow: 'tcMouthPt', fx: 6, fy: 22, s: .9 });
+  thSay('Buddy has a present for Dad… 🎁');
+  await thWait(800);
+  await thWalk(520, 2800);
+  thSay('😼 "For you, Dad!"');
+  await thTween(c, { head: 14 }, 260);
+  mouse.follow = null; Object.assign(mouse, { phys: true, vx: .05, vy: 0, floor: FLOOR + 2 });
+  thS('thud'); await thWait(400);
+  await thTween(c, { head: -18, fold: 1, tilt: -24 }, 400, 'out'); thS('meow');
+  thCatSays(['Mrrow!']); await thWait(1300); thBubble(null);
+  thSay('Dad looks down…');
+  await thTween(d, { aLU: 10, aLF: -60, aRU: -10, aRF: 60, lookX: -6, lookY: 13, head: 6 }, 600);
+  await thWait(700);
+  thS('squeak');
+  thTween(mouse, { y: mouse.y - 24 }, 120, 'out').then(() => thTween(mouse, { y: FLOOR + 2 }, 160, 'in'));
+  await thWait(300);
+  thSay('…the mouse is ALIVE! 🐭');
+  thDadShock(true); d.head = 0;
+  const [hx, hy] = thPtSync('tdPropPt'); d.propL = 0;
+  thProp(TH_ART.paperFly, 'thPropsL', { x: hx, y: hy, phys: true, vx: .18, vy: -.85, vr: .35, floor: FLOOR - 2, restR: 0 });
+  thS('whoosh');
+  thTween(d, { lift: 70 }, 260, 'out').then(() => thTween(d, { lift: 0 }, 420, 'in'));
+  thDadSays(['EEEEK!', 'A MOUSE!'], 'Eeeek! A mouse!');
+  thS('squeak');
+  mouse.s = -.9; mouse.sy = .9;
+  const mrun = thTween(mouse, { x: thOffR() + 100 }, 1300, 'in');
+  await thWait(400);
+  await thTween(c, { head: 0, fold: 0, tilt: 0 }, 300);
+  await mrun;
+  await thWait(900); thBubble(null);
+  Object.assign(d, { mouth: 'flat', sweat: 1, pupil: .8 }); await thTween(d, { aLU: 30, aLF: -150, aRU: -30, aRF: 150 }, 400);
+  thSay('Dad is scared of a teeny tiny mouse! 🐭😂');
+  await thTurn(-1); thS('meow');
+  await thWait(1200);
+}
+
+// ---------- 6. 3 A.M. Wake-Up ----------
+async function thSceneNight() {
+  thStage(thBedroom());
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 820, y: 448, rot: -90, head: 70, aLU: 4, aLF: 0, aRU: -4, aRF: 0, lid: 1, mouth: 'snore', lookX: 0, lookY: 0 });
+  c.face = -1;
+  thStart(600, 380, 1);
+  const [fx, fy] = thPtSync('tdFace');
+  const snoreZ = thEmit(750, () => thTxt(Math.random() < .5 ? 'Z' : 'z', fx + 40 + Math.random() * 20, fy - 60, 22 + Math.random() * 14, '#a9b8ff', 1800, -.05));
+  const snore = thEmit(2200, () => thS('snore'));
+  const alarm = thE('thAlarm');
+  thSay('It is 3:00 A.M. Dad is fast asleep… 😴');
+  await thWait(1800);
+  await thWalk(990, 2000);
+  await thJump(846, 462, 620, 90); await thLand(false);
+  thSay('Buddy is HUNGRY.');
+  await thWalkTo(780, 412, 700, .8);
+  await thWalkTo(600, 386, 1300, .8);
+  await thCamTo(520, 360, 1.5, 600);
+  for (const [txt, size, ms] of [['tap', 24, 260], ['tap tap', 30, 200], ['TAP TAP TAP!', 38, 150]]) {
+    thSay(txt + ' 🐾');
+    for (let k = 0; k < txt.split(' ').length; k++) { await thTween(c, { reach: 1 }, ms, 'out'); thS('pop'); await thTween(c, { reach: 0 }, ms); }
+    thTxt(txt, fx, fy - 70, size, '#ffd166', 900, -.06);
+    await thWait(500);
+  }
+  thSay('Dad is STILL asleep… 😴'); await thWait(1200);
+  thSay('…so Buddy sits on his FACE.');
+  await thJump(fx + 30, fy + 34, 600, 60);
+  thS('thud'); await thTween(c, { loaf: 1 }, 300, 'out');
+  thStopEmit(snoreZ); thStopEmit(snore);
+  thTxt('MMMPH!', fx + 70, fy - 70, 30, '#ffd166', 1500, -.04);
+  await thWait(1500);
+  await thTween(c, { loaf: 0 }, 200);
+  await thJump(640, 386, 520, 70); await thLand(false); c.surf = 386;
+  Object.assign(d, { lid: 0, pupil: .45, mouth: 'o', brow: 12 });
+  thShake(4);
+  const blink = thEmit(400, () => alarm.setAttribute('opacity', alarm.getAttribute('opacity') === '0.2' ? '1' : '0.2'));
+  thDadSays(["It's 3 A.M.,", 'Buddy…'], "It's three A M, Buddy.");
+  await thWait(2000); thBubble(null);
+  c.mouth = 'open'; thS('meow'); thCatSays(['MEOW!', '(breakfast?)']);
+  await thWait(1800); thBubble(null); c.mouth = null;
+  thSay('Buddy wants BREAKFAST. At 3 A.M. 🌙');
+  Object.assign(d, { lid: .55, pupil: 1, brow: -4, mouth: 'frown' });
+  await thCamTo(600, 380, 1, 700);
+  await thWait(1000);
+  thStopEmit(blink); alarm.setAttribute('opacity', 1);
+}
+
+// ---------- 7. TP Mummy ----------
+async function thSceneMummy() {
+  thStage(thBathroom());
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 730, aRU: 200, aRF: -128, foam: 1, brush: 1, mouth: 'flat', lookX: 0, lookY: 0 });
+  thDadProp('R', 'brush');
+  thStart(560, 380, 1);
+  const roll = thE('thRoll'), sheet = thE('thSheet'), rs = { a: 0, len: 0 };
+  const drawRoll = () => { roll.setAttribute('transform', `translate(0 420) rotate(${thF(rs.a)})`); sheet.setAttribute('d', `M24 420 L24 ${thF(420 + rs.len)}`); };
+  thSay('Dad is brushing his teeth… 🪥');
+  await thWait(1500);
+  await thWalk(228, 2200);
+  await thTween(c, { head: -28 }, 300);
+  thSay('Buddy found the toilet paper… 🧻'); await thWait(700);
+  for (let i = 0; i < 2; i++) {
+    const jp = thJump(c.x, FLOOR, 640, 150);
+    await thWait(260); thTween(c, { reach: 1 }, 120, 'out'); thS('rip');
+    thTween(rs, { a: rs.a + 300, len: Math.min(190, rs.len + 95) }, 420, 'out', drawRoll);
+    await jp; await thLand(); c.reach = 0;
+  }
+  c.head = 0;
+  await thWalk(300, 500, .8);
+  await thTween(c, { head: 18 }, 200); thS('rip');
+  thSay('ZOOMIES! 💨');
+  const strip = thProp('<path d="" stroke="#fbfbf6" stroke-width="10" fill="none" stroke-linecap="round"/>', 'thCatL', {
+    draw: p => { const [mx, my] = thPt('tcMouthPt'); p.el.setAttribute('transform', ''); p.el.firstChild.setAttribute('d', `M324 ${thF(420 + rs.len)} Q${thF((324 + mx) / 2)} ${thF(Math.max(420 + rs.len, my) + 30)} ${thF(mx)} ${thF(my)}`); }
+  });
+  sheet.setAttribute('d', 'M24 420 L24 420');
+  const Lx = d.x - 150, Rx = d.x + 150;
+  c.head = 0; c.walk = 1; c.speed = 3; c.tailUp = 20;
+  await thTween(c, { x: Lx }, 600, 'in');
+  for (let k = 0; k < 12; k++) {
+    const front = k % 2 === 0, base = FLOOR - k * 30;
+    if (front) { thCatLayer('front'); thE('thCatL').insertBefore(strip.el, thE('tcat')); c.face = 1; c.scale = 1; }
+    else { thCatLayer('back'); thE('thCatBackL').insertBefore(strip.el, thE('tcat')); c.face = -1; c.scale = .86; }
+    const sx = c.x, ex = front ? Rx : Lx, o = { p: 0 };
+    thTween(rs, { a: rs.a + 200 }, 330, 'linear', drawRoll);
+    await thTween(o, { p: 1 }, 330, 'linear', () => { c.x = thLerp(sx, ex, o.p); c.y = base - Math.sin(o.p * Math.PI) * 22; c.surf = FLOOR; });
+    d.wrap = k + 1; thS(k % 2 ? 'pop' : 'rip');
+    for (let s = 0; s < 3; s++) thPart({ t: 'line', x: c.x - 60 * c.face, y: c.y - 40 - s * 22, dir: -c.face, len: 50, life: 260, max: 260 });
+    if (k === 1) { d.brush = 0; d.propR = 0; const [hx, hy] = thPtSync('tdHandR'); thProp(TH_ART.brushFly, 'thPropsL', { x: hx, y: hy, phys: true, vx: .15, vy: -.5, vr: .6, floor: FLOOR - 2, restR: 90 }); d.mouth = 'o'; thTween(d, { aRU: -8, aRF: 6 }, 300); }
+    if (k === 2) thDadSays(['Hey! HEY!'], 'Hey! Hey!');
+    if (k === 5) thBubble(null);
+    if (k === 9) d.foam = 0;
+  }
+  c.walk = 0;
+  thCatLayer('front'); thE('thCatL').insertBefore(strip.el, thE('tcat')); c.face = 1; c.scale = 1;
+  await thJump(560, FLOOR, 600, 40); await thLand();
+  thE('thRollPaper').setAttribute('r', 10); thE('thRollLine').setAttribute('d', '');
+  await thTween(c, { fold: 1, tilt: -24, head: -10 }, 300);
+  Object.assign(d, { pupil: .55, brow: 12, sweat: 1, lookX: -6 });
+  for (let i = 0; i < 2; i++) { await thTween(d, { rot: -4 }, 200); await thTween(d, { rot: 4 }, 200); }
+  await thTween(d, { rot: 0 }, 150);
+  thTxt('MMMF MMF!', d.x, 120, 32, '#3b2a1e', 1700, -.04);
+  thSay('Dad is a MUMMY now! 🧻😂');
+  thS('meow');
+  await thCamTo(600, 380, 1, 600);
+  await thWait(1800);
+}
+
+// ---------- 8. Hairball ----------
+async function thSceneHairball() {
+  thStage(thLiving({}));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 720, crouch: .55, aLU: 50, aLF: -42, aRU: -10, aRF: 8, eyes: 'h', mouth: 'happy', head: -4 });
+  thStart(560, 380, 1);
+  thSay('Dad wants to pet Buddy… 🥰');
+  await thWait(800);
+  thDadSays(["Who's a good", 'kitty?'], "Who's a good kitty?");
+  await thWalk(500, 2400);
+  await thWait(800); thBubble(null);
+  for (const [txt, k] of [['hack…', .5], ['hack… hack…', .75], ['HUAAAACK!! 🤮', 1]]) {
+    thSay(txt); thS('cough'); c.mouth = 'open';
+    await thTween(c, { head: 14 * k, sy: 1 - .14 * k, sx: 1 + .1 * k }, 160, 'out');
+    await thTween(c, { head: -6 * k, sy: 1 + .06 * k, sx: 1 - .04 * k }, 200, 'back');
+    c.mouth = null; await thTween(c, { head: 0, sy: 1, sx: 1 }, 260);
+    await thWait(450);
+  }
+  c.mouth = 'open';
+  await thTween(c, { head: 18, sy: .82, sx: 1.12 }, 140, 'out');
+  const [mx, my] = thPtSync('tcMouthPt');
+  const hb = thProp(TH_ART.hairball, 'thPropsL', { x: mx, y: my, s: .4 });
+  thTween(c, { head: -10, sy: 1.1, sx: .94 }, 160, 'out');
+  thS('whoosh'); thSlow(.4, 120);
+  let [ex, ey] = thPtSync('tdHandL'); ey -= 8;
+  await thArc(hb, ex, ey, 900, 150, 540, 1);
+  thSlow(1, 120);
+  hb.r = 0; hb.follow = 'tdHandL'; hb.fx = 0; hb.fy = -8;
+  thS('splat'); thSplash(ex, ey, 8, .35, '#b8e08a');
+  thTween(hb, { sy: .7 }, 80, 'out').then(() => thTween(hb, { sy: 1 }, 260, 'back'));
+  c.mouth = null; thTween(c, { head: 0, sy: 1, sx: 1 }, 300);
+  Object.assign(d, { eyes: 'x', mouth: 'gross' }); thTween(d, { green: 1, jit: .5 }, 400);
+  const slime = thEmit(380, () => { const [x, y] = thPt('tdHandL'); thPart({ t: 'drop', x: x + (Math.random() - .5) * 10, y: y + 6, vx: 0, vy: .02, r: 3, life: 2000, col: '#b8e08a' }); });
+  await thWait(300);
+  thDadSays(['EWWW!', "It's SLIMY!"], "Ewww! It's slimy!");
+  thSay("A slimy hairball… right in Dad's hand! 🤢");
+  await thWait(1400); thBubble(null);
+  await thTween(c, { paw: 1, head: 14, lid: .3, fold: 1, tilt: -24 }, 400);
+  for (let i = 0; i < 3; i++) { c.lick = 1; await thWait(220); c.lick = 0; await thWait(200); }
+  await thTween(c, { paw: 0, head: 0, lid: 0 }, 300);
+  await thWait(800);
+  thStopEmit(slime); d.jit = 0;
+}
+
+// ---------- 9. Head Nap (biscuits on Dad's head) ----------
+async function thSceneHat() {
+  thStage(thLiving({ table: true }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 712, aLU: 22, aLF: -98, tap: 1, lookX: -2, lookY: 9 });
+  thDadProp('L', 'phone');
+  thStart(560, 360, 1);
+  thSay('Dad is busy on his phone… 📱');
+  await thWait(1200);
+  await thWalk(320, 2400);
+  await thTween(c, { head: -30 }, 300); thS('meow');
+  thSay('Buddy is looking at Dad\'s head… 🤔'); await thWait(900);
+  c.wig = 1; await thWait(800); c.wig = 0;
+  await thJump(452, 424, 600, 120); await thLand(false);
+  await thWait(300);
+  const [hx, hy] = thPtSync('tdHeadTop');
+  await thCamTo(640, 300, 1.25, 500);
+  thTween(c, { scale: .8 }, 700);
+  await thJump(hx - 6, hy + 8, 760, 120);
+  thS('thud'); c.surf = FLOOR;
+  Object.assign(d, { tap: 0, mouth: 'o', pupil: .7, brow: 10 });
+  thTween(d, { lookX: 0, lookY: -12, aLU: 10, aLF: -10 }, 300);
+  thDadSays(['Whoa!'], 'Whoa!');
+  await thTween(c, { loaf: 1, sy: 1, sx: 1 }, 350, 'out');
+  await thWait(700); thBubble(null);
+  thSay('Knead… knead… Buddy is making biscuits! 🍞');
+  c.lid = .55; thS('purr', 3.4);
+  await thTween(c, { knead: 1 }, 300);
+  const hearts = thEmit(500, () => { const [x, y] = thPt('tcHeadPt'); thHeart(x, y - 10); });
+  await thWait(3000);
+  thStopEmit(hearts);
+  await thTween(c, { knead: 0, lid: 1, head: 8 }, 600);
+  const zz = thCatZ();
+  thSay('Buddy fell asleep on Dad\'s head! 😴');
+  Object.assign(d, { mouth: 'flat', pupil: 1, brow: 0, browIn: 6 });
+  await thWait(900);
+  d.mouth = 'smile';
+  thDadSays(["Guess I'm not", 'moving for a while.'], "Guess I'm not moving for a while.");
+  await thWait(2600); thBubble(null);
+  await thCamTo(600, 360, 1.05, 600);
+  await thWait(800);
+  thStopEmit(zz);
+}
+
+// ---------- 10. The Fancy Bed ----------
+async function thSceneBox() {
+  thStage(thLiving({}));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 760, aLU: 58, aLF: -18, aRU: -12, aRF: 10, eyes: 'h', mouth: 'happy', lookX: -8, lookY: 6 });
+  thStart(560, 380, 1);
+  const bed = thProp(TH_ART.fancyBed, 'thBackL', { x: 570, y: FLOOR });
+  thProp(TH_ART.boxBack, 'thMidL', { x: 360, y: FLOOR });
+  thProp(TH_ART.boxFront, 'thFrontL', { x: 360, y: FLOOR });
+  const spark = thEmit(260, () => thSparkle(570 + (Math.random() - .5) * 170, FLOOR - 30 - Math.random() * 70));
+  thS('chime');
+  thSay('Dad bought Buddy a SUPER fancy bed! 👑');
+  thDadSays(['Ta-da! A royal', 'bed for Buddy!'], 'Ta-da! A royal bed for Buddy!');
+  await thWait(1600); thBubble(null);
+  await thWalk(550, 2600);
+  thStopEmit(spark);
+  thSay('sniff… sniff… 👃');
+  for (let i = 0; i < 2; i++) { await thTween(c, { head: 20 }, 260); await thTween(c, { head: 10 }, 200); }
+  await thTween(c, { head: 0 }, 260);
+  thSay('…'); await thWait(700);
+  await thTween(c, { lid: .45, slit: .6 }, 300);
+  thSay('Nope. 😾'); await thWait(700);
+  c.lid = 0; c.slit = 0;
+  await thTurn(-1);
+  await thWalk(450, 900);
+  await thJump(340, FLOOR - 8, 640, 110);
+  thS('thud'); c.surf = FLOOR;
+  await thTween(c, { loaf: 1 }, 300, 'out');
+  await thTurn(1, 260);
+  thS('purr', 2.8); c.lid = .6;
+  const hearts = thEmit(450, () => { const [x, y] = thPt('tcHeadPt'); thHeart(x, y - 6); });
+  thSay('Buddy LOVES the box. 📦');
+  await thWait(800);
+  Object.assign(d, { eyes: 'o', mouth: 'frown', brow: -4, browIn: 12, lookX: -10, lookY: 6 });
+  await thTween(d, { aLU: 8, aLF: -6, cry: 1 }, 600);
+  const tears = thEmit(320, () => { const [x, y] = thPt('tdFace'); thPart({ t: 'drop', x: x + (Math.random() < .5 ? -30 : 30), y: y + 50, vx: (Math.random() - .5) * .05, vy: 0, r: 3.5, life: 2500, col: '#7fd0ff' }); });
+  thS('wahwah');
+  thDadSays(['That bed cost', 'two hundred dollars!'], 'That bed cost two hundred dollars!');
+  await thWait(2600); thBubble(null);
+  thSay('Buddy only likes the BOX. 📦😹');
+  await thWait(1500);
+  thStopEmit(hearts); thStopEmit(tears);
+}
+
+// ---------- registry + runner ----------
 const PRANKS = [
-  { id: 'poop', name: 'Poop Attack', emoji: '💩', run: prankPoop },
-  { id: 'keyboard', name: 'Keyboard Nap', emoji: '⌨️', run: prankKeyboard },
-  { id: 'glass', name: 'The Water Glass', emoji: '🥛', run: prankGlass },
-  { id: 'butt', name: 'Butt in Face', emoji: '🍑', run: prankButt },
-  { id: 'gift', name: 'A "Gift"', emoji: '🐭', run: prankGift },
-  { id: 'night', name: '3 A.M. Wake-Up', emoji: '🌙', run: prankNight },
-  { id: 'mummy', name: 'TP Mummy', emoji: '🧻', run: prankMummy },
-  { id: 'hairball', name: 'Hairball', emoji: '🤮', run: prankHairball },
-  { id: 'hat', name: 'Cat Hat', emoji: '👨‍🦲', run: prankHat },
-  { id: 'box', name: 'The Fancy Bed', emoji: '📦', run: prankBox }
+  { id: 'poop', name: 'Poop Attack', emoji: '💩', run: thScenePoop },
+  { id: 'keyboard', name: 'Keyboard Nap', emoji: '⌨️', run: thSceneKeyboard },
+  { id: 'glass', name: 'The Water Glass', emoji: '🥛', run: thSceneGlass },
+  { id: 'butt', name: 'Butt in Face', emoji: '🍑', run: thSceneButt },
+  { id: 'gift', name: 'A "Gift"', emoji: '🐭', run: thSceneGift },
+  { id: 'night', name: '3 A.M. Wake-Up', emoji: '🌙', run: thSceneNight },
+  { id: 'mummy', name: 'TP Mummy', emoji: '🧻', run: thSceneMummy },
+  { id: 'hairball', name: 'Hairball', emoji: '🤮', run: thSceneHairball },
+  { id: 'hat', name: 'Head Nap', emoji: '😴', run: thSceneHat },
+  { id: 'box', name: 'The Fancy Bed', emoji: '📦', run: thSceneBox }
 ];
 function choosePrank() {
   const c = PRANKS.filter(p => p.id !== state.lastPrank);
@@ -1849,24 +2517,48 @@ function choosePrank() {
   for (let i = 0; i < c.length; i++) { r -= w[i]; if (r <= 0) return c[i]; }
   return c[c.length - 1];
 }
+function thInit() {
+  if (TH.inited) return; TH.inited = true;
+  thE('thDadL').innerHTML = `<g id="tdad">${thDadSVG()}</g>`;
+  TH.de = {}; ['tdad', 'tdLegL', 'tdLegR', 'tdTorso', 'tdArmL', 'tdArmLF', 'tdPropL', 'tdArmR', 'tdArmRF', 'tdPropR', 'tdHead', 'tdPupils', 'tdLidL', 'tdLidR', 'tdBrowL', 'tdBrowR', 'tdEyesO', 'tdEyesX', 'tdEyesH', 'tdGreen', 'tdTears', 'tdSweat', 'tdFoam'].forEach(id => { TH.de[id] = thE(id); });
+  TH.de.mouths = [...thE('tdMouths').children]; TH.de.bands = [...document.querySelectorAll('#tdMummy .tdBand')];
+  window.addEventListener('resize', () => { if (TH.open) thFrame(); });
+  thE('thSkip').addEventListener('click', () => { TH.ff = true; thE('thSkip').hidden = true; try { speechSynthesis.cancel(); } catch (e) {} });
+}
+function thReset() {
+  TH.tweens = []; TH.parts = []; TH.props.forEach(p => p.el.remove()); TH.props = [];
+  TH.sim = TH.onDrop = TH.onFloorDrop = null; TH.emit = []; TH.ts = 1; TH.flash = 0; TH.ff = false;
+  Object.assign(TH.cam, { x: 560, y: 380, z: 1, shake: 0 });
+  thStage({}); thBubble(null); thSay('');
+  const t = catIdToTraits(buddyId());
+  TH.catMouth = { smile: 'w', tongue: 'tongue', fangs: 'fangs', blep: 'blep', smirk: 'smirk' }[t.mouth] || 'w';
+  thE('thCatBackL').innerHTML = '';
+  thE('thCatL').innerHTML = `<g id="tcat">${thCatSVG(t, state.hat)}</g>`;
+  TH.ce = {}; ['tcat', 'tcInner', 'tcLegBF', 'tcLegBN', 'tcBody', 'tcLegFF', 'tcLegFN', 'tcHead', 'tcLidL', 'tcLidR', 'tcLidLineL', 'tcLidLineR', 'tcPupL', 'tcPupR', 'tcMouth', 'tcMouthO', 'tcTongue', 'tcBlep', 'tcFangs', 'tcTail', 'tcTailSt', 'tcTailTip'].forEach(id => { TH.ce[id] = thE(id); });
+  TH.cat = thCatDefaults(); TH.dad = thDadDefaults();
+  thDadProp('L', null); thDadProp('R', null);
+}
 async function runPrank(id, replay) {
   const p = PRANKS.find(x => x.id === id) || PRANKS[0];
   overlayCount++;
-  dadReset(); $('poopDone').style.display = 'none'; cap(''); sub('');
-  STAGE().classList.add('open');
-  await sleep(60);
+  thInit();
+  const th = thE('theater'); th.classList.add('open'); TH.open = true; thFrame();
+  thReset();
+  thE('thEnd').hidden = true; thE('thSkip').hidden = false;
+  TH.last = null; if (!TH.raf) TH.raf = requestAnimationFrame(thStep);
+  thRender();
   try { await p.run(); } catch (e) { console.error(e); }
+  TH.ff = false; TH.ts = 1;
   if (!replay) {
     state.dadPooped++; state.pranksSeen[p.id] = (state.pranksSeen[p.id] || 0) + 1; state.lastPrank = p.id;
     state.meter = 0; state.poopPending = false; save();
   }
   const fresh = !replay && state.pranksSeen[p.id] === 1;
-  sub(replay ? `Replay: ${p.emoji} ${p.name}` : `${fresh ? `🆕 New prank: ${p.name}! • ` : ''}Dad has been pranked ${state.dadPooped} ${state.dadPooped === 1 ? 'time' : 'times'}!`);
-  await sleep(800);
-  $('poopDone').style.display = 'block';
-  await new Promise(res => { $('poopDone').onclick = res; });
-  STAGE().classList.remove('open');
-  dadReset();
+  thE('thSub').textContent = replay ? `Replay: ${p.emoji} ${p.name}` : `${fresh ? `🆕 New prank: ${p.name}! • ` : ''}Dad has been pranked ${state.dadPooped} ${state.dadPooped === 1 ? 'time' : 'times'}!`;
+  thE('thSkip').hidden = true; thE('thEnd').hidden = false;
+  await new Promise(res => { thE('thDone').onclick = res; });
+  th.classList.remove('open'); TH.open = false;
+  try { speechSynthesis.cancel(); } catch (e) {}
   overlayCount--;
   updateHUD();
 }
