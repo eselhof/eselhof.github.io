@@ -345,7 +345,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <div id="appVer"></div>
 <div id="theater">
-  <svg id="thStage" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Cartoon of Buddy pranking Dad">
+  <svg id="thStage" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Cartoon of Kitty pranking Dad">
     <defs><radialGradient id="thVigG" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#3b2a1e" stop-opacity="0"/><stop offset="1" stop-color="#3b2a1e" stop-opacity=".25"/></radialGradient></defs>
     <rect x="-3000" y="-3000" width="7000" height="7000" fill="#f6e7cf"/>
     <g id="thCam">
@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.0';
+const APP_VERSION = 'v4.2';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -424,7 +424,7 @@ function defaultState() {
     correctMul: 0, totalMul: 0, correctDiv: 0, totalDiv: 0,
     catsCollected: [], names: {}, buddy: 0,
     fish: 0, fishEarned: 0, hatsOwned: [], hat: null,
-    meter: 0, poopPending: false, dadPooped: 0, lastPoopVariant: null, pranksSeen: {}, lastPrank: null,
+    meter: 0, poopPending: false, dadPooped: 0, momPranked: 0, lastPoopVariant: null, pranksSeen: {}, lastPrank: null,
     knock: 0, knockObj: 0, broken: 0,
     boss: null, bossCounter: 0, dogsBonked: 0,
     zoomBest: 0, zoomRuns: 0, zoomIntroSeen: false,
@@ -1051,7 +1051,7 @@ function onCorrect() {
   if (state.boss) bossHit();
   else maybeSpawnBoss();
   if (state.streak > 0 && state.streak % 5 === 0) { setTimeout(() => { sceneMsg(`🔥 ${state.streak} in a row!`); Sound.coin(); }, 900); }
-  if (state.poopPending) setTimeout(() => sceneMsg('Buddy is SO full… uh oh 😳', 2400), 500);
+  if (state.poopPending) setTimeout(() => sceneMsg('Kitty is SO full… uh oh 😳', 2400), 500);
 
   showReward(catId, fishGain);
   updateHUD();
@@ -1180,7 +1180,7 @@ function knockStep() {
       const dx = (Math.random() - 0.5) * 90, dy = -20 - Math.random() * 40;
       sceneFx(pick(['✨', '🔹', '◆', '▲']), 58, 110 * sceneK(), 12 * sceneK(), [{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(${dx * 4}deg)`, opacity: 0 }], 700);
     }
-    sceneMsg(pick(['CRASH! 💥', 'Oops! 😼', 'Not sorry! 😹', 'Bye bye!']) + ` Buddy broke ${name}!`, 2000);
+    sceneMsg(pick(['CRASH! 💥', 'Oops! 😼', 'Not sorry! 😹', 'Bye bye!']) + ` Kitty broke ${name}!`, 2000);
     setTimeout(() => { placeKnockObj(); pulse($('knockObj'), [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'cubic-bezier(.34,1.56,.64,1)' }); }, 900);
   }, 360);
 }
@@ -1206,7 +1206,7 @@ function bossHit() {
   if (done) { state.boss = null; state.fish += 10; state.fishEarned += 10; state.dogsBonked++; }
   save();
   setTimeout(async () => {
-    // Buddy tosses the ball, the puppy catches it
+    // Kitty tosses the ball, the puppy catches it
     pulse($('buddyCanvas'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-14deg)' }, { transform: 'rotate(0)' }], { duration: 300 });
     sceneFx('🎾', 20, 40 * sceneK(), 22 * sceneK(), [{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${$('scene').clientWidth * 0.55}px,${-20 * sceneK()}px)`, opacity: 1, offset: .5 }, { transform: `translate(${$('scene').clientWidth * 0.66}px,${40 * sceneK()}px)`, opacity: 0 }], 650);
     Sound.pop();
@@ -1236,7 +1236,7 @@ async function startZoomies() {
     Sound.meow();
     const go = await openDialog(`<h3>⚡ What are Zoomies?</h3>
       <p style="font-size:56px;margin:4px 0">🐈💨</p>
-      <p style="text-align:left">Your buddy gets the zoomies and runs laps!<br><br>
+      <p style="text-align:left">Your kitty gets the zoomies and runs laps!<br><br>
       ⏱️ You have <b>30 seconds</b>.<br>
       ✅ Answer as many problems as you can.<br>
       🐟 Every right answer = <b>2 fish</b> (double!) and a new cat.<br>
@@ -1280,7 +1280,7 @@ async function endZoomies() {
 }
 
 // ============================================================
-// PRANK THEATER — cartoon scenes of Buddy pranking Dad
+// PRANK THEATER — cartoon scenes of Kitty pranking Dad
 // ============================================================
 const SVGNS = 'http://www.w3.org/2000/svg';
 const FLOOR = 622;
@@ -1302,8 +1302,13 @@ const TH = {
 };
 const thE = id => document.getElementById(id);
 const thS = (n, ...a) => { if (!TH.ff && Sound[n]) { try { Sound[n](...a); } catch (e) {} } };
-const thSpeak = text => { if (!TH.ff) Sound.say([text]); };
-const thSay = t => { thE('thCap').textContent = t; };
+const thW = t => TH.who !== 'mom' ? t : String(t).replace(/\bDad\b/g, 'Mom').replace(/\bDAD\b/g, 'MOM').replace(/\bhis\b/g, 'her').replace(/\bHis\b/g, 'Her');
+const thSpeak = text => {
+  if (TH.ff || !state.sound) return;
+  if (TH.who !== 'mom') { Sound.say([text]); return; }
+  try { const u = new SpeechSynthesisUtterance(text); u.pitch = 1.35; u.rate = 1; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+};
+const thSay = t => { thE('thCap').textContent = thW(t); };
 
 function thTween(obj, to, dur, ease, onUpdate) {
   return new Promise(res => {
@@ -1511,7 +1516,7 @@ function thBubble(lines, ax, ay, side) {
   const a1 = thClamp(ax - 12, L + 22, R - 46), a2 = a1 + 24, tipY = Math.max(ay, B + 14);
   thE('thBubBox').setAttribute('d', `M${L + r} ${T} H${R - r} Q${R} ${T} ${R} ${T + r} V${B - r} Q${R} ${B} ${R - r} ${B} H${a2} L${ax} ${tipY} L${a1} ${B} H${L + r} Q${L} ${B} ${L} ${B - r} V${T + r} Q${L} ${T} ${L + r} ${T} Z`);
   const t = thE('thBubText'); t.textContent = '';
-  lines.forEach((ln, k) => { const sp = document.createElementNS(SVGNS, 'tspan'); sp.setAttribute('x', cx); sp.setAttribute('y', T + 11 + lh * (k + 1) - 8); sp.textContent = ln; t.appendChild(sp); });
+  lines.forEach((ln, k) => { const sp = document.createElementNS(SVGNS, 'tspan'); sp.setAttribute('x', cx); sp.setAttribute('y', T + 11 + lh * (k + 1) - 8); sp.textContent = thW(ln); t.appendChild(sp); });
   const o = { s: .2 }, oy = T + h / 2;
   b.setAttribute('opacity', 1);
   thTween(o, { s: 1 }, 260, 'back', () => b.setAttribute('transform', `translate(${cx} ${oy}) scale(${o.s.toFixed(3)}) translate(${-cx} ${-oy})`));
@@ -1519,7 +1524,7 @@ function thBubble(lines, ax, ay, side) {
 function thDadSays(lines, speech) { const [fx, fy] = thPtSync('tdFace'); thBubble(lines, fx - 36, fy - 66, -1); if (speech) thSpeak(speech); }
 function thCatSays(lines) { const [mx, my] = thPtSync('tcMouthPt'); thBubble(lines, mx, my - 34, TH.cat.face >= 0 ? 1 : -1); }
 
-// ---------- Buddy (side view, built from the buddy's traits) ----------
+// ---------- Kitty (side view, built from the kitty's traits) ----------
 const TH_FUR = {
   orange: { a: '#f6ad5c', b: '#e48f3a', da: '#d88a3d', db: '#c47530', st: '#c97a2e', ol: '#9a5a22', belly: '#fbd9b0', mouth: '#7a4317' },
   gray: { a: '#c9c9c9', b: '#a6a6a6', da: '#949494', db: '#7c7c7c', st: '#777777', ol: '#5a5a5a', belly: '#efefef', mouth: '#4a4a4a' },
@@ -1697,7 +1702,11 @@ function thRenderCat() {
 
 // ---------- Dad ----------
 const TD_BANDS = [[-14, 92], [-50, 92], [-88, 94], [-126, 98], [-164, 152], [-200, 158], [-238, 160], [-276, 158], [-312, 152], [-352, 130], [-430, 128], [-458, 100]];
-function thDadSVG() {
+function thDadSVG(kind) {
+  const m = thDadSVGBase();
+  return kind === 'mom' ? thMomify(m) : m;
+}
+function thDadSVGBase() {
   const bands = TD_BANDS.map(([y, w], i) => `<rect class="tdBand" x="${-w / 2}" y="${y - 12}" width="${w}" height="24" rx="5" transform="rotate(${i % 2 ? 3 : -3} 0 ${y})" fill="#fbfbf6" stroke="#d6d0bf" stroke-width="2" display="none"/>`).join('');
   return `<defs>
 <linearGradient id="tdShirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fa7a0"/><stop offset="1" stop-color="#2d8a84"/></linearGradient>
@@ -1762,7 +1771,23 @@ const TD_PROPS = {
   paper: `<g transform="translate(52 -6) rotate(-4)"><rect x="-64" y="-46" width="128" height="88" rx="3" fill="#f4f1e8" stroke="#cfc6b0" stroke-width="2"/><path d="M0 -46 V42" stroke="#d8d0bc" stroke-width="2"/><text x="-32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">DAILY</text><text x="32" y="-26" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#444">NEWS</text><path d="M-56 -14 H-8 M-56 -4 H-12 M-56 6 H-8 M-56 16 H-16 M-56 26 H-10 M8 -14 H56 M8 -4 H52 M8 6 H56 M8 16 H48 M8 26 H56" stroke="#bbb" stroke-width="3"/><g id="tdPropPt" transform="translate(-10 -40)"/></g>`,
   brush: `<g transform="rotate(-80)"><rect x="-3.5" y="-52" width="7" height="58" rx="3.5" fill="#4ecdc4"/><rect x="-6" y="-66" width="12" height="16" rx="3" fill="#fff" stroke="#ccc" stroke-width="1.5"/></g>`
 };
-function thDadProp(side, kind) { thE(side === 'L' ? 'tdPropL' : 'tdPropR').innerHTML = kind ? TD_PROPS[kind] : ''; }
+function thMomify(m) {
+  const R = (a, b, n) => { const c = m.split(a).length - 1; if (c !== (n || 1)) console.warn('momify', a, c); m = m.split(a).join(b); };
+  R('stop-color="#3fa7a0"', 'stop-color="#b36ad8"'); R('stop-color="#2d8a84"', 'stop-color="#8e4fbf"');
+  R('stop-color="#4b5d86"', 'stop-color="#43436a"'); R('stop-color="#3a4a6e"', 'stop-color="#323252"');
+  R('ry="14" fill="#5a3825"', 'ry="14" fill="#c0392b"', 2); R('fill="#7a5038"', 'fill="#e8806e"', 2);
+  R('fill="#36978f"', 'fill="#9a58c4"'); R('stroke="#24746f"', 'stroke="#7a3fa8"');
+  R('stroke="#5a3825" stroke-width="6"', 'stroke="#5a3825" stroke-width="4.5"', 2);
+  R('fill="#6b2e1e"', 'fill="#a8344a"', 4); R('stroke="#6b2e1e"', 'stroke="#a8344a"', 4);
+  R('fill="#ff8a7a" opacity=".35"', 'fill="#ff8a7a" opacity=".5"', 2);
+  R('<circle cx="-62" cy="-392" r="12" fill="#eab087"/><circle cx="62" cy="-392" r="12" fill="#eab087"/>',
+    '<path d="M-66 -398 Q-78 -480 0 -482 Q78 -480 66 -398 Q82 -340 76 -298 Q62 -282 44 -296 Q52 -330 42 -350 L-42 -350 Q-52 -330 -44 -296 Q-62 -282 -76 -298 Q-82 -340 -66 -398 Z" fill="#5d3f27"/>');
+  R('<path d="M-60 -404 Q-66 -462 -10 -466 Q28 -476 52 -452 Q70 -432 62 -404 Q52 -432 22 -436 Q-4 -420 -30 -434 Q-50 -428 -60 -404 Z" fill="#6b4a2f"/>',
+    '<path d="M-63 -398 Q-70 -472 -2 -474 Q62 -474 65 -400 Q54 -446 16 -448 Q-12 -434 -40 -448 Q-56 -434 -63 -398 Z" fill="#6b4a2f"/><path d="M-65 -404 Q-71 -360 -59 -326 Q-49 -350 -54 -402 Z M65 -404 Q71 -360 59 -326 Q49 -350 54 -402 Z" fill="#6b4a2f"/><circle cx="-58" cy="-364" r="5" fill="#f2c14e"/><circle cx="58" cy="-364" r="5" fill="#f2c14e"/>');
+  R('<g id="tdPupils">', '<path d="M-35 -407 L-41 -413 M-31 -412 L-34 -419 M35 -407 L41 -413 M31 -412 L34 -419" stroke="#3b2a1e" stroke-width="2.5" stroke-linecap="round"/><g id="tdPupils">');
+  return m;
+}
+function thDadProp(side, kind) { const m = kind ? TD_PROPS[kind] : ''; thE(side === 'L' ? 'tdPropL' : 'tdPropR').innerHTML = TH.who === 'mom' ? m.replace(/\bDAD\b/g, 'MOM') : m; }
 function thDadDefaults() {
   return { x: 720, y: FLOOR, rot: 0, lift: 0, crouch: 0, head: 0, lookX: -3, lookY: 4, pupil: 1, lid: 0, blink: 0, brow: 0, browIn: 0, mouth: 'smile', eyes: 'o', tap: 0, sweat: 0, green: 0, cry: 0, jit: 0, aLU: 8, aLF: -6, aRU: -8, aRF: 6, propL: 1, propR: 1, wrap: 0, foam: 0, brush: 0, o: 1 };
 }
@@ -1942,7 +1967,8 @@ function thBathroom() {
   return { set, back };
 }
 function thStage(s) {
-  thE('thSetL').innerHTML = s.set || ''; thE('thBackL').innerHTML = s.back || ''; thE('thMidL').innerHTML = s.mid || ''; thE('thFrontL').innerHTML = s.front || '';
+  const w = m => TH.who === 'mom' ? (m || '').replace(/\bDAD\b/g, 'MOM') : (m || '');
+  thE('thSetL').innerHTML = w(s.set); thE('thBackL').innerHTML = w(s.back); thE('thMidL').innerHTML = w(s.mid); thE('thFrontL').innerHTML = w(s.front);
 }
 // ---------- scene helpers ----------
 async function thWalk(x, ms, speed) { const c = TH.cat; c.walk = 1; c.speed = speed || 1; await thTween(c, { x }, ms, 'out'); c.walk = 0; }
@@ -2019,10 +2045,10 @@ async function thSceneGlass() {
   }
   thSay('Dad is busy on his phone… 📱');
   await thWait(1600);
-  thSay('Here comes Buddy…');
+  thSay('Here comes Kitty…');
   await thWalk(305, 2600);
   thS('meow'); await thTween(c, { head: -22 }, 350);
-  thSay('He has spotted the glass. 🥛'); await thWait(700);
+  thSay('Kitty has spotted the glass. 🥛'); await thWait(700);
   thSay('Wiggle… wiggle…');
   await thTween(c, { head: -12, sy: .9, sx: 1.06 }, 250);
   c.wig = 1; await thWait(1100); c.wig = 0;
@@ -2040,7 +2066,7 @@ async function thSceneGlass() {
   await thWait(650);
   thSay('Tap… tap.'); await nudge(7);
   d.tap = 0; d.mouth = 'flat'; await thTween(d, { lookX: -10, lookY: 0, brow: 6, head: -6 }, 300);
-  thDadSays(['Buddy…', "don't you dare."], "Buddy. Don't you dare.");
+  thDadSays(['Kitty…', "don't you dare."], "Kitty. Don't you dare.");
   await thWait(1900); thBubble(null);
   thSay('…'); await thTween(c, { head: -6 }, 300); await thWait(900);
   thSay('PUSH. 😼'); c.mouth = 'smirk';
@@ -2072,7 +2098,7 @@ async function thSceneGlass() {
   thDadSays(['That phone was', 'brand new.'], 'That phone was brand new.');
   await thWait(2000); thBubble(null);
   await thCamTo(540, 380, 1.1, 700);
-  thSay('Buddy is not sorry. 😼'); c.mouth = null;
+  thSay('Kitty is not sorry. 😼'); c.mouth = null;
   await thTween(c, { paw: 1, head: 14, lid: .3 }, 400);
   for (let i = 0; i < 3; i++) { c.lick = 1; await thWait(220); c.lick = 0; await thWait(200); }
   await thTween(c, { paw: 0, head: 0 }, 400); thS('meow');
@@ -2089,7 +2115,7 @@ async function thScenePoop() {
   else if (v === 'paper') { thDadProp('L', 'paper'); Object.assign(d, { aLU: 18, aLF: -128, aRU: -18, aRF: 128, lookX: 0, lookY: 8 }); }
   else { thDadProp('L', 'phone'); Object.assign(d, { aLU: 22, aLF: -98, tap: 1, lookX: -2, lookY: 9 }); }
   thStart(560, 380, 1);
-  thSay('Buddy ate SO much food… 🍽️');
+  thSay('Kitty ate SO much food… 🍽️');
   await thWait(1200);
   await thWalk(430, 2400);
   thS('meow'); await thTween(c, { head: -14 }, 300);
@@ -2124,7 +2150,7 @@ async function thScenePoop() {
   thDadSays(L[0], L[1]);
   await thTween(c, { tailUp: 70, sy: 1, sx: 1 }, 400);
   await thWait(1500); thBubble(null);
-  thSay('Buddy feels MUCH better now. 😌');
+  thSay('Kitty feels MUCH better now. 😌');
   await thWalk(thOffL(), 2600, .9);
 }
 
@@ -2140,10 +2166,10 @@ async function thSceneKeyboard() {
   thSay('Dad is writing an important email… 💻');
   for (const ch of 'e!') { await thWait(420); lines[3] += ch; show(); thS('clack'); }
   await thWait(300);
-  thSay('Here comes Buddy…');
+  thSay('Here comes Kitty…');
   await thWalk(250, 2300);
   await thTween(c, { head: -24 }, 300); thS('meow');
-  thSay('Buddy wants attention. 😼'); await thWait(800);
+  thSay('Kitty wants attention. 😼'); await thWait(800);
   c.wig = 1; await thWait(800); c.wig = 0;
   await thJump(372, 398, 620, 140); await thLand(false);
   c.walk = 1; c.speed = .7; await thTween(c, { x: 470, head: 0 }, 900); c.walk = 0;
@@ -2163,7 +2189,7 @@ async function thSceneKeyboard() {
     if (n % 9 === 0) thSay('j'.repeat(Math.min(26, n / 3 + 6)));
     await thWait(45);
   }
-  thSay('…and Buddy\'s paw hit SEND. 📨');
+  thSay('…and Kitty\'s paw hit SEND. 📨');
   thE('thSent').setAttribute('display', 'inline'); thS('send');
   await thWait(500);
   thDadShock(true); d.head = 0; d.lookX = -6;
@@ -2173,7 +2199,7 @@ async function thSceneKeyboard() {
   Object.assign(d, { mouth: 'frown', sweat: 0, pupil: 1, brow: -2, lid: .3, eyes: 'o' });
   await thTween(d, { aRU: 162, aRF: -22, aLU: 8, aLF: -6, head: 6 }, 500);
   thS('thud');
-  thSay("Buddy sent Dad's boss a LOT of j's. ⌨️😴");
+  thSay("Kitty sent Dad's boss a LOT of j's. ⌨️😴");
   await thCamTo(540, 380, 1.05, 700);
   await thWait(1400);
   thStopEmit(zz);
@@ -2190,10 +2216,10 @@ async function thSceneButt() {
   await thWait(1500);
   await thWalk(930, 2200);
   await thJump(668, 414, 640, 90); await thLand(false);
-  thSay('Buddy climbs aboard…');
+  thSay('Kitty climbs aboard…');
   await thWalkTo(528, 392, 1200, .8);
   d.lid = 0; d.mouth = 'happy'; d.eyes = 'h';
-  thDadSays(['Aww, hi', 'Buddy!'], 'Aww, hi Buddy!');
+  thDadSays(['Aww, hi', 'Kitty!'], 'Aww, hi Kitty!');
   thS('meow'); await thWait(1500); thBubble(null);
   thSay('…oh no. Not the butt. 😳');
   d.eyes = 'o'; d.mouth = 'o'; d.lookX = 6; d.pupil = .8;
@@ -2225,7 +2251,7 @@ async function thSceneGift() {
   d.x = 740; thDadProp('L', 'paper'); Object.assign(d, { aLU: 18, aLF: -128, aRU: -18, aRF: 128, lookX: 0, lookY: 8 });
   thStart(560, 380, 1);
   const mouse = thProp(TH_ART.mouse, 'thPropsL', { follow: 'tcMouthPt', fx: 6, fy: 22, s: .9 });
-  thSay('Buddy has a present for Dad… 🎁');
+  thSay('Kitty has a present for Dad… 🎁');
   await thWait(800);
   await thWalk(520, 2800);
   thSay('😼 "For you, Dad!"');
@@ -2275,7 +2301,7 @@ async function thSceneNight() {
   await thWait(1800);
   await thWalk(990, 2000);
   await thJump(846, 462, 620, 90); await thLand(false);
-  thSay('Buddy is HUNGRY.');
+  thSay('Kitty is HUNGRY.');
   await thWalkTo(780, 412, 700, .8);
   await thWalkTo(600, 386, 1300, .8);
   await thCamTo(520, 360, 1.5, 600);
@@ -2286,7 +2312,7 @@ async function thSceneNight() {
     await thWait(500);
   }
   thSay('Dad is STILL asleep… 😴'); await thWait(1200);
-  thSay('…so Buddy sits on his FACE.');
+  thSay('…so Kitty sits on his FACE.');
   await thJump(fx + 30, fy + 34, 600, 60);
   thS('thud'); await thTween(c, { loaf: 1 }, 300, 'out');
   thStopEmit(snoreZ); thStopEmit(snore);
@@ -2297,11 +2323,11 @@ async function thSceneNight() {
   Object.assign(d, { lid: 0, pupil: .45, mouth: 'o', brow: 12 });
   thShake(4);
   const blink = thEmit(400, () => alarm.setAttribute('opacity', alarm.getAttribute('opacity') === '0.2' ? '1' : '0.2'));
-  thDadSays(["It's 3 A.M.,", 'Buddy…'], "It's three A M, Buddy.");
+  thDadSays(["It's 3 A.M.,", 'Kitty…'], "It's three A M, Kitty.");
   await thWait(2000); thBubble(null);
   c.mouth = 'open'; thS('meow'); thCatSays(['MEOW!', '(breakfast?)']);
   await thWait(1800); thBubble(null); c.mouth = null;
-  thSay('Buddy wants BREAKFAST. At 3 A.M. 🌙');
+  thSay('Kitty wants BREAKFAST. At 3 A.M. 🌙');
   Object.assign(d, { lid: .55, pupil: 1, brow: -4, mouth: 'frown' });
   await thCamTo(600, 380, 1, 700);
   await thWait(1000);
@@ -2321,7 +2347,7 @@ async function thSceneMummy() {
   await thWait(1500);
   await thWalk(228, 2200);
   await thTween(c, { head: -28 }, 300);
-  thSay('Buddy found the toilet paper… 🧻'); await thWait(700);
+  thSay('Kitty found the toilet paper… 🧻'); await thWait(700);
   for (let i = 0; i < 2; i++) {
     const jp = thJump(c.x, FLOOR, 640, 150);
     await thWait(260); thTween(c, { reach: 1 }, 120, 'out'); thS('rip');
@@ -2374,7 +2400,7 @@ async function thSceneHairball() {
   const d = TH.dad, c = TH.cat;
   Object.assign(d, { x: 720, crouch: .55, aLU: 50, aLF: -42, aRU: -10, aRF: 8, eyes: 'h', mouth: 'happy', head: -4 });
   thStart(560, 380, 1);
-  thSay('Dad wants to pet Buddy… 🥰');
+  thSay('Dad wants to pet Kitty… 🥰');
   await thWait(800);
   thDadSays(["Who's a good", 'kitty?'], "Who's a good kitty?");
   await thWalk(500, 2400);
@@ -2423,7 +2449,7 @@ async function thSceneHat() {
   await thWait(1200);
   await thWalk(320, 2400);
   await thTween(c, { head: -30 }, 300); thS('meow');
-  thSay('Buddy is looking at Dad\'s head… 🤔'); await thWait(900);
+  thSay('Kitty is looking at Dad\'s head… 🤔'); await thWait(900);
   c.wig = 1; await thWait(800); c.wig = 0;
   await thJump(452, 424, 600, 120); await thLand(false);
   await thWait(300);
@@ -2437,7 +2463,7 @@ async function thSceneHat() {
   thDadSays(['Whoa!'], 'Whoa!');
   await thTween(c, { loaf: 1, sy: 1, sx: 1 }, 350, 'out');
   await thWait(700); thBubble(null);
-  thSay('Knead… knead… Buddy is making biscuits! 🍞');
+  thSay('Knead… knead… Kitty is making biscuits! 🍞');
   c.lid = .55; thS('purr', 3.4);
   await thTween(c, { knead: 1 }, 300);
   const hearts = thEmit(500, () => { const [x, y] = thPt('tcHeadPt'); thHeart(x, y - 10); });
@@ -2445,7 +2471,7 @@ async function thSceneHat() {
   thStopEmit(hearts);
   await thTween(c, { knead: 0, lid: 1, head: 8 }, 600);
   const zz = thCatZ();
-  thSay('Buddy fell asleep on Dad\'s head! 😴');
+  thSay('Kitty fell asleep on Dad\'s head! 😴');
   Object.assign(d, { mouth: 'flat', pupil: 1, brow: 0, browIn: 6 });
   await thWait(900);
   d.mouth = 'smile';
@@ -2467,8 +2493,8 @@ async function thSceneBox() {
   thProp(TH_ART.boxFront, 'thFrontL', { x: 360, y: FLOOR });
   const spark = thEmit(260, () => thSparkle(570 + (Math.random() - .5) * 170, FLOOR - 30 - Math.random() * 70));
   thS('chime');
-  thSay('Dad bought Buddy a SUPER fancy bed! 👑');
-  thDadSays(['Ta-da! A royal', 'bed for Buddy!'], 'Ta-da! A royal bed for Buddy!');
+  thSay('Dad bought Kitty a SUPER fancy bed! 👑');
+  thDadSays(['Ta-da! A royal', 'bed for Kitty!'], 'Ta-da! A royal bed for Kitty!');
   await thWait(1600); thBubble(null);
   await thWalk(550, 2600);
   thStopEmit(spark);
@@ -2487,7 +2513,7 @@ async function thSceneBox() {
   await thTurn(1, 260);
   thS('purr', 2.8); c.lid = .6;
   const hearts = thEmit(450, () => { const [x, y] = thPt('tcHeadPt'); thHeart(x, y - 6); });
-  thSay('Buddy LOVES the box. 📦');
+  thSay('Kitty LOVES the box. 📦');
   await thWait(800);
   Object.assign(d, { eyes: 'o', mouth: 'frown', brow: -4, browIn: 12, lookX: -10, lookY: 6 });
   await thTween(d, { aLU: 8, aLF: -6, cry: 1 }, 600);
@@ -2495,7 +2521,7 @@ async function thSceneBox() {
   thS('wahwah');
   thDadSays(['That bed cost', 'two hundred dollars!'], 'That bed cost two hundred dollars!');
   await thWait(2600); thBubble(null);
-  thSay('Buddy only likes the BOX. 📦😹');
+  thSay('Kitty only likes the BOX. 📦😹');
   await thWait(1500);
   thStopEmit(hearts); thStopEmit(tears);
 }
@@ -2522,9 +2548,6 @@ function choosePrank() {
 }
 function thInit() {
   if (TH.inited) return; TH.inited = true;
-  thE('thDadL').innerHTML = `<g id="tdad">${thDadSVG()}</g>`;
-  TH.de = {}; ['tdad', 'tdLegL', 'tdLegR', 'tdTorso', 'tdArmL', 'tdArmLF', 'tdPropL', 'tdArmR', 'tdArmRF', 'tdPropR', 'tdHead', 'tdPupils', 'tdLidL', 'tdLidR', 'tdBrowL', 'tdBrowR', 'tdEyesO', 'tdEyesX', 'tdEyesH', 'tdGreen', 'tdTears', 'tdSweat', 'tdFoam'].forEach(id => { TH.de[id] = thE(id); });
-  TH.de.mouths = [...thE('tdMouths').children]; TH.de.bands = [...document.querySelectorAll('#tdMummy .tdBand')];
   window.addEventListener('resize', () => { if (TH.open) thFrame(); });
   thE('thSkip').addEventListener('click', () => { TH.ff = true; thE('thSkip').hidden = true; try { speechSynthesis.cancel(); } catch (e) {} });
 }
@@ -2538,11 +2561,15 @@ function thReset() {
   thE('thCatBackL').innerHTML = '';
   thE('thCatL').innerHTML = `<g id="tcat">${thCatSVG(t, state.hat)}</g>`;
   TH.ce = {}; ['tcat', 'tcInner', 'tcLegBF', 'tcLegBN', 'tcBody', 'tcLegFF', 'tcLegFN', 'tcHead', 'tcLidL', 'tcLidR', 'tcLidLineL', 'tcLidLineR', 'tcPupL', 'tcPupR', 'tcMouth', 'tcMouthO', 'tcTongue', 'tcBlep', 'tcFangs', 'tcTail', 'tcTailSt', 'tcTailTip'].forEach(id => { TH.ce[id] = thE(id); });
+  thE('thDadL').innerHTML = `<g id="tdad">${thDadSVG(TH.who)}</g>`;
+  TH.de = {}; ['tdad', 'tdLegL', 'tdLegR', 'tdTorso', 'tdArmL', 'tdArmLF', 'tdPropL', 'tdArmR', 'tdArmRF', 'tdPropR', 'tdHead', 'tdPupils', 'tdLidL', 'tdLidR', 'tdBrowL', 'tdBrowR', 'tdEyesO', 'tdEyesX', 'tdEyesH', 'tdGreen', 'tdTears', 'tdSweat', 'tdFoam'].forEach(id => { TH.de[id] = thE(id); });
+  TH.de.mouths = [...thE('tdMouths').children]; TH.de.bands = [...document.querySelectorAll('#tdMummy .tdBand')];
   TH.cat = thCatDefaults(); TH.dad = thDadDefaults();
   thDadProp('L', null); thDadProp('R', null);
 }
-async function runPrank(id, replay) {
+async function runPrank(id, replay, who) {
   const p = PRANKS.find(x => x.id === id) || PRANKS[0];
+  TH.who = who || (Math.random() < .5 ? 'mom' : 'dad');
   overlayCount++;
   thInit();
   const th = thE('theater'); th.classList.add('open'); TH.open = true; thFrame();
@@ -2553,11 +2580,12 @@ async function runPrank(id, replay) {
   try { await p.run(); } catch (e) { console.error(e); }
   TH.ff = false; TH.ts = 1;
   if (!replay) {
-    state.dadPooped++; state.pranksSeen[p.id] = (state.pranksSeen[p.id] || 0) + 1; state.lastPrank = p.id;
+    if (TH.who === 'mom') state.momPranked = (state.momPranked || 0) + 1; else state.dadPooped++;
+    state.pranksSeen[p.id] = (state.pranksSeen[p.id] || 0) + 1; state.lastPrank = p.id;
     state.meter = 0; state.poopPending = false; save();
   }
   const fresh = !replay && state.pranksSeen[p.id] === 1;
-  thE('thSub').textContent = replay ? `Replay: ${p.emoji} ${p.name}` : `${fresh ? `🆕 New prank: ${p.name}! • ` : ''}Dad has been pranked ${state.dadPooped} ${state.dadPooped === 1 ? 'time' : 'times'}!`;
+  thE('thSub').textContent = replay ? `Replay: ${p.emoji} ${p.name}` : `${fresh ? `🆕 New prank: ${p.name}! • ` : ''}${TH.who === 'mom' ? 'Mom' : 'Dad'} has been pranked ${TH.who === 'mom' ? state.momPranked : state.dadPooped} ${(TH.who === 'mom' ? state.momPranked : state.dadPooped) === 1 ? 'time' : 'times'}!`;
   thE('thSkip').hidden = true; thE('thEnd').hidden = false;
   await new Promise(res => { thE('thDone').onclick = res; });
   th.classList.remove('open'); TH.open = false;
@@ -2635,7 +2663,7 @@ function renderCats() {
   const bb = document.createElement('div'); bb.className = 'box buddy-box';
   const bc = document.createElement('canvas'); drawFullCat(bc, buddyId(), 96, { hat: state.hat }); bb.appendChild(bc);
   const bt = document.createElement('div');
-  bt.innerHTML = `<div class="section-title">⭐ Your buddy: ${esc(catName(buddyId()) || 'Buddy')}</div><div class="sub" style="text-align:left">Your buddy eats the food, knocks stuff over, plays with puppies… and pranks Dad. Tap any cat below to make it your buddy.</div>`;
+  bt.innerHTML = `<div class="section-title">⭐ Your buddy: ${esc(catName(buddyId()) || 'Kitty')}</div><div class="sub" style="text-align:left">Your kitty eats the food, knocks stuff over, plays with puppies… and pranks Dad. Tap any cat below to make it your buddy.</div>`;
   bb.appendChild(bt); el.appendChild(bb);
 
   // badges
@@ -2687,7 +2715,7 @@ function openCatModal(id) {
     const acts = document.createElement('div'); acts.className = 'actions';
     const nb = document.createElement('button'); nb.className = 'btn'; nb.textContent = '✏️ Name';
     nb.onclick = async () => { await askName(id); openCatModal(id); };
-    const bb = document.createElement('button'); bb.className = 'btn primary'; bb.textContent = isBuddy ? '⭐ Your buddy' : '⭐ Make buddy'; bb.disabled = isBuddy;
+    const bb = document.createElement('button'); bb.className = 'btn primary'; bb.textContent = isBuddy ? '⭐ Your kitty' : '⭐ Make my kitty'; bb.disabled = isBuddy;
     bb.onclick = () => { state.buddy = id; save(); Sound.meow(); updateHUD(); openCatModal(id); };
     acts.appendChild(nb); acts.appendChild(bb); box.appendChild(acts);
   });
@@ -2714,7 +2742,7 @@ const ART = {
   throne: SVG('0 0 100 140', `<path d="M14 100 V30 L26 6 L38 26 L50 2 L62 26 L74 6 L86 30 V100 Z" fill="#f1c40f" stroke="#c99b00" stroke-width="3"/><path d="M24 96 V36 Q50 24 76 36 V96 Z" fill="#c0392b"/><circle cx="50" cy="16" r="5" fill="#3498db"/><circle cx="26" cy="14" r="4" fill="#e74c3c"/><circle cx="74" cy="14" r="4" fill="#2ecc71"/><rect x="6" y="94" width="88" height="22" rx="8" fill="#f1c40f" stroke="#c99b00" stroke-width="3"/><rect x="14" y="92" width="72" height="10" rx="5" fill="#e74c3c"/><rect x="12" y="114" width="10" height="24" fill="#c99b00"/><rect x="78" y="114" width="10" height="24" fill="#c99b00"/>`)
 };
 // tier: 0 basics, 1 comfy, 2 fancy, 3 legendary.  w = width as % of the room.  place: floor | wall | rug
-// use: what Buddy does there.  perch: how high up (fraction of the item's height) Buddy sits.
+// use: what Kitty does there.  perch: how high up (fraction of the item's height) Kitty sits.
 const ROOM_ITEMS = [
   { id: 'foodbowl', name: 'Food Bowl', tier: 0, price: 5, art: 'foodbowl', w: 10, place: 'floor', use: 'eat' },
   { id: 'waterbowl', name: 'Water Bowl', tier: 0, price: 5, art: 'waterbowl', w: 10, place: 'floor', use: 'drink' },
@@ -2800,7 +2828,7 @@ function renderRoom() {
   const el = $('roomInner'); el.innerHTML = '';
   const r = state.room, rk = roomRank();
   const pctNext = rk.next ? Math.round((rk.v - rk.prev) / (rk.next[0] - rk.prev) * 100) : 100;
-  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🏠</span> ${esc(catName(buddyId()) || 'Buddy')}'s Room</div>
+  el.insertAdjacentHTML('beforeend', `<div><div class="h2"><span class="e">🏠</span> ${esc(catName(buddyId()) || 'Kitty')}'s Room</div>
     <div class="sub">Level: <b>${rk.name}</b> • coziness ${rk.v}${rk.next ? ` / ${rk.next[0]} to <b>${rk.next[1]}</b>` : ' — MAXED OUT! 👑'}</div>
     <div class="bar" style="max-width:340px;margin:6px auto 0"><div style="width:${pctNext}%;background:linear-gradient(90deg,#f39c12,#e67e22)"></div></div></div>`);
   const ctl = document.createElement('div'); ctl.className = 'row'; ctl.style.justifyContent = 'center';
@@ -2819,7 +2847,7 @@ function renderRoom() {
   const cw = document.createElement('div'); cw.className = 'room-cat'; cw.id = 'roomCat';
   cw.innerHTML = '<canvas></canvas>'; room.appendChild(cw);
   el.appendChild(room);
-  if (!r.items.length) room.insertAdjacentHTML('beforeend', `<div class="room-empty">It's empty in here! 🥺<br>Earn 🐟 and buy Buddy some stuff in the Shop.</div>`);
+  if (!r.items.length) room.insertAdjacentHTML('beforeend', `<div class="room-empty">It's empty in here! 🥺<br>Earn 🐟 and buy Kitty some stuff in the Shop.</div>`);
 
   // storage tray
   const out = r.items.filter(it => it.out);
@@ -2869,7 +2897,7 @@ function buildRoomItem(it) {
   return e;
 }
 
-// ---- Buddy lives in the room ----
+// ---- Kitty lives in the room ----
 const USE_FX = { sleep: '💤', eat: '😋', drink: '💧', play: '⭐', scratch: '✨', potty: '🙈', sit: '😺', watch: '👀' };
 let roomCatPos = { x: 50, y: 88 };
 function sizeRoomCat() {
@@ -2968,7 +2996,7 @@ function renderShop() {
       it.insertAdjacentHTML('beforeend', `<div class="shop-name">${h.name}</div>`);
       if (wearing) { const b = document.createElement('button'); b.className = 'btn small'; b.textContent = 'Take off'; b.onclick = () => { state.hat = null; save(); updateHUD(); renderShop(); }; it.appendChild(b); }
       else if (owned) { const b = document.createElement('button'); b.className = 'btn small green'; b.textContent = 'Wear it'; b.onclick = () => { state.hat = h.id; save(); Sound.pop(); updateHUD(); renderShop(); }; it.appendChild(b); }
-      else { it.insertAdjacentHTML('beforeend', priceLine(h.price)); it.appendChild(buyBtn(h.price, () => { state.hatsOwned.push(h.id); state.hat = h.id; toast(`Buddy is wearing the ${h.name}!`); })); }
+      else { it.insertAdjacentHTML('beforeend', priceLine(h.price)); it.appendChild(buyBtn(h.price, () => { state.hatsOwned.push(h.id); state.hat = h.id; toast(`Kitty is wearing the ${h.name}!`); })); }
       grid.appendChild(it);
     });
     el.appendChild(grid);
@@ -2983,7 +3011,7 @@ function renderShop() {
         it.insertAdjacentHTML('beforeend', `<div class="swatch" style="background:${d.css}"></div><div class="shop-name">${d.name}</div>`);
         if (using) it.insertAdjacentHTML('beforeend', '<div class="shop-price">✓ Using</div>');
         else if (owned) { const b = document.createElement('button'); b.className = 'btn small green'; b.textContent = 'Use it'; b.onclick = () => { state.room[kind] = d.id; save(); Sound.pop(); renderShop(); }; it.appendChild(b); }
-        else { it.insertAdjacentHTML('beforeend', priceLine(d.price)); it.appendChild(buyBtn(d.price, () => { state.room.styles.push(key); state.room[kind] = d.id; toast(`New ${kind === 'wall' ? 'wallpaper' : 'floor'} in Buddy's room!`); })); }
+        else { it.insertAdjacentHTML('beforeend', priceLine(d.price)); it.appendChild(buyBtn(d.price, () => { state.room.styles.push(key); state.room[kind] = d.id; toast(`New ${kind === 'wall' ? 'wallpaper' : 'floor'} in Kitty's room!`); })); }
         grid.appendChild(it);
       });
       sec.appendChild(grid); el.appendChild(sec);
@@ -3001,7 +3029,7 @@ function renderShop() {
         else {
           if (n) it.insertAdjacentHTML('beforeend', `<div class="shop-price">You have ${n}</div>`);
           it.insertAdjacentHTML('beforeend', priceLine(d.price));
-          it.appendChild(buyBtn(d.price, () => { addRoomItem(d.id); toast(`🏠 ${d.name} added to Buddy's room!`); }));
+          it.appendChild(buyBtn(d.price, () => { addRoomItem(d.id); toast(`🏠 ${d.name} added to Kitty's room!`); }));
         }
         grid.appendChild(it);
       });
@@ -3025,7 +3053,7 @@ function renderStats() {
     <div class="bar"><div style="width:${pct(c, t)}%;background:${barColor(pct(c, t))}"></div></div></div>`;
   el.innerHTML = `<div class="h2"><span class="e">📊</span> Stats</div>
     <div class="box"><div class="fun-grid">
-      <div class="fun-cell"><div class="n">😹 ${s.dadPooped}</div><div class="l">Dad pranked</div></div>
+      <div class="fun-cell"><div class="n">😹 ${s.dadPooped} / ${s.momPranked || 0}</div><div class="l">Dad / Mom pranked</div></div>
       <div class="fun-cell"><div class="n">💥 ${s.broken}</div><div class="l">Things broken</div></div>
       <div class="fun-cell"><div class="n">🐶 ${s.dogsBonked}</div><div class="l">Puppy playdates</div></div>
       <div class="fun-cell"><div class="n">⚡ ${s.zoomBest}</div><div class="l">Zoomies record</div></div>
@@ -3037,7 +3065,7 @@ function renderStats() {
   // Dad pranks collection
   const seenN = PRANKS.filter(p => s.pranksSeen[p.id]).length;
   const pb = document.createElement('div'); pb.className = 'box';
-  pb.innerHTML = `<div class="section-title">🎬 Dad Pranks (${seenN}/${PRANKS.length})</div><div class="sub" style="text-align:left">Fill Buddy's food bowl to see one. Tap one you've unlocked to watch it again!</div>`;
+  pb.innerHTML = `<div class="section-title">🎬 Prank Collection (${seenN}/${PRANKS.length})</div><div class="sub" style="text-align:left">Fill Kitty's food bowl to see one. Tap one you've unlocked to watch it again!</div>`;
   const pg = document.createElement('div'); pg.className = 'prank-grid';
   PRANKS.forEach(p => {
     const n = s.pranksSeen[p.id] || 0;
@@ -3107,7 +3135,7 @@ function openParent() {
 
     // dad clips
     const d = document.createElement('div'); d.className = 'p-section';
-    d.innerHTML = `<div class="p-title">🎙 Dad's reaction sounds</div><div class="p-note">Record up to 3 short clips (5 seconds max), like "NOOOO!" or "Not again!". One plays at random when Buddy pranks Dad. With none recorded, the iPad's built-in voice says something instead. Clips stay on this device only.</div>`;
+    d.innerHTML = `<div class="p-title">🎙 Dad's reaction sounds</div><div class="p-note">Record up to 3 short clips (5 seconds max), like "NOOOO!" or "Not again!". One plays at random when Kitty pranks Dad. With none recorded, the iPad's built-in voice says something instead. Mom pranks always use the iPad's voice. Clips stay on this device only.</div>`;
     const clips = Clips.list();
     for (let i = 0; i < 3; i++) {
       const row = document.createElement('div'); row.className = 'clip-row';
@@ -3247,7 +3275,7 @@ updateHUD();
 newProblem();
 if (!state.welcomed) {
   state.welcomed = true; save();
-  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry buddy cat, a hat shop, playful puppies, ⚡ Zoomies… and something VERY silly happens to Dad when your buddy eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
+  uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry kitty, a hat shop, playful puppies, ⚡ Zoomies… and something VERY silly happens to Dad when your kitty eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
 }
 </script>
 </body>
