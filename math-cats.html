@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.3';
+const APP_VERSION = 'v4.4';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -2771,19 +2771,19 @@ const ROOM_ITEMS = [
   { id: 'tv', name: 'Cat TV', tier: 1, price: 110, emoji: '📺', w: 13, place: 'floor', use: 'watch' },
   { id: 'couch', name: 'Mini Couch', tier: 1, price: 120, emoji: '🛋️', w: 22, place: 'floor', use: 'sit', perch: 0.5 },
   { id: 'fishtank', name: 'Fish Tank', tier: 1, price: 150, art: 'fishtank', w: 22, place: 'floor', use: 'watch' },
-  { id: 'hammock', name: 'Cat Hammock', tier: 2, price: 200, art: 'hammock', w: 24, place: 'floor', use: 'sleep', perch: 0.5 },
-  { id: 'xmas', name: 'Holiday Tree', tier: 2, price: 220, emoji: '🎄', w: 14, place: 'floor' },
-  { id: 'cattree', name: 'Cat Tree', tier: 2, price: 250, art: 'cattree', w: 20, place: 'floor', use: 'sleep', perch: 0.74 },
-  { id: 'piano', name: 'Piano', tier: 2, price: 280, emoji: '🎹', w: 16, place: 'floor', use: 'play' },
-  { id: 'fountain', name: 'Fountain', tier: 2, price: 300, emoji: '⛲', w: 15, place: 'floor', use: 'drink' },
-  { id: 'disco', name: 'Disco Ball', tier: 2, price: 350, emoji: '🪩', w: 9, place: 'wall' },
-  { id: 'rainbow', name: 'Rainbow', tier: 2, price: 400, emoji: '🌈', w: 22, place: 'wall' },
-  { id: 'castle', name: 'Cat Castle', tier: 3, price: 800, emoji: '🏰', w: 26, place: 'floor' },
-  { id: 'rocket', name: 'Rocket Ship', tier: 3, price: 1000, emoji: '🚀', w: 16, place: 'floor' },
-  { id: 'unicorn', name: 'Unicorn Friend', tier: 3, price: 1200, emoji: '🦄', w: 15, place: 'floor' },
-  { id: 'dragon', name: 'Pet Dragon', tier: 3, price: 1500, emoji: '🐉', w: 18, place: 'floor' },
-  { id: 'ufo', name: 'Flying Saucer', tier: 3, price: 1800, emoji: '🛸', w: 16, place: 'wall' },
-  { id: 'throne', name: 'Royal Throne', tier: 3, price: 2000, art: 'throne', w: 18, place: 'floor', use: 'sit', perch: 0.48 }
+  { id: 'hammock', name: 'Cat Hammock', tier: 2, price: 150, art: 'hammock', w: 24, place: 'floor', use: 'sleep', perch: 0.5 },
+  { id: 'xmas', name: 'Holiday Tree', tier: 2, price: 160, emoji: '🎄', w: 14, place: 'floor' },
+  { id: 'cattree', name: 'Cat Tree', tier: 2, price: 180, art: 'cattree', w: 20, place: 'floor', use: 'sleep', perch: 0.74 },
+  { id: 'piano', name: 'Piano', tier: 2, price: 200, emoji: '🎹', w: 16, place: 'floor', use: 'play' },
+  { id: 'fountain', name: 'Fountain', tier: 2, price: 220, emoji: '⛲', w: 15, place: 'floor', use: 'drink' },
+  { id: 'disco', name: 'Disco Ball', tier: 2, price: 250, emoji: '🪩', w: 9, place: 'wall' },
+  { id: 'rainbow', name: 'Rainbow', tier: 2, price: 280, emoji: '🌈', w: 22, place: 'wall' },
+  { id: 'castle', name: 'Cat Castle', tier: 3, price: 400, emoji: '🏰', w: 26, place: 'floor' },
+  { id: 'rocket', name: 'Rocket Ship', tier: 3, price: 475, emoji: '🚀', w: 16, place: 'floor' },
+  { id: 'unicorn', name: 'Unicorn Friend', tier: 3, price: 550, emoji: '🦄', w: 15, place: 'floor' },
+  { id: 'dragon', name: 'Pet Dragon', tier: 3, price: 650, emoji: '🐉', w: 18, place: 'floor' },
+  { id: 'ufo', name: 'Flying Saucer', tier: 3, price: 750, emoji: '🛸', w: 16, place: 'wall' },
+  { id: 'throne', name: 'Royal Throne', tier: 3, price: 850, art: 'throne', w: 18, place: 'floor', use: 'sit', perch: 0.48 }
 ];
 const TIERS = ['🐾 Basics', '🛋️ Comfy', '✨ Fancy', '👑 Legendary'];
 const WALLS = [
@@ -2794,18 +2794,18 @@ const WALLS = [
   { id: 'stripes', name: 'Stripes', price: 60, css: 'repeating-linear-gradient(90deg,#fde2c8 0 8cqw,#fbf1dc 8cqw 16cqw)' },
   { id: 'dots', name: 'Polka Dots', price: 60, css: 'radial-gradient(#f7b2c4 22%, transparent 24%) 0 0/7cqw 7cqw, #fff4f7' },
   { id: 'stars', name: 'Starry Night', price: 150, css: 'radial-gradient(#ffe680 10%, transparent 12%) 0 0/9cqw 9cqw, radial-gradient(#fff 6%, transparent 8%) 4cqw 5cqw/9cqw 9cqw, #283a6b' },
-  { id: 'rainbowwall', name: 'Rainbow', price: 300, css: 'linear-gradient(90deg,#ffb3b3,#ffd9a8,#fff3a8,#bff0c0,#b3d9ff,#d9c2ff)' },
-  { id: 'space', name: 'Outer Space', price: 500, css: 'radial-gradient(circle at 80% 30%, #ff9f68 0 6%, transparent 6.5%), radial-gradient(#fff 5%, transparent 7%) 0 0/6cqw 6cqw, radial-gradient(#cfd8ff 4%, transparent 6%) 3cqw 3cqw/11cqw 11cqw, #0b1030' }
+  { id: 'rainbowwall', name: 'Rainbow', price: 220, css: 'linear-gradient(90deg,#ffb3b3,#ffd9a8,#fff3a8,#bff0c0,#b3d9ff,#d9c2ff)' },
+  { id: 'space', name: 'Outer Space', price: 350, css: 'radial-gradient(circle at 80% 30%, #ff9f68 0 6%, transparent 6.5%), radial-gradient(#fff 5%, transparent 7%) 0 0/6cqw 6cqw, radial-gradient(#cfd8ff 4%, transparent 6%) 3cqw 3cqw/11cqw 11cqw, #0b1030' }
 ];
 const FLOORS = [
   { id: 'wood', name: 'Wood', price: 0, css: 'repeating-linear-gradient(90deg,#c99a63 0 12cqw,#b98a55 12cqw 12.5cqw)' },
   { id: 'checker', name: 'Checker Tiles', price: 40, css: 'conic-gradient(#fff 25%, #e2e2e2 0 50%, #fff 0 75%, #e2e2e2 0) 0 0/10cqw 10cqw' },
   { id: 'carpet', name: 'Blue Carpet', price: 40, css: 'radial-gradient(#8fb6e3 20%, transparent 22%) 0 0/3cqw 3cqw, #7da7d9' },
   { id: 'grass', name: 'Grass', price: 120, css: 'repeating-linear-gradient(80deg,#7fc85e 0 1.2cqw,#6fb84f 1.2cqw 2.4cqw)' },
-  { id: 'candy', name: 'Candy Stripes', price: 200, css: 'repeating-linear-gradient(45deg,#ffc2d1 0 3cqw,#fff 3cqw 6cqw)' },
-  { id: 'clouds', name: 'Cloud Floor', price: 300, css: 'radial-gradient(ellipse at 20% 40%, #fff 0 18%, transparent 19%), radial-gradient(ellipse at 70% 70%, #fff 0 22%, transparent 23%), #dceeff' }
+  { id: 'candy', name: 'Candy Stripes', price: 160, css: 'repeating-linear-gradient(45deg,#ffc2d1 0 3cqw,#fff 3cqw 6cqw)' },
+  { id: 'clouds', name: 'Cloud Floor', price: 220, css: 'radial-gradient(ellipse at 20% 40%, #fff 0 18%, transparent 19%), radial-gradient(ellipse at 70% 70%, #fff 0 22%, transparent 23%), #dceeff' }
 ];
-const RANKS = [[0, 'Empty Room'], [40, 'Cozy Corner'], [150, 'Comfy Den'], [500, 'Fancy Pad'], [1500, 'Cat Mansion'], [4000, 'Cat Palace'], [8000, 'Legendary Kingdom']];
+const RANKS = [[0, 'Empty Room'], [40, 'Cozy Corner'], [150, 'Comfy Den'], [500, 'Fancy Pad'], [1200, 'Cat Mansion'], [2800, 'Cat Palace'], [5000, 'Legendary Kingdom']];
 const itemDef = id => ROOM_ITEMS.find(x => x.id === id);
 function roomValue() {
   const r = state.room;
