@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.4';
+const APP_VERSION = 'v4.6';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -605,7 +605,7 @@ const FUR_COLORS = { orange: '#F4A460', gray: '#A9A9A9', black: '#3a3a3a', white
 const EYE_COLORS = { green: '#4CAF50', blue: '#42A5F5', amber: '#FFB300', brown: '#8D6E63' };
 const OUTLINE = 'rgba(90,70,40,0.25)';
 
-function drawCatHead(ctx, t, cx, cy, s) {
+function drawCatHead(ctx, t, cx, cy, s, sleep) {
   const r = s * 0.32, fur = FUR_COLORS[t.fur];
   const earW = r * 0.5, earH = r * 0.7, earLx = cx - r * 0.7, earRx = cx + r * 0.7, earY = cy - r * 0.65;
   const ehm = t.ears === 'tall' ? 1.3 : t.ears === 'folded' ? 0.6 : 1;
@@ -664,6 +664,7 @@ function drawCatHead(ctx, t, cx, cy, s) {
   const ec = t.eyes === 'heterochromia' ? ['#42A5F5', '#4CAF50'] : [EYE_COLORS[t.eyes], EYE_COLORS[t.eyes]];
   for (let i = 0; i < 2; i++) {
     const ex = cx + (i ? 1 : -1) * sp;
+    if (sleep) { ctx.strokeStyle = t.fur === 'black' && t.pattern !== 'tuxedo' ? '#d9c3b0' : '#4E342E'; ctx.lineWidth = s * 0.018; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(ex, eyeY - er * 0.5, er * 1.15, Math.PI * 0.18, Math.PI * 0.82); ctx.stroke(); continue; }
     ctx.fillStyle = 'white'; ctx.beginPath(); ctx.ellipse(ex, eyeY, er * 1.3, er * 1.4, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = ec[i]; ctx.beginPath(); ctx.arc(ex, eyeY, er, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#1a1a1a'; ctx.beginPath(); ctx.arc(ex, eyeY, er * 0.5, 0, Math.PI * 2); ctx.fill();
@@ -842,7 +843,7 @@ function drawFullCat(canvas, id, size, opts) {
   const ctx = prep(canvas, size, size), t = catIdToTraits(id);
   drawBody(ctx, t, size, size, opts.fat || 0);
   const s = size * 0.5625, cx = size / 2, cy = size * 0.40;
-  drawCatHead(ctx, t, cx, cy, s);
+  drawCatHead(ctx, t, cx, cy, s, opts.sleep);
   drawHat(ctx, opts.hat, cx, cy - s * 0.32 * 0.9, s * 0.32);
 }
 // Rear view (for the poop moment)
@@ -1031,6 +1032,11 @@ function collectCat() {
 function onCorrect() {
   phase = 'correct';
   if (!zoom) state.cur = null;
+  if (prob.attempts >= 2) { // answer was shown: practice only, no rewards
+    save(); Sound.correct(); renderInput('right');
+    if (zoom) { setTimeout(() => { if (zoom) newProblem(); }, 260); updateHUD(); return; }
+    showPractice(); updateHUD(); return;
+  }
   state.streak++; if (state.streak > state.bestStreak) state.bestStreak = state.streak;
   const catId = collectCat();
   const fishGain = zoom ? 2 : 1;
@@ -1081,6 +1087,15 @@ function showReward(catId, fishGain) {
   rv.appendChild(box);
   if (Math.random() < 0.35) setTimeout(() => Sound.meow(), 250);
   spawnStars();
+  $('nextBtn').style.display = 'block'; $('numpadArea').style.display = 'none';
+}
+
+function showPractice() {
+  $('playView').style.display = 'none';
+  const rv = $('rewardView'); rv.style.display = 'block'; rv.innerHTML = '';
+  const box = document.createElement('div'); box.className = 'reward-container';
+  box.innerHTML = `<div class="reward-eq">Good practice! 🧠</div><div class="reward-name" style="font-size:1.8em">${prob.a} ${prob.op} ${prob.b} = ${prob.answer}</div><div class="reward-traits">Remember this one! It will come back soon.<br>Get it by yourself next time to win 🐱 + 🐟</div>`;
+  rv.appendChild(box);
   $('nextBtn').style.display = 'block'; $('numpadArea').style.display = 'none';
 }
 
@@ -1405,6 +1420,8 @@ function thAdvance(d) {
       case 'stink': p.y -= d * .05; break;
       case 'heart': p.x += p.vx * d; p.y += p.vy * d; break;
       case 'fly': p.a += d * .012; break;
+      case 'snow': p.y += p.vy * d; p.x += Math.sin(TH.clock * .0012 + p.ph) * .02 * d; if (p.y > FLOOR + 160) p.life = 0; break;
+      case 'conf': p.vy += .0011 * d; p.vx *= Math.pow(.998, d); p.x += p.vx * d; p.y += p.vy * d; p.rot += p.vr * d; if (p.y > FLOOR + 6) { p.y = FLOOR + 6; p.vy = 0; p.vx = 0; p.vr = 0; } break;
     }
   }
   TH.parts = TH.parts.filter(p => p.life > 0);
@@ -1431,6 +1448,8 @@ function thRender() {
   const cl = thE('thClouds'); if (cl) cl.setAttribute('transform', `translate(${thF((now / 120) % 260 - 60)} 0)`);
   const sw = Math.sin(now / 1400) * 1.2;
   for (const [id, s] of [['thCurtL', 1], ['thCurtR', -1]]) { const e = thE(id); if (e) e.setAttribute('transform', `rotate(${(sw * s).toFixed(2)} ${e.dataset.px} ${e.dataset.py})`); }
+  if (TH.flame && TH.flame.isConnected) TH.flame.setAttribute('transform', `translate(0 608) scale(${(1 + Math.sin(now / 90) * .05).toFixed(3)} ${(1 + Math.sin(now / 130) * .1).toFixed(3)})`);
+  if (TH.garB) { const k = Math.floor(now / 450); TH.garB.forEach((b, i) => b.setAttribute('opacity', (i + k) % 3 ? 1 : .45)); }
   thRenderCat(); thRenderDad(); thRenderProps(); thRenderParts();
   thE('thFlash').setAttribute('opacity', TH.flash.toFixed(2));
 }
@@ -1471,6 +1490,8 @@ function thRenderParts() {
       case 'heart': h += `<path transform="translate(${thF(p.x)} ${thF(p.y)}) scale(${p.s})" d="M0 7 C-14 -4 -9 -16 0 -9 C9 -16 14 -4 0 7 Z" fill="#ff5c8a" opacity="${Math.min(1, fade * 2).toFixed(2)}"/>`; break;
       case 'sparkle': { const r = p.r * Math.sin(fade * Math.PI); h += `<path transform="translate(${thF(p.x)} ${thF(p.y)})" d="M0 ${-r} L${r * .22} ${-r * .22} L${r} 0 L${r * .22} ${r * .22} L0 ${r} L${-r * .22} ${r * .22} L${-r} 0 L${-r * .22} ${-r * .22} Z" fill="#ffd93b"/>`; break; }
       case 'fly': { const x = p.cx + Math.cos(p.a) * p.rad, y = p.cy + Math.sin(p.a * 1.3) * p.rad * .5; h += `<g transform="translate(${thF(x)} ${thF(y)})"><ellipse cx="-3" cy="-4" rx="4" ry="2.5" fill="#d8eeff" opacity=".85"/><ellipse cx="3" cy="-4" rx="4" ry="2.5" fill="#d8eeff" opacity=".85"/><ellipse rx="4" ry="3" fill="#222"/></g>`; break; }
+      case 'snow': h += `<circle cx="${thF(p.x)}" cy="${thF(p.y)}" r="${thF(p.r)}" fill="#fff" opacity=".9"/>`; break;
+      case 'conf': h += `<rect x="${thF(-p.w / 2)}" y="${thF(-p.h / 2)}" width="${thF(p.w)}" height="${thF(p.h)}" fill="${p.col}" transform="translate(${thF(p.x)} ${thF(p.y)}) rotate(${thF(p.rot)}) scale(1 ${Math.cos(p.rot * .05).toFixed(2)})" opacity="${Math.min(1, fade * 3).toFixed(2)}"/>`; break;
       case 'line': h += `<path d="M${thF(p.x)} ${thF(p.y)} h${thF(p.len * p.dir)}" stroke="#fffdf7" stroke-width="4" stroke-linecap="round" opacity="${(fade * .9).toFixed(2)}"/>`; break;
     }
   }
@@ -1479,7 +1500,7 @@ function thRenderParts() {
 
 // ---------- props ----------
 function thProp(markup, layer, o) {
-  const g = document.createElementNS(SVGNS, 'g'); g.innerHTML = markup; thE(layer || 'thPropsL').appendChild(g);
+  const g = document.createElementNS(SVGNS, 'g'); g.innerHTML = TH.who === 'mom' ? markup.replace(/\bDAD\b/g, 'MOM') : markup; thE(layer || 'thPropsL').appendChild(g);
   const p = Object.assign({ x: 0, y: 0, r: 0, s: 1, sy: null, o: 1, el: g, phys: false, vx: 0, vy: 0, vr: 0, g: .0016, floor: FLOOR, bounce: .3, fric: .6, onLand: null, follow: null, fx: 0, fy: 0, landed: false, restR: null, draw: null }, o || {});
   TH.props.push(p); return p;
 }
@@ -1730,12 +1751,13 @@ function thDadSVGBase() {
  <rect x="24" y="-292" width="26" height="22" rx="3" fill="#36978f"/>
  <rect x="-62" y="-218" width="124" height="12" rx="4" fill="#5a3825"/><rect x="-9" y="-219" width="18" height="14" rx="3" fill="#f2c14e"/>
  <g id="tdBelly" transform="translate(0 -250)"/>
- <rect x="-11" y="-346" width="22" height="20" fill="#eab087"/>
+ <rect x="-11" y="-346" width="22" height="20" fill="#eab087"/><g id="tdNeckwear"></g>
  <g id="tdHead">
   <circle cx="-62" cy="-392" r="12" fill="#eab087"/><circle cx="62" cy="-392" r="12" fill="#eab087"/>
   <circle cx="0" cy="-396" r="62" fill="url(#tdSkin)"/>
   <circle id="tdGreen" cx="0" cy="-396" r="62" fill="#9ccc65" opacity="0"/>
   <path d="M-60 -404 Q-66 -462 -10 -466 Q28 -476 52 -452 Q70 -432 62 -404 Q52 -432 22 -436 Q-4 -420 -30 -434 Q-50 -428 -60 -404 Z" fill="#6b4a2f"/>
+  <g id="tdHatSlot"></g>
   <ellipse cx="-34" cy="-372" rx="11" ry="6" fill="#ff8a7a" opacity=".35"/><ellipse cx="34" cy="-372" rx="11" ry="6" fill="#ff8a7a" opacity=".35"/>
   <g id="tdEyesO">
    <ellipse cx="-23" cy="-398" rx="13" ry="15" fill="#fff"/><ellipse cx="23" cy="-398" rx="13" ry="15" fill="#fff"/>
@@ -1768,7 +1790,19 @@ function thDadSVGBase() {
  <g id="tdArmL"><rect x="-14" y="-6" width="28" height="56" rx="13" fill="url(#tdShirt)"/><rect x="-11" y="40" width="22" height="32" rx="11" fill="#eab087"/>
   <g id="tdArmLF"><rect x="-11" y="-6" width="22" height="64" rx="11" fill="#eab087"/><g id="tdPropL"></g><circle cx="0" cy="62" r="14" fill="#f2c29b"/><g id="tdHandL" transform="translate(0 64)"/></g></g>
 </g>
-<g id="tdMummy">${bands}</g>`;
+<g id="tdMummy">${bands}</g><g id="tdLights">${thLightsSVG()}</g>`;
+}
+function thLightsSVG() {
+  const cols = ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71', '#9b59b6'];
+  let s = '';
+  for (let k = 0; k < 8; k++) {
+    const y = -34 - k * 37, w = k < 4 ? 104 : 176, a = -w / 2, tilt = k % 2 ? 4 : -4;
+    let path = `M${a} ${y}`, bl = '';
+    for (let i = 0; i < 6; i++) { const x0 = a + w * i / 6, x1 = a + w * (i + 1) / 6; path += ` Q${(x0 + x1) / 2} ${y + 9} ${x1} ${y}`; }
+    for (let i = 0; i < 6; i++) { const x = a + w * (i + .5) / 6, c = (k * 2 + i) % 5; bl += `<circle class="tdGlow" cx="${x}" cy="${y + 13}" r="11" fill="${cols[c]}" opacity="0"/><ellipse class="tdBulb" data-c="${c}" cx="${x}" cy="${y + 13}" rx="5" ry="7" fill="${cols[c]}" opacity=".6"/>`; }
+    s += `<g class="tdLS" display="none" transform="rotate(${tilt} 0 ${y})"><path d="${path}" stroke="#2f5d2f" stroke-width="4" fill="none"/>${bl}</g>`;
+  }
+  return s;
 }
 const TD_PROPS = {
   phone: `<rect x="-16" y="-30" width="32" height="54" rx="6" fill="#26303a"/><rect id="tdPhoneScr" x="-12" y="-25" width="24" height="42" rx="3" fill="#8ee6ff"/><g id="tdPropPt" transform="translate(0 -4)"/>`,
@@ -1794,7 +1828,7 @@ function thMomify(m) {
 }
 function thDadProp(side, kind) { const m = kind ? TD_PROPS[kind] : ''; thE(side === 'L' ? 'tdPropL' : 'tdPropR').innerHTML = TH.who === 'mom' ? m.replace(/\bDAD\b/g, 'MOM') : m; }
 function thDadDefaults() {
-  return { x: 720, y: FLOOR, rot: 0, lift: 0, crouch: 0, head: 0, lookX: -3, lookY: 4, pupil: 1, lid: 0, blink: 0, brow: 0, browIn: 0, mouth: 'smile', eyes: 'o', tap: 0, sweat: 0, green: 0, cry: 0, jit: 0, aLU: 8, aLF: -6, aRU: -8, aRF: 6, propL: 1, propR: 1, wrap: 0, foam: 0, brush: 0, o: 1 };
+  return { x: 720, y: FLOOR, rot: 0, lift: 0, crouch: 0, head: 0, lookX: -3, lookY: 4, pupil: 1, lid: 0, blink: 0, brow: 0, browIn: 0, mouth: 'smile', eyes: 'o', tap: 0, sweat: 0, green: 0, cry: 0, jit: 0, aLU: 8, aLF: -6, aRU: -8, aRF: 6, propL: 1, propR: 1, wrap: 0, foam: 0, brush: 0, lights: 0, lightsOn: 0, o: 1 };
 }
 function thRenderDad() {
   const d = TH.dad, E = TH.de; if (!d || !E.tdad) return;
@@ -1827,6 +1861,14 @@ function thRenderDad() {
   E.tdSweat.setAttribute('opacity', d.sweat.toFixed(2));
   E.tdFoam.setAttribute('display', d.foam ? 'inline' : 'none');
   E.bands.forEach((b, i) => b.setAttribute('display', i < d.wrap ? 'inline' : 'none'));
+  if (E.ls) {
+    E.ls.forEach((g, i) => g.setAttribute('display', i < (d.lights || 0) ? 'inline' : 'none'));
+    if (d.lightsOn !== E.lOn || d.lightsOn) {
+      const k = Math.floor(performance.now() / 380), cols = ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71', '#9b59b6'];
+      E.bulbs.forEach((b, i) => { const c = d.lightsOn ? cols[(+b.dataset.c + k) % 5] : cols[b.dataset.c]; b.setAttribute('fill', c); b.setAttribute('opacity', d.lightsOn ? 1 : .6); E.glows[i].setAttribute('fill', c); E.glows[i].setAttribute('opacity', d.lightsOn ? ((i + k) % 2 ? .45 : .25) : 0); });
+      E.lOn = d.lightsOn;
+    }
+  }
   const ps = thE('tdPhoneScr'); if (ps && d.tap) ps.setAttribute('fill', Math.floor(performance.now() / 700) % 2 ? '#8ee6ff' : '#b3f0ff');
   const sh = thE('thDadSh');
   sh.setAttribute('cx', thF(d.x)); sh.setAttribute('rx', thF(88 * (1 - d.lift / 260))); sh.setAttribute('opacity', d.rot ? 0 : (.22 * d.o).toFixed(2));
@@ -1871,6 +1913,7 @@ const TH_DEFS = `<defs>
  <linearGradient id="thNightSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1433"/><stop offset="1" stop-color="#2a3474"/></linearGradient>
  <linearGradient id="thWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a86b3c"/><stop offset="1" stop-color="#7f4f2a"/></linearGradient>
  <radialGradient id="thLampG" cx=".5" cy=".3" r=".6"><stop offset="0" stop-color="#fff6c9" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c9" stop-opacity="0"/></radialGradient>
+ <linearGradient id="thSnowSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9c6e8"/><stop offset="1" stop-color="#e6eef8"/></linearGradient>
  <clipPath id="thWinClip"><rect x="0" y="0" width="176" height="196"/></clipPath>
 </defs>`;
 function thTable(x) {
@@ -1974,6 +2017,7 @@ function thBathroom() {
 function thStage(s) {
   const w = m => TH.who === 'mom' ? (m || '').replace(/\bDAD\b/g, 'MOM') : (m || '');
   thE('thSetL').innerHTML = w(s.set); thE('thBackL').innerHTML = w(s.back); thE('thMidL').innerHTML = w(s.mid); thE('thFrontL').innerHTML = w(s.front);
+  TH.flame = thE('thFlame'); const gb = document.querySelectorAll('.thGarB'); TH.garB = gb.length ? [...gb] : null;
 }
 // ---------- scene helpers ----------
 async function thWalk(x, ms, speed) { const c = TH.cat; c.walk = 1; c.speed = speed || 1; await thTween(c, { x }, ms, 'out'); c.walk = 0; }
@@ -2532,6 +2576,367 @@ async function thSceneBox() {
 }
 
 // ---------- registry + runner ----------
+// ============================================================
+// CHRISTMAS PRANKS — art, sets, scenes
+// ============================================================
+const TH_STAR = 'M0 -20 L6 -6 L21 -6 L9 3 L13 18 L0 9 L-13 18 L-9 3 L-21 -6 L-6 -6 Z';
+const TH_HATS = {
+  santa: `<path d="M-64 -432 Q-58 -506 12 -508 Q64 -504 96 -444 L84 -438 Q62 -470 26 -478 Q-26 -476 -46 -430 Z" fill="#d62f3a"/><path d="M-60 -436 Q-40 -500 14 -500 Q30 -500 40 -496" stroke="#b5222d" stroke-width="5" fill="none" opacity=".6"/><rect x="-72" y="-450" width="144" height="26" rx="13" fill="#fff"/><circle cx="96" cy="-438" r="15" fill="#fff"/>`,
+  beanie: `<path d="M-64 -420 Q-68 -494 0 -496 Q68 -494 64 -420 Z" fill="#3f8fd6"/><path d="M-56 -470 H56 M-62 -452 H62" stroke="#fff" stroke-width="6" opacity=".8"/><rect x="-68" y="-434" width="136" height="22" rx="10" fill="#2f6fb0"/><circle cx="0" cy="-498" r="15" fill="#fff"/>`
+};
+const TH_NECK = {
+  scarf: `<path d="M-42 -342 Q0 -322 42 -342 L46 -322 Q0 -302 -46 -322 Z" fill="#e74c3c"/><path d="M18 -324 L32 -262 L16 -258 L6 -318 Z" fill="#c0392b"/><path d="M20 -270 L33 -268 M21 -264 L32 -262" stroke="#f6d365" stroke-width="2"/>`
+};
+function thDadHat(k) { const e = thE('tdHatSlot'); if (e) e.innerHTML = k ? `<g transform="translate(0 -12)">${TH_HATS[k]}</g>` : ''; }
+function thDadNeck(k) { const e = thE('tdNeckwear'); if (e) e.innerHTML = k ? TH_NECK[k] : ''; }
+Object.assign(TD_PROPS, {
+  star: `<path transform="translate(14 -8) scale(1.5)" d="${TH_STAR}" fill="#ffd93b" stroke="#e0a800" stroke-width="1.5"/><g id="tdPropPt" transform="translate(14 -8)"/>`,
+  tape: `<circle cx="10" cy="-6" r="16" fill="#cfe9f7" stroke="#8fb9d3" stroke-width="3"/><circle cx="10" cy="-6" r="7" fill="#fffdf7" stroke="#8fb9d3" stroke-width="2"/><path d="M24 2 L44 14" stroke="#cfe9f7" stroke-width="8" stroke-linecap="round" opacity=".9"/>`,
+  lights: `<g transform="translate(16 -6)"><path d="M-26 0 Q-20 -24 4 -22 Q28 -18 22 4 Q14 26 -8 20 Q-30 12 -14 -6 Q2 -20 14 -4 Q20 10 0 10 Q-14 8 -6 -4" stroke="#2f5d2f" stroke-width="4" fill="none"/><g><circle cx="-22" cy="-10" r="5" fill="#e74c3c"/><circle cx="0" cy="-22" r="5" fill="#f1c40f"/><circle cx="22" cy="-6" r="5" fill="#3498db"/><circle cx="10" cy="18" r="5" fill="#2ecc71"/><circle cx="-16" cy="14" r="5" fill="#9b59b6"/><circle cx="2" cy="4" r="5" fill="#e67e22"/></g></g>`,
+  carrot: `<path d="M8 -6 L-34 0 L8 6 Z" fill="#ff8c1a"/><path d="M8 -4 L16 -10 M8 0 L18 0 M8 4 L16 10" stroke="#3fae5a" stroke-width="3" stroke-linecap="round"/>`
+});
+function thTreeSVG(star) {
+  const orn = [[-82, -62, '#e74c3c'], [-28, -84, '#f1c40f'], [40, -64, '#3498db'], [92, -72, '#9b59b6'], [-62, -152, '#3498db'], [10, -140, '#e74c3c'], [62, -162, '#f1c40f'], [-30, -214, '#9b59b6'], [34, -234, '#e74c3c'], [0, -282, '#3498db']];
+  return `<path d="M-32 0 L32 0 L26 -36 L-26 -36 Z" fill="#c0392b"/><rect x="-30" y="-42" width="60" height="9" rx="3" fill="#a93226"/><rect x="-10" y="-58" width="20" height="18" fill="#7a4a24"/>
+  <path d="M-126 -50 Q0 -38 126 -50 L0 -188 Z" fill="#2e8b57"/><path d="M-104 -138 Q0 -126 104 -138 L0 -264 Z" fill="#37a065"/><path d="M-80 -220 Q0 -210 80 -220 L0 -326 Z" fill="#43b371"/>
+  <path d="M-100 -78 Q-10 -50 96 -106 M-82 -170 Q0 -142 78 -188 M-56 -244 Q0 -228 52 -260" stroke="#f6d365" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>
+  ${orn.map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="9.5" fill="${c}"/><circle cx="${x - 3}" cy="${y - 3}" r="2.6" fill="#fff" opacity=".7"/>`).join('')}
+  ${star ? `<path transform="translate(0 -334)" d="${TH_STAR}" fill="#ffd93b" stroke="#e0a800" stroke-width="2"/>` : ''}
+  <g id="thTreeTop" transform="translate(0 -326)"/>`;
+}
+function thFireplaceSVG(cx) {
+  let br = '';
+  for (let y = 404, r = 0; y < 622; y += 20, r++) { br += `<path d="M-150 ${y} H150"/>`; for (let x = -150 + (r % 2) * 25; x < 150; x += 50) br += `<path d="M${x} ${y - 20} V${y}"/>`; }
+  return `<g transform="translate(${cx} 0)"><ellipse cx="0" cy="622" rx="170" ry="12" fill="#3b2a1e" opacity=".2"/>
+  <rect x="-150" y="388" width="300" height="234" fill="#b5523b"/><g stroke="#9a4330" stroke-width="2">${br}</g>
+  <path d="M-92 622 V502 Q-92 452 0 452 Q92 452 92 502 V622 Z" fill="#2a1a12"/>
+  <ellipse cx="0" cy="600" rx="80" ry="34" fill="#ff9f1c" opacity=".18"/>
+  <g id="thFlame" transform="translate(0 608)"><path d="M-52 0 Q-62 -50 -32 -80 Q-30 -50 -12 -40 Q-16 -92 20 -112 Q14 -62 40 -52 Q58 -40 52 0 Z" fill="#ff9f1c"/><path d="M-32 0 Q-36 -34 -14 -54 Q-8 -30 10 -28 Q14 -58 30 -68 Q32 -30 34 0 Z" fill="#ffd166"/></g>
+  <rect x="-72" y="600" width="144" height="14" rx="6" fill="#6b4226"/>
+  <rect x="-174" y="370" width="348" height="22" rx="5" fill="#7a4a24"/><rect x="-166" y="390" width="332" height="6" fill="#5e3a1c" opacity=".5"/>
+  <path d="M-150 368 Q-75 348 0 366 Q75 348 150 368" stroke="#2e7d4f" stroke-width="12" fill="none"/><circle cx="-90" cy="358" r="6" fill="#e74c3c"/><circle cx="0" cy="364" r="6" fill="#f1c40f"/><circle cx="90" cy="358" r="6" fill="#e74c3c"/>
+  </g>`;
+}
+function thStockingSVG(label, col) {
+  return `<path d="M-18 14 L18 14 L18 74 Q20 96 46 98 Q64 100 62 116 Q60 132 36 130 L4 128 Q-20 126 -20 100 Z" fill="${col}"/><path d="M-18 40 H18 M-18 62 H18" stroke="#fff" stroke-width="4" opacity=".45"/>
+  <rect x="-25" y="-4" width="50" height="22" rx="7" fill="#fff"/><text x="0" y="12" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="12" fill="#c0392b">${label}</text>`;
+}
+const TH_XART = {
+  ornament: c => `<circle cy="-10" r="10" fill="${c}"/><rect x="-4" y="-24" width="8" height="6" rx="2" fill="#d4af37"/><circle cx="-3" cy="-13" r="2.8" fill="#fff" opacity=".7"/>`,
+  star: `<path d="${TH_STAR}" fill="#ffd93b" stroke="#e0a800" stroke-width="2"/>`,
+  bow: `<path d="M0 0 Q-28 -26 -30 -4 Q-30 14 0 0 Z M0 0 Q28 -26 30 -4 Q30 14 0 0 Z" fill="#f1c40f" stroke="#c99b00" stroke-width="2"/><path d="M-4 2 L-14 24 M4 2 L14 24" stroke="#f1c40f" stroke-width="6" stroke-linecap="round"/><circle r="6" fill="#e0a800"/>`,
+  giftBack: `<rect x="-60" y="-86" width="120" height="86" fill="#9c7342"/><rect x="-54" y="-82" width="108" height="72" fill="#7f5a31"/>`,
+  giftFront: `<g class="gOpen"><path d="M-62 -66 L-96 -92 L-64 -98 L-40 -70 Z" fill="#d8b07a" stroke="#a57b45" stroke-width="3" stroke-linejoin="round"/><path d="M62 -66 L96 -92 L64 -98 L40 -70 Z" fill="#d8b07a" stroke="#a57b45" stroke-width="3" stroke-linejoin="round"/><rect x="-62" y="-68" width="124" height="68" rx="3" fill="#c9a06a" stroke="#a57b45" stroke-width="3"/></g>
+   <g class="gClosed" display="none"><rect x="-62" y="-92" width="124" height="92" rx="3" fill="#c9a06a" stroke="#a57b45" stroke-width="3"/><rect x="-62" y="-92" width="124" height="14" fill="#b88d55"/><rect x="-10" y="-92" width="20" height="92" fill="#e6cf9e" opacity=".7"/></g>
+   <g class="gWrap" display="none"><rect x="-62" y="-92" width="124" height="92" rx="3" fill="#d62f3a"/><g fill="#fff" opacity=".35"><circle cx="-38" cy="-66" r="5"/><circle cx="34" cy="-26" r="5"/><circle cx="-30" cy="-18" r="4"/><circle cx="40" cy="-72" r="4"/></g><rect x="-8" y="-92" width="16" height="92" fill="#f1c40f"/><rect x="-62" y="-54" width="124" height="14" fill="#f1c40f"/><g transform="translate(0 -94)"><path d="M0 0 Q-28 -26 -30 -4 Q-30 14 0 0 Z M0 0 Q28 -26 30 -4 Q30 14 0 0 Z" fill="#f1c40f" stroke="#c99b00" stroke-width="2"/><circle r="6" fill="#e0a800"/></g></g>`,
+  snowBody: `<ellipse cx="0" cy="-2" rx="72" ry="12" fill="#c3d4e8" opacity=".6"/><circle cx="0" cy="-58" r="60" fill="#fdfeff" stroke="#d3e1f0" stroke-width="3"/><circle cx="0" cy="-150" r="44" fill="#fdfeff" stroke="#d3e1f0" stroke-width="3"/>
+   <g fill="#2b2b2b"><circle cx="0" cy="-168" r="5"/><circle cx="0" cy="-148" r="5"/><circle cx="0" cy="-128" r="5"/></g>
+   <path d="M-38 -160 L-96 -204 M-74 -188 L-84 -212 M38 -160 L96 -200 M76 -186 L92 -210" stroke="#6b4226" stroke-width="5" stroke-linecap="round"/>
+   <path d="M-36 -190 Q0 -176 36 -190 L38 -178 Q0 -164 -38 -178 Z" fill="#e74c3c"/><path d="M18 -180 L28 -140 L14 -138 L8 -176 Z" fill="#c0392b"/>`,
+  snowHead: `<circle r="32" fill="#fdfeff" stroke="#d3e1f0" stroke-width="3"/><circle cx="-11" cy="-8" r="4.5" fill="#2b2b2b"/><circle cx="11" cy="-8" r="4.5" fill="#2b2b2b"/><g fill="#2b2b2b"><circle cx="-12" cy="12" r="2.5"/><circle cx="-5" cy="16" r="2.5"/><circle cx="3" cy="17" r="2.5"/><circle cx="11" cy="13" r="2.5"/></g>
+   <rect x="-18" y="-62" width="36" height="30" fill="#222"/><rect x="-28" y="-35" width="56" height="7" rx="2" fill="#222"/><rect x="-18" y="-42" width="36" height="6" fill="#c0392b"/>
+   <g class="carrot" display="none"><path d="M0 -3 L42 3 L0 8 Z" fill="#ff8c1a"/></g>`,
+  plug: `<path d="M-4 -12 V-22 M4 -12 V-22" stroke="#9a9a9a" stroke-width="3"/><rect x="-9" y="-13" width="18" height="18" rx="4" fill="#f4f4f4" stroke="#9a9a9a" stroke-width="2"/>`
+};
+function thXmas(o) {
+  o = o || {};
+  const L = thLiving(o);
+  let set = L.set
+    .replace('fill="url(#thSky)"', 'fill="url(#thSnowSky)"')
+    .replace('fill="#86c76a"/>', 'fill="#f4f8ff"/>')
+    .replace('fill="#5fa64a" stroke="#6b4a2a"', 'fill="#2e7d4f" stroke="#6b4a2a"')
+    .replace('<circle cx="140" cy="40" r="22" fill="#ffe066"/>', '<g fill="#fff">' + Array.from({ length: 14 }, (_, i) => `<circle cx="${(i * 47) % 176}" cy="${(i * 31) % 150}" r="${2 + i % 3}"/>`).join('') + '</g>');
+  let g = '', bulbs = '';
+  const cols = ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71', '#9b59b6'];
+  for (let x0 = -900, k = 0; x0 < 1900; x0 += 200, k++) {
+    g += `M${x0} 64 Q${x0 + 100} 118 ${x0 + 200} 64 `;
+    for (let i = 1; i < 5; i++) { const t = i / 5, x = x0 + 200 * t, y = (1 - t) * (1 - t) * 64 + 2 * (1 - t) * t * 118 + t * t * 64; bulbs += `<ellipse class="thGarB" cx="${x.toFixed(0)}" cy="${(y + 9).toFixed(0)}" rx="5" ry="7" fill="${cols[(k * 4 + i) % 5]}"/>`; }
+  }
+  set += `<path d="${g}" stroke="#2e7d4f" stroke-width="10" fill="none"/>${bulbs}<g transform="translate(372 210)"><circle r="30" fill="none" stroke="#2e7d4f" stroke-width="14"/><path d="M0 26 L-12 44 M0 26 L12 44" stroke="#d62f3a" stroke-width="6"/><circle cy="26" r="6" fill="#d62f3a"/></g>`;
+  let back = L.back || '';
+  if (o.fireplace != null) back = thFireplaceSVG(o.fireplace) + back;
+  if (o.tree != null) back = `<g transform="translate(${o.tree} ${FLOOR})">${thTreeSVG(true)}</g>` + back;
+  if (o.outlet != null) set += `<g transform="translate(${o.outlet} 424)"><rect x="-16" y="-22" width="32" height="44" rx="5" fill="#fffaf2" stroke="#d9c3a5" stroke-width="2"/><rect x="-6" y="-12" width="3" height="9" fill="#5a4e3a"/><rect x="3" y="-12" width="3" height="9" fill="#5a4e3a"/><rect x="-6" y="4" width="3" height="9" fill="#5a4e3a"/><rect x="3" y="4" width="3" height="9" fill="#5a4e3a"/></g>`;
+  return { set, back, mid: L.mid };
+}
+function thSnowyard() {
+  let pines = '';
+  [[-420, 1], [-120, .8], [860, 1.1], [1120, .9], [1400, 1]].forEach(([x, s]) => { pines += `<g transform="translate(${x} 476) scale(${s})"><rect x="-8" y="-30" width="16" height="30" fill="#6b4226"/><path d="M-60 -24 L60 -24 L0 -130 Z M-48 -84 L48 -84 L0 -176 Z M-34 -138 L34 -138 L0 -214 Z" fill="#2e6b4a"/><path d="M-30 -78 L0 -130 L30 -78 Q0 -90 -30 -78 Z M-22 -134 L0 -176 L22 -134 Q0 -144 -22 -134 Z M-14 -186 L0 -214 L14 -186 Q0 -194 -14 -186 Z" fill="#fff"/></g>`; });
+  const set = `${TH_DEFS}<defs><linearGradient id="sySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9dbde3"/><stop offset="1" stop-color="#eaf2fb"/></linearGradient></defs>
+  <rect x="-900" y="-800" width="2800" height="1276" fill="url(#sySky)"/>
+  <path d="M-900 420 Q-500 330 -100 410 Q300 340 700 400 Q1100 330 1900 410 V476 H-900 Z" fill="#dfeaf7"/>
+  ${pines}
+  <g transform="translate(150 0)"><rect x="-380" y="236" width="300" height="240" fill="#c9705a"/><path d="M-400 240 L-230 130 L-60 240 Z" fill="#8a4b3a"/><path d="M-404 244 Q-230 120 -56 244 L-60 228 Q-230 108 -400 228 Z" fill="#fff"/><rect x="-300" y="300" width="80" height="80" rx="4" fill="#ffe08a" stroke="#fffaf2" stroke-width="8"/><path d="M-260 300 V380 M-300 340 H-220" stroke="#fffaf2" stroke-width="6"/><rect x="-306" y="378" width="92" height="12" rx="4" fill="#fff"/></g>
+  <g stroke="#a9845c" stroke-width="8">${Array.from({ length: 22 }, (_, i) => `<path d="M${-60 + i * 90} 420 V478"/>`).join('')}</g><path d="M-100 436 H2000 M-100 460 H2000" stroke="#a9845c" stroke-width="6"/>
+  <rect x="-900" y="476" width="2800" height="1000" fill="#f5f9ff"/>
+  <g fill="#e2ebf7"><ellipse cx="200" cy="560" rx="220" ry="18"/><ellipse cx="900" cy="700" rx="300" ry="22"/><ellipse cx="560" cy="650" rx="160" ry="12"/></g>`;
+  return { set };
+}
+function thSnowfall() { return thEmit(90, () => { const v = TH.view || { l: 0, r: 1000, t: 0 }; thPart({ t: 'snow', x: v.l + Math.random() * (v.r - v.l), y: v.t - 10, r: 2 + Math.random() * 3.5, vy: .03 + Math.random() * .04, ph: Math.random() * 6, life: 30000 }); }); }
+function thConfetti(x, y, n) { const cols = ['#d62f3a', '#f1c40f', '#2ecc71', '#3498db', '#fff']; for (let i = 0; i < n; i++) thPart({ t: 'conf', x, y, vx: (Math.random() - .5) * .9, vy: -.3 - Math.random() * .6, rot: Math.random() * 360, vr: (Math.random() - .5) * 1.4, w: 6 + Math.random() * 8, h: 4 + Math.random() * 5, col: cols[i % cols.length], life: 2600 }); }
+
+// ---------- 11. Tree Topper ----------
+async function thSceneTree() {
+  thStage(thXmas({}));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 730, aLU: 40, aLF: -112, eyes: 'h', mouth: 'happy', lookX: -8, lookY: 2 });
+  thDadProp('L', 'star'); thDadHat('santa');
+  thStart(560, 380, 1);
+  const H = 326, T = thProp(thTreeSVG(false), 'thMidL', { x: 430, y: FLOOR - 2 });
+  const top = () => { const a = T.r * Math.PI / 180; return [T.x + Math.sin(a) * H, T.y - Math.cos(a) * H]; };
+  let ride = false;
+  TH.sim = () => { if (ride) { const [x, y] = top(); c.x = x - 6; c.y = y + 6; c.surf = FLOOR; } };
+  thSay('The tree is almost done… ⭐');
+  thDadSays(['Now for', 'the star!'], 'Now for the star!');
+  await thWait(1500); thBubble(null);
+  await thWalk(310, 2200);
+  await thTween(c, { head: -34 }, 300);
+  thSay('Kitty is looking at the top of the tree… 🎄'); thS('meow'); await thWait(800);
+  c.wig = 1; await thWait(700); c.wig = 0;
+  await thJump(420, 470, 560, 120); thS('rip'); await thWait(250);
+  await thJump(424, 332, 560, 90); ride = true; c.fold = 1; c.tilt = -24; c.head = 0; thS('thud');
+  thSay('Kitty is the new tree topper! 😼⭐');
+  Object.assign(d, { eyes: 'o', mouth: 'o', pupil: .8, brow: 8 });
+  thDadSays(['Kitty, no—', "that's for the star!"], "Kitty, no! That's for the star!");
+  for (const a of [-5, 6, -8, 10, -10]) await thTween(T, { r: a }, 420, 'inOut');
+  thBubble(null);
+  thSay('Uh oh… 😳');
+  await thTween(T, { r: 18 }, 600, 'in');
+  ride = false; c.fold = 0; c.tilt = 0;
+  thJump(600, FLOOR, 650, 60).then(() => thLand());
+  await thTween(T, { r: 56 }, 520, 'in');
+  thS('crash'); thShake(10); thFlash(.2);
+  Object.assign(d, { mouth: 'scream', pupil: .5, brow: 14, eyes: 'o', sweat: 1 });
+  thTween(d, { aLU: 40, aLF: -60, aRU: -40, aRF: 60, crouch: .3 }, 200, 'out');
+  const orn = [['#e74c3c', 120], ['#f1c40f', 200], ['#3498db', 70], ['#9b59b6', 250], ['#e74c3c', 160]];
+  orn.forEach(([col, h], i) => { const a = T.r * Math.PI / 180, ox = (i - 2) * 30; thProp(TH_XART.ornament(col), 'thPropsL', { x: T.x + Math.sin(a) * h + Math.cos(a) * ox, y: T.y - Math.cos(a) * h + Math.sin(a) * ox, phys: true, vx: (Math.random() - .3) * .25, vy: -.2, vr: (Math.random() - .5) * .6, floor: FLOOR + 4, bounce: .45, restR: 0 }); });
+  const [sx, sy] = thPtSync('tdPropPt'); d.propL = 0;
+  const st = thProp(TH_XART.star, 'thPropsL', { x: sx, y: sy, s: 1.4 });
+  const [hx, hy] = thPtSync('tdHeadTop');
+  await thArc(st, hx, hy - 28, 900, 160, 720, 1.6);
+  st.r = 0; st.follow = 'tdHeadTop'; st.fx = 0; st.fy = -28; thS('chime');
+  for (let i = 0; i < 6; i++) thSparkle(hx + (Math.random() - .5) * 70, hy - 30 - Math.random() * 40);
+  Object.assign(d, { mouth: 'flat', sweat: 0, pupil: 1, brow: -2, lid: .3 });
+  thSay("Now DAD is the tree topper! ⭐😂");
+  await thWait(600);
+  thDadSays(["I'll just… stand", 'here, then.'], "I'll just stand here, then.");
+  await thWait(2200); thBubble(null);
+  await thTween(c, { fold: 1, tilt: -24, head: -10, lid: .4 }, 300); c.mouth = 'smirk';
+  await thWait(1000);
+}
+
+// ---------- 12. Surprise Present ----------
+async function thSceneGift2() {
+  thStage(thXmas({ tree: 160 }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 760, aLU: 30, aLF: -118, eyes: 'o', mouth: 'smile', lookX: 6, lookY: 6, head: 6 });
+  thDadProp('L', 'tape'); thDadHat('santa');
+  thStart(560, 380, 1);
+  const bx = 540;
+  const back = thProp(TH_XART.giftBack, 'thMidL', { x: bx, y: FLOOR }), front = thProp(TH_XART.giftFront, 'thFrontL', { x: bx, y: FLOOR });
+  const showBox = k => ['gOpen', 'gClosed', 'gWrap'].forEach(cl => front.el.querySelector('.' + cl).setAttribute('display', cl === k ? 'inline' : 'none'));
+  thSay('Dad is wrapping presents… 🎁');
+  thDadSays(['Grandma will LOVE', 'this sweater!'], 'Grandma will love this sweater!');
+  await thWait(1400); thBubble(null);
+  thSay('Dad is looking for the tape end…');
+  await thWalk(440, 2300);
+  thSay('sniff… sniff… 📦'); await thTween(c, { head: 18 }, 300); await thTween(c, { head: 0 }, 300);
+  await thJump(bx, FLOOR - 10, 600, 100); thS('thud'); c.surf = FLOOR;
+  await thTween(c, { loaf: 1 }, 260);
+  await thTween(c, { y: FLOOR + 60, o: 0 }, 400, 'in');
+  thSay('…Kitty is hiding in the box! 🤫'); await thWait(900);
+  thTween(d, { lookX: -8, lookY: 10, head: -4 }, 300);
+  thDadSays(['Okay! Close it', 'up…'], 'Okay! Close it up.');
+  await thWait(900); thBubble(null);
+  showBox('gClosed'); back.o = 0; thS('rip'); thDust(bx, FLOOR - 50, 6); await thWait(600);
+  thSay('wrap… wrap… wrap… 🎀'); thS('rip');
+  for (let i = 0; i < 3; i++) { thTween(front, { sx: 1.06 }, 120).then(() => thTween(front, { sx: 1 }, 120)); front.sx = 1; await thWait(350); }
+  showBox('gWrap'); thS('chime'); for (let i = 0; i < 6; i++) thSparkle(bx + (Math.random() - .5) * 120, FLOOR - 60 - Math.random() * 60);
+  Object.assign(d, { eyes: 'h', mouth: 'happy' });
+  thDadSays(['Done!', 'Perfect!'], 'Done! Perfect!');
+  await thWait(1400); thBubble(null);
+  thSay('…'); await thWait(700);
+  const wiggle = async n => { for (let i = 0; i < n; i++) { await thTween(front, { r: 4 }, 70); await thTween(front, { r: -4 }, 70); } front.r = 0; };
+  await wiggle(4);
+  thTxt('…mrrp?', bx, FLOOR - 120, 26, '#3b2a1e', 1400, -.04);
+  Object.assign(d, { eyes: 'o', mouth: 'o', brow: 8 });
+  thDadSays(['Did that present', 'just… MEOW?'], 'Did that present just meow?');
+  await thWait(1500); thBubble(null);
+  for (const nx of [600, 650]) { const sx = front.x, o = { k: 0 }; thS('boing'); await thTween(o, { k: 1 }, 380, 'linear', () => { front.x = thLerp(sx, nx, o.k); front.y = FLOOR - Math.sin(o.k * Math.PI) * 50; }); thS('thud'); await thWait(250); }
+  thSay('SURPRISE!! 🎁');
+  front.o = 0; thS('rip'); thS('pop'); thConfetti(front.x, FLOOR - 50, 40); thShake(6);
+  Object.assign(c, { x: front.x, y: FLOOR, o: 1, loaf: 0, surf: FLOOR, face: 1 });
+  const bow = thProp(TH_XART.bow, 'thPropsL', { x: front.x, y: FLOOR - 94 });
+  thJump(front.x - 140, FLOOR, 700, 140).then(() => thLand());
+  thDadShock(true); d.lift = 0; thTween(d, { lift: 50 }, 220, 'out').then(() => thTween(d, { lift: 0 }, 360, 'in'));
+  const [hx, hy] = thPtSync('tdHeadTop');
+  await thArc(bow, hx, hy - 18, 800, 120, 360, 1.3);
+  bow.r = 0; bow.follow = 'tdHeadTop'; bow.fx = 0; bow.fy = -18;
+  thSay('The present was KITTY! 🎁😹');
+  await thWait(600);
+  Object.assign(d, { mouth: 'happy', eyes: 'h', sweat: 0 }); await thTween(d, { aLU: 10, aLF: -10, aRU: -10, aRF: 10 }, 400);
+  thDadSays(['Best present', 'EVER.'], 'Best present ever.');
+  await thWait(2000); thBubble(null);
+}
+
+// ---------- 13. Twinkle Lights ----------
+async function thSceneLights() {
+  thStage(thXmas({ outlet: 340 }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 730, aLU: 30, aLF: -118, aRU: -30, aRF: 118, eyes: 'o', mouth: 'frown', brow: -2, browIn: 8, lookX: -3, lookY: 9 });
+  thDadProp('L', 'lights'); thDadHat('santa');
+  thStart(560, 380, 1);
+  thSay('Dad is untangling the Christmas lights… 💡');
+  thDadSays(['Who TANGLED', 'these?!'], 'Who tangled these?!');
+  await thWait(1600); thBubble(null);
+  await thWalk(500, 2200);
+  await thTween(c, { head: -24 }, 300); thS('meow');
+  thSay('Kitty grabs the end of the lights… 😼'); await thWait(700);
+  thSay('ZOOMIES! 💨');
+  d.propL = 0; Object.assign(d, { mouth: 'o', brow: 8, browIn: 0 });
+  thTween(d, { aLU: 8, aLF: -6, aRU: -8, aRF: 6 }, 300);
+  const Lx = d.x - 150, Rx = d.x + 150; c.walk = 1; c.speed = 3; c.tailUp = 20;
+  await thTween(c, { x: Lx }, 500, 'in');
+  for (let k = 0; k < 8; k++) {
+    const front = k % 2 === 0, base = FLOOR - k * 38;
+    if (front) { thCatLayer('front'); c.face = 1; c.scale = 1; } else { thCatLayer('back'); c.face = -1; c.scale = .86; }
+    const sx = c.x, ex = front ? Rx : Lx, o = { p: 0 };
+    await thTween(o, { p: 1 }, 330, 'linear', () => { c.x = thLerp(sx, ex, o.p); c.y = base - Math.sin(o.p * Math.PI) * 22; c.surf = FLOOR; });
+    d.lights = k + 1; thS(k % 2 ? 'pop' : 'tink');
+    for (let s = 0; s < 3; s++) thPart({ t: 'line', x: c.x - 60 * c.face, y: c.y - 40 - s * 22, dir: -c.face, len: 50, life: 260, max: 260 });
+    if (k === 3) thDadSays(['Hey! KITTY!'], 'Hey! Kitty!');
+    if (k === 6) thBubble(null);
+  }
+  c.walk = 0; thCatLayer('front'); c.face = -1; c.scale = 1;
+  await thJump(440, FLOOR, 600, 60); await thLand();
+  const [px, py] = thPtSync('tdShoeR');
+  const plug = thProp(TH_XART.plug, 'thPropsL', { x: 470, y: FLOOR + 2, r: 90 });
+  const wire = thProp('<path d="" stroke="#2f5d2f" stroke-width="4" fill="none"/>', 'thBackL', { draw: p => { const [fx, fy] = thPt('tdShoeR'); p.el.setAttribute('transform', ''); p.el.firstChild.setAttribute('d', `M${thF(plug.x)} ${thF(plug.y)} Q${thF((plug.x + fx) / 2)} ${FLOOR + 14} ${thF(fx - 20)} ${thF(fy + 6)}`); } });
+  thSay('Kitty found the plug… 🔌');
+  await thTween(c, { head: 16 }, 300); thS('pop');
+  plug.follow = 'tcMouthPt'; plug.fx = -4; plug.fy = 10; plug.r = 0;
+  await thTween(c, { head: -20 }, 300);
+  await thWalk(410, 1100, .9);
+  await thTween(c, { head: -6 }, 200);
+  plug.follow = null; await thTween(c, { head: -40 }, 200); await thTween(plug, { x: 340, y: 440, r: 0 }, 300, 'out');
+  thS('clack'); thS('chime'); thFlash(.5);
+  d.lightsOn = 1;
+  thSay('CLICK! ✨');
+  Object.assign(d, { eyes: 'o', mouth: 'o', pupil: .7, brow: 10 });
+  await thWait(900);
+  const [hx, hy] = thPtSync('tdHeadTop');
+  const sparkle = thEmit(300, () => thSparkle(hx + (Math.random() - .5) * 180, hy + 40 + Math.random() * 380));
+  Object.assign(d, { eyes: 'h', mouth: 'happy' });
+  thSay("Dad is a Christmas tree now! 🎄✨");
+  thDadSays(['Ho… ho… ho?'], 'Ho, ho, ho?');
+  await thWait(2400); thBubble(null);
+  await thTurn(1); thS('meow');
+  await thWait(1000);
+  thStopEmit(sparkle);
+}
+
+// ---------- 14. Stocking Surprise ----------
+async function thSceneStocking() {
+  thStage(thXmas({ fireplace: 470, tree: 900 }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 770, eyes: 'h', mouth: 'happy', lookX: -8, lookY: 2 });
+  thDadNeck('scarf');
+  thStart(560, 380, 1);
+  thProp(thStockingSVG('KITTY', '#2e8b57'), 'thBackL', { x: 400, y: 392, s: .85 });
+  const stock = thProp(thStockingSVG('DAD', '#d62f3a'), 'thMidL', { x: 520, y: 392 });
+  thSay('Christmas morning! 🎄');
+  thDadSays(["Let's see what's", 'in my stocking!'], "Let's see what's in my stocking!");
+  await thWait(1500); thBubble(null);
+  thTween(d, { lookX: 8, head: 10 }, 400);
+  thSay('Dad is looking at the tree… Kitty has a plan. 😼');
+  await thWalk(330, 2100);
+  await thTween(c, { head: -30 }, 300);
+  await thJump(450, 372, 600, 90); await thLand(false);
+  c.walk = 1; c.speed = .7; await thTween(c, { x: 500 }, 500); c.walk = 0;
+  thSay('…'); await thTween(c, { head: 20 }, 300);
+  await thJump(520, 440, 420, 30);
+  await thTween(c, { o: 0, y: 470, scale: .7 }, 260, 'in');
+  thS('pop');
+  for (let i = 0; i < 3; i++) { await thTween(stock, { sx: 1.18, sy: 1.08 }, 120); await thTween(stock, { sx: 1, sy: 1 }, 160); }
+  stock.sx = 1; c.scale = 1;
+  thTween(d, { lookX: -8, head: 0, lookY: 4 }, 300);
+  thSay('Kitty is hiding in the stocking! 🧦🤫'); await thWait(800);
+  thDadSays(['Ooh! My stocking', 'looks FULL!'], 'Ooh! My stocking looks full!');
+  await thWait(1300); thBubble(null);
+  d.aLU = 40; d.aLF = -95;
+  const [hx0] = thPtSync('tdHandL'); d.aLU = 8; d.aLF = -6;
+  const walkTo = d.x + (530 - hx0), w = { k: 0 }, sx0 = d.x;
+  await thTween(w, { k: 1 }, 900, 'inOut', () => { d.x = thLerp(sx0, walkTo, w.k); d.lift = Math.abs(Math.sin(w.k * Math.PI * 3)) * 8; });
+  d.lift = 0;
+  thSay('Dad reaches in…');
+  await thTween(d, { aLU: 40, aLF: -95 }, 500);
+  await thWait(600);
+  thSay('MROWWW!! 🙀'); thS('meow'); thShake(8);
+  Object.assign(c, { x: 520, y: 470, o: 1, face: -1, scale: 1, surf: FLOOR, mouth: 'open' });
+  thJump(380, FLOOR, 700, 160).then(async () => { await thLand(); c.mouth = null; });
+  thDadShock(true); thTween(d, { lift: 46 }, 220, 'out').then(() => thTween(d, { lift: 0 }, 380, 'in'));
+  const [hx, hy] = thPtSync('tdHeadTop');
+  await thArc(stock, hx - 6, hy + 34, 700, 120, 180, 1);
+  stock.follow = 'tdHeadTop'; stock.fx = -6; stock.fy = 34; stock.r = 180; thS('thud');
+  await thWait(400);
+  thDadSays(['Who put a CAT', 'in my stocking?!'], 'Who put a cat in my stocking?!');
+  thSay('Dad got a CAT in his stocking! 🧦😹');
+  await thWait(2300); thBubble(null);
+  await thTween(c, { fold: 1, tilt: -24, head: -8, lid: .4 }, 300); c.mouth = 'smirk';
+  await thWait(1000);
+}
+
+// ---------- 15. Snowman ----------
+async function thSceneSnowman() {
+  thStage(thSnowyard());
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 760, aLU: 30, aLF: -118, eyes: 'h', mouth: 'happy', lookX: -8, lookY: 2 });
+  thDadProp('L', 'carrot'); thDadHat('beanie'); thDadNeck('scarf');
+  thStart(560, 380, 1);
+  const snow = thSnowfall();
+  const body = thProp(TH_XART.snowBody, 'thMidL', { x: 470, y: FLOOR });
+  const head = thProp(TH_XART.snowHead, 'thMidL', { x: 470, y: FLOOR - 226 });
+  thSay('Dad is building a snowman! ⛄');
+  thDadSays(['Just needs', 'a nose!'], 'Just needs a nose!');
+  await thWait(1400); thBubble(null);
+  const w = { k: 0 }, sx0 = d.x;
+  await thTween(w, { k: 1 }, 900, 'inOut', () => { d.x = thLerp(sx0, 620, w.k); d.lift = Math.abs(Math.sin(w.k * Math.PI * 3)) * 8; }); d.lift = 0;
+  await thTween(d, { aLU: 62, aLF: -70 }, 400);
+  d.propL = 0; head.el.querySelector('.carrot').setAttribute('display', 'inline'); thS('pop');
+  await thTween(d, { aLU: 8, aLF: -6 }, 300);
+  const w2 = { k: 0 }, sx1 = d.x;
+  await thTween(w2, { k: 1 }, 700, 'inOut', () => { d.x = thLerp(sx1, 750, w2.k); d.lift = Math.abs(Math.sin(w2.k * Math.PI * 2)) * 8; }); d.lift = 0;
+  thDadSays(['Perfect!'], 'Perfect!'); thS('chime');
+  await thWait(1000); thBubble(null);
+  await thWalk(330, 2200);
+  await thTween(c, { head: -32 }, 300); thS('meow');
+  thSay('Kitty wants to climb the snowman… ⛄'); await thWait(700);
+  c.wig = 1; await thWait(700); c.wig = 0;
+  await thJump(456, FLOOR - 190, 650, 110); await thLand(false);
+  await thJump(462, FLOOR - 254, 420, 40);
+  c.fold = 1; c.tilt = -24; thS('thud');
+  const ride = () => { c.x = head.x - 8 + Math.sin(head.r * Math.PI / 180) * 30; c.y = head.y - 28; };
+  TH.sim = () => ride();
+  thSay('Wobble… wobble…');
+  Object.assign(d, { eyes: 'o', mouth: 'o', brow: 8 });
+  for (const a of [-8, 10, -12, 14]) await thTween(head, { r: a }, 300, 'inOut');
+  TH.sim = null; c.fold = 0; c.tilt = 0;
+  thJump(360, FLOOR, 600, 70).then(() => thLand());
+  thSay('Uh oh… ⛄💨'); thS('whoosh');
+  const [hx, hy] = thPtSync('tdFace');
+  await thArc(head, hx, hy + 6, 900, 160, 400, 2.1);
+  head.r = 0; head.follow = 'tdFace'; head.fx = 0; head.fy = 6; head.s = 2.1;
+  thS('splat'); thShake(9); thPuffs(hx, hy, 10, '#ffffff');
+  thTween(d, { aLU: 150, aLF: 20, aRU: -150, aRF: -20, jit: .6 }, 300, 'out');
+  thTxt('BRRRR!', hx, hy - 110, 32, '#2f6fb0', 1600, -.04);
+  thSay('Now DAD is the snowman! ⛄😂');
+  await thWait(1300);
+  await thJump(470, FLOOR - 172, 600, 110); await thLand(false);
+  await thTween(c, { fold: 1, tilt: -24, head: -10, lid: .4 }, 300); c.mouth = 'smirk';
+  await thWait(1800);
+  d.jit = 0; thStopEmit(snow);
+}
+
 const PRANKS = [
   { id: 'poop', name: 'Poop Attack', emoji: '💩', run: thScenePoop },
   { id: 'keyboard', name: 'Keyboard Nap', emoji: '⌨️', run: thSceneKeyboard },
@@ -2542,7 +2947,12 @@ const PRANKS = [
   { id: 'mummy', name: 'TP Mummy', emoji: '🧻', run: thSceneMummy },
   { id: 'hairball', name: 'Hairball', emoji: '🤮', run: thSceneHairball },
   { id: 'hat', name: 'Head Nap', emoji: '😴', run: thSceneHat },
-  { id: 'box', name: 'The Fancy Bed', emoji: '📦', run: thSceneBox }
+  { id: 'box', name: 'The Fancy Bed', emoji: '📦', run: thSceneBox },
+  { id: 'tree', name: 'Tree Topper', emoji: '🎄', run: thSceneTree },
+  { id: 'wrap', name: 'Surprise Present', emoji: '🎁', run: thSceneGift2 },
+  { id: 'lights', name: 'Twinkle Lights', emoji: '💡', run: thSceneLights },
+  { id: 'stocking', name: 'Stocking Surprise', emoji: '🧦', run: thSceneStocking },
+  { id: 'snowman', name: 'Snowman', emoji: '⛄', run: thSceneSnowman }
 ];
 function choosePrank() {
   const c = PRANKS.filter(p => p.id !== state.lastPrank);
@@ -2568,13 +2978,16 @@ function thReset() {
   TH.ce = {}; ['tcat', 'tcInner', 'tcLegBF', 'tcLegBN', 'tcBody', 'tcLegFF', 'tcLegFN', 'tcHead', 'tcLidL', 'tcLidR', 'tcLidLineL', 'tcLidLineR', 'tcPupL', 'tcPupR', 'tcMouth', 'tcMouthO', 'tcTongue', 'tcBlep', 'tcFangs', 'tcTail', 'tcTailSt', 'tcTailTip'].forEach(id => { TH.ce[id] = thE(id); });
   thE('thDadL').innerHTML = `<g id="tdad">${thDadSVG(TH.who)}</g>`;
   TH.de = {}; ['tdad', 'tdLegL', 'tdLegR', 'tdTorso', 'tdArmL', 'tdArmLF', 'tdPropL', 'tdArmR', 'tdArmRF', 'tdPropR', 'tdHead', 'tdPupils', 'tdLidL', 'tdLidR', 'tdBrowL', 'tdBrowR', 'tdEyesO', 'tdEyesX', 'tdEyesH', 'tdGreen', 'tdTears', 'tdSweat', 'tdFoam'].forEach(id => { TH.de[id] = thE(id); });
-  TH.de.mouths = [...thE('tdMouths').children]; TH.de.bands = [...document.querySelectorAll('#tdMummy .tdBand')];
+  TH.de.mouths = [...thE('tdMouths').children]; TH.de.bands = [...document.querySelectorAll('#tdMummy .tdBand')]; TH.de.ls = [...document.querySelectorAll('#tdLights .tdLS')]; TH.de.bulbs = [...document.querySelectorAll('#tdLights .tdBulb')]; TH.de.glows = [...document.querySelectorAll('#tdLights .tdGlow')]; TH.de.lOn = 0;
   TH.cat = thCatDefaults(); TH.dad = thDadDefaults();
   thDadProp('L', null); thDadProp('R', null);
 }
 async function runPrank(id, replay, who) {
   const p = PRANKS.find(x => x.id === id) || PRANKS[0];
-  TH.who = who || (Math.random() < .5 ? 'mom' : 'dad');
+  if (who) TH.who = who;
+  else if ((state.whoStreak || 0) >= 2) TH.who = state.lastWho === 'mom' ? 'dad' : 'mom';
+  else TH.who = Math.random() < .5 ? 'mom' : 'dad';
+  state.whoStreak = TH.who === state.lastWho ? (state.whoStreak || 0) + 1 : 1; state.lastWho = TH.who; save();
   overlayCount++;
   thInit();
   const th = thE('theater'); th.classList.add('open'); TH.open = true; thFrame();
@@ -2904,13 +3317,13 @@ function buildRoomItem(it) {
 
 // ---- Kitty lives in the room ----
 const USE_FX = { sleep: '💤', eat: '😋', drink: '💧', play: '⭐', scratch: '✨', potty: '🙈', sit: '😺', watch: '👀' };
-let roomCatPos = { x: 50, y: 88 };
+let roomCatPos = { x: 50, y: 88 }, roomCatSleep = false, roomSleepUntil = 0;
 function sizeRoomCat() {
   const room = $('room'), cw = $('roomCat'); if (!room || !cw) return;
   const sz = Math.round(room.clientWidth * 0.16);
-  drawFullCat(cw.querySelector('canvas'), buddyId(), sz, { fat: state.meter / 10, hat: state.hat });
+  drawFullCat(cw.querySelector('canvas'), buddyId(), sz, { fat: state.meter / 10, hat: state.hat, sleep: roomCatSleep });
   cw.style.left = roomCatPos.x + '%'; cw.style.top = roomCatPos.y + '%'; cw.style.zIndex = 10 + Math.round(roomCatPos.y) + 1;
-  cw.onclick = () => { Sound.meow(); roomFx('💕', roomCatPos.x, roomCatPos.y - 14); };
+  cw.onclick = () => { Sound.meow(); roomFx('💕', roomCatPos.x, roomCatPos.y - 14); if (roomCatSleep) { roomCatSleep = false; roomSleepUntil = 0; sizeRoomCat(); } };
   cw.style.display = roomEditing ? 'none' : '';
 }
 function roomFx(t, x, y) {
@@ -2921,6 +3334,7 @@ function roomFx(t, x, y) {
 }
 function roomCatGo(it) {
   const room = $('room'), cw = $('roomCat'); if (!room || !cw || roomEditing) return;
+  if (roomCatSleep) { roomCatSleep = false; sizeRoomCat(); }
   let x, y, z, fx = null;
   if (it) {
     const d = itemDef(it.id), node = room.querySelector(`.ritem[data-u="${it.u}"]`);
@@ -2939,14 +3353,17 @@ function roomCatGo(it) {
   roomCatGo._t = setTimeout(() => {
     cw.classList.remove('walking'); cw.style.zIndex = z;
     if (fx) roomFx(fx, x, y - 16);
-    if (fx === '💤') { setTimeout(() => roomFx('💤', x + 3, y - 18), 900); }
+    if (fx === '💤') {
+      roomCatSleep = true; roomSleepUntil = Date.now() + 8500; sizeRoomCat();
+      let n = 0; const zz = () => { if (!roomCatSleep || n++ > 5) return; roomFx('💤', x + 3 * (n % 2), y - 18); roomCatGo._z = setTimeout(zz, 1500); }; roomCatGo._z = setTimeout(zz, 900);
+    }
   }, 1700);
 }
 function roomCatStart() {
   clearTimeout(roomCatTimer);
   const tick = () => {
     if (currentPage !== 'room' || !$('room')) return;
-    if (!roomEditing && !overlayCount) {
+    if (!roomEditing && !overlayCount && Date.now() >= roomSleepUntil) {
       const usable = state.room.items.filter(it => !it.out && itemDef(it.id).use);
       roomCatGo(usable.length && Math.random() < 0.7 ? pick(usable) : null);
     }
