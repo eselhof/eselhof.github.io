@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.6';
+const APP_VERSION = 'v4.7';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -2987,7 +2987,7 @@ async function runPrank(id, replay, who) {
   if (who) TH.who = who;
   else if ((state.whoStreak || 0) >= 2) TH.who = state.lastWho === 'mom' ? 'dad' : 'mom';
   else TH.who = Math.random() < .5 ? 'mom' : 'dad';
-  state.whoStreak = TH.who === state.lastWho ? (state.whoStreak || 0) + 1 : 1; state.lastWho = TH.who; save();
+  if (!who) { state.whoStreak = TH.who === state.lastWho ? (state.whoStreak || 0) + 1 : 1; state.lastWho = TH.who; save(); }
   overlayCount++;
   thInit();
   const th = thE('theater'); th.classList.add('open'); TH.open = true; thFrame();
@@ -3038,6 +3038,7 @@ function openModal(build) {
   const x = document.createElement('button'); x.className = 'close-x'; x.textContent = '✕'; x.addEventListener('click', closeModal);
   box.appendChild(x); build(box);
   if (!ov.classList.contains('open')) { overlayCount++; ov.classList.add('open'); }
+  if (secretTheater && box.querySelector('h3')?.textContent.includes('Grown-up')) addSecretTheater(box);
 }
 function closeModal() { const ov = $('modal'); if (ov.classList.contains('open')) { ov.classList.remove('open'); overlayCount--; } if (rec) stopRecording(); refreshPage(); }
 
@@ -3540,10 +3541,31 @@ function renderStats() {
 // ============================================================
 // GROWN-UP CORNER
 // ============================================================
-let rec = null;
+let rec = null, secretTheater = false;
+function addSecretTheater(box) {
+  if (box.querySelector('.secret-th')) return;
+  const s = document.createElement('div'); s.className = 'p-section secret-th';
+  s.innerHTML = `<div class="p-title">🎬 All pranks</div>`;
+  const g = document.createElement('div'); g.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:6px 8px;align-items:center';
+  PRANKS.forEach(p => {
+    const n = document.createElement('div'); n.textContent = `${p.emoji} ${p.name}`; g.appendChild(n);
+    ['dad', 'mom'].forEach(w => {
+      const b = document.createElement('button'); b.className = 'mini-btn'; b.textContent = w === 'dad' ? 'Dad' : 'Mom';
+      b.onclick = async () => { closeModal(); await runPrank(p.id, true, w); openParent(); };
+      g.appendChild(b);
+    });
+  });
+  s.appendChild(g);
+  const h = box.querySelector('h3'); h.after(s);
+}
 function openParent() {
   openModal(box => {
-    box.insertAdjacentHTML('beforeend', '<h3>⚙️ Grown-up corner</h3>');
+    box.insertAdjacentHTML('beforeend', '<h3 style="user-select:none;-webkit-user-select:none;-webkit-touch-callout:none">⚙️ Grown-up corner</h3>');
+    { const h = box.querySelector('h3'); let ht = null;
+      const stop = () => { clearTimeout(ht); ht = null; };
+      h.addEventListener('pointerdown', () => { stop(); ht = setTimeout(() => { ht = null; secretTheater = true; addSecretTheater(box); }, 2000); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => h.addEventListener(e, stop));
+      h.addEventListener('contextmenu', e => e.preventDefault()); }
     // tables
     const t = document.createElement('div'); t.className = 'p-section';
     t.innerHTML = `<div class="p-title">Times tables up to</div><div class="p-note">Problems use tables 1–N, times 1–12.</div>`;
