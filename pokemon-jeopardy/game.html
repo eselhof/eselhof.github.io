@@ -246,6 +246,8 @@ button{font-family:inherit;cursor:pointer;border:none}
       <div class="hint">Off by default. Daily Doubles and Final Jeopardy always risk your wager.</div>
     </div>
     <div id="homeScores"></div>
+    <div id="buildStamp" style="text-align:center;font-size:10px;letter-spacing:.1em;
+      color:rgba(255,255,255,.3);margin:6px 0 2px">BUILD 1.3</div>
     <button class="gold" id="startBtn" style="width:100%">Start game</button>
     <div class="adminRow">
       <span id="flagCount">No reported clues</span>
@@ -640,26 +642,109 @@ function allResponsesIn(catName){
   if(m.fixed) return m.fixed.map(c=>c.r);
   return Object.values(m.tiers).flat().map(c=>c.r);
 }
-function distractors(catName, correct, n){
-  const bad = new Set([norm(correct)]);
-  let pool = allResponsesIn(catName).filter(r=>!bad.has(norm(r)));
-  if(pool.length < n*3){
-    for(const k of Object.keys(DATA.categories)){
-      if(pool.length >= n*3) break;
-      if(k!==catName) pool = pool.concat(allResponsesIn(k).filter(r=>!bad.has(norm(r))));
-    }
+function clueClassIn(catName, resp){
+  const m = DATA.categories[catName]; if(!m) return null;
+  const list = m.fixed || Object.values(m.tiers).flat();
+  const hit = list.find(c=>norm(c.r)===norm(resp));
+  return hit ? hit.k : null;
+}
+/* ---- numeric distractors: match the form of the answer ---- */
+const NUMWORDS = ['one','two','three','four','five','six','seven','eight','nine','ten','twelve'];
+function numberDistractors(ans, n){
+  const t = String(ans).trim();
+  const wi = NUMWORDS.indexOf(t.toLowerCase());
+  if(wi >= 0){
+    const near = NUMWORDS.filter((w,i)=>i!==wi && Math.abs(i-wi)<=4);
+    return shuffle(near).slice(0,n);
   }
-  const out=[], seen=new Set([norm(correct)]);
-  for(const r of shuffle(pool)){
+  const hadComma = t.indexOf(',') >= 0;
+  const v = parseInt(t.replace(/[^0-9]/g,''),10);
+  if(isNaN(v)) return [];
+  const cands = [v*2, Math.round(v/2), v+Math.max(1,Math.round(v*0.25)),
+                 Math.max(1, v-Math.max(1,Math.round(v*0.25))), v*4, Math.round(v/4)]
+    .filter(x=>x>0 && x!==v);
+  const seen = new Set(), out = [];
+  for(const x of shuffle(cands)){
     if(out.length>=n) break;
-    const k=norm(r); if(seen.has(k)) continue;
-    seen.add(k); out.push(r);
+    if(seen.has(x)) continue; seen.add(x);
+    out.push(hadComma || x>=1000 ? x.toLocaleString('en-US') : String(x));
   }
   return out;
 }
+/* Same class is not enough: three legendaries beside an Eeveelution still gives
+   it away. Rank the global species pool by family resemblance, then by how close
+   its difficulty is to the answer's. */
+function sharedSuffix(a, b){
+  const x = norm(a), y = norm(b);
+  let i = 0;
+  while(i < x.length && i < y.length && x[x.length-1-i] === y[y.length-1-i]) i++;
+  return i;
+}
+function rankedSpecies(catName, correct, clueTier){
+  const pool = (DATA.pools && DATA.pools.species) || [];
+  const tiers = DATA.tiers || {};
+  const m = DATA.categories[catName];
+  const sibs = m ? (m.fixed || Object.values(m.tiers).flat())
+                    .filter(c=>c.k==='species' && norm(c.r)!==norm(correct)).map(c=>c.r) : [];
+  // does this category's answer set share a family ending (-eon, -chu)?
+  let famLen = 0;
+  for(const sv of sibs){ const n2 = sharedSuffix(sv, correct); if(n2 >= 3) famLen = Math.max(famLen, n2); }
+  const tail = famLen ? norm(correct).slice(-famLen) : null;
+  const t0 = (typeof clueTier === 'number') ? clueTier
+           : (tiers[correct] !== undefined ? tiers[correct] : 2);
+  return shuffle(pool).map(p=>{
+    const fam = tail && norm(p).endsWith(tail) ? 0 : 1;
+    const dt  = Math.abs((tiers[p] !== undefined ? tiers[p] : 2) - t0);
+    return {p, score: fam*10 + dt};
+  }).sort((a,b)=>a.score-b.score).map(x=>x.p);
+}
+function speciesPairDistractors(ans, n){
+  const pool = DATA.pools && DATA.pools.species ? DATA.pools.species : [];
+  if(pool.length < 8) return [];
+  const used = new Set(String(ans).toLowerCase().split(' and ').map(x=>norm(x)));
+  const out = [];
+  const pick = shuffle(pool).filter(p=>!used.has(norm(p)));
+  for(let i=0; out.length<n && i+1 < pick.length; i+=2) out.push(pick[i]+' and '+pick[i+1]);
+  return out;
+}
+/* Distractors must be the SAME KIND of thing as the answer. A ball question with
+   three species as decoys gives the answer away without any knowledge. */
+function distractors(catName, correct, n){
+  const cls = (CUR && CUR.clue && CUR.clue.k) || clueClassIn(catName, correct);
+  const seen = new Set([norm(correct)]);
+  const out = [];
+  // ordered=true preserves a ranking the caller already computed
+  const take = (list, ordered) => {
+    for(const r of (ordered ? (list || []) : shuffle(list || []))){
+      if(out.length >= n) break;
+      const k = norm(r);
+      if(!k || seen.has(k)) continue;
+      seen.add(k); out.push(r);
+    }
+  };
+  if(cls === 'number'){ take(numberDistractors(correct, n)); return out; }
+  if(cls === 'speciespair'){ take(speciesPairDistractors(correct, n)); return out; }
+  // 1. same category AND same class — keeps legendaries with legendaries, starters with starters
+  if(cls){
+    const m = DATA.categories[catName];
+    if(m){
+      const list = m.fixed || Object.values(m.tiers).flat();
+      take(list.filter(c=>c.k===cls).map(c=>c.r));
+    }
+  }
+  // 2. the global pool for that class
+  if(out.length < n && cls === 'species'){
+    take(rankedSpecies(catName, correct, CUR && CUR.clue ? CUR.clue.t : undefined), true);
+  }
+  if(out.length < n && cls && DATA.pools && DATA.pools[cls]) take(DATA.pools[cls]);
+  // 3. same category regardless of class — last resort, still never cross-class global
+  if(out.length < n && !cls) take(allResponsesIn(catName));
+  return out;   // may be short: better fewer buttons than mismatched ones
+}
 function renderChoices(){
   const row = $('#mcRow');
-  const opts = shuffle([CUR.clue.r, ...distractors(CUR.cat.name, CUR.clue.r, 3)]);
+  const ds = distractors(CUR.cat.name, CUR.clue.r, 3);
+  const opts = shuffle([CUR.clue.r, ...ds]);
   row.innerHTML = opts.map((o,i)=>`<button class="mcBtn" data-i="${i}">${o}</button>`).join('');
   row.querySelectorAll('.mcBtn').forEach((b,i)=>{
     b.onclick = ()=>{ row.classList.add('hidden'); showVerdict(norm(opts[i])===norm(CUR.clue.r), opts[i]); };
@@ -769,8 +854,18 @@ function endRound(){
 }
 
 /* ---- final jeopardy ---- */
+/* the final[] array kept the generator's long key names (clue/response/aliases)
+   while every other clue was normalized to c/r/a — map it so both shapes work */
+function normFinal(f){
+  if(!f) return null;
+  return { id: f.id,
+           c: f.c !== undefined ? f.c : f.clue,
+           r: f.r !== undefined ? f.r : f.response,
+           a: f.a !== undefined ? f.a : (f.aliases || []),
+           t: (typeof f.t === 'number' ? f.t : null) };
+}
 function startFinal(){
-  G.finalClue = rand(DATA.final);
+  G.finalClue = normFinal(rand(DATA.final));
   const eligible = G.players.filter(p=>p.score>0);
   if(!eligible.length){
     inter('Final Jeopardy!','Nobody has points to wager','', 'See results', showResults);
@@ -919,6 +1014,8 @@ function renderHome(){
     : n===0 ? 'No reported clues' : bits.join(' · ');
   $('#expBtn').style.display = n ? '' : 'none';
   $('#clrBtn').style.display = n ? '' : 'none';
+  const bs = $('#buildStamp');
+  if(bs) bs.textContent = 'BUILD 1.3 · SET ' + ((window.DATA && DATA.version) || '?');
   const top = (ST.scores||[]).slice(0,5);
   $('#homeScores').innerHTML = top.length
     ? `<div class="hsTitle">High scores</div>` + top.map(r=>
