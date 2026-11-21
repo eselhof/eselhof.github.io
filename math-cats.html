@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.7';
+const APP_VERSION = 'v4.9';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -875,10 +875,33 @@ function drawCatRear(canvas, id, size, opts) {
 // Badges (special silly cats)
 const BADGES = [
   { name: 'Cat Loaf', need: 10 }, { name: 'Cat Butt', need: 25 }, { name: 'Bread Cat', need: 50 },
-  { name: 'Box Cat', need: 100 }, { name: 'Wizard Cat', need: 200 }, { name: 'Space Cat', need: 500 }
+  { name: 'Box Cat', need: 100 }, { name: 'Wizard Cat', need: 200 }, { name: 'Space Cat', need: 500 },
+  ...[['Pizza Cat', '🍕'], ['Ninja Cat', '🥷'], ['Pirate Cat', '🏴‍☠️'], ['Rocket Cat', '🚀'], ['Super Cat', '🦸'],
+    ['Disco Cat', '🪩'], ['Dino Cat', '🦖'], ['Robot Cat', '🤖'], ['Mermaid Cat', '🧜‍♀️'], ['Rainbow Cat', '🌈'],
+    ['Dragon Cat', '🐉'], ['Unicorn Cat', '🦄'], ['Volcano Cat', '🌋'], ['Ghost Cat', '👻'], ['Royal Cat', '👑'],
+    ['Sushi Cat', '🍣'], ['Astronaut Cat', '👩‍🚀'], ['Lightning Cat', '⚡'], ['Ice Cream Cat', '🍦'], ['Comet Cat', '☄️'],
+    ['Crystal Cat', '💎'], ['Galaxy Cat', '🌌'], ['Time Travel Cat', '⏳'], ['Phoenix Cat', '🔥'], ['Legend Cat', '🏆'], ['Cosmic Cat', '🪐']
+  ].map(([name, emoji], i) => ({ name, emoji, need: 600 + i * 100 })),
+  { name: 'Every Cat Ever', emoji: '🌟', need: 3125 }
 ];
+const MEDAL_TIERS = [[1000, '#cd7f32', '#a0602a'], [1500, '#c0c7cf', '#8d96a0'], [2000, '#f5c542', '#c99a1a'], [2500, '#7fd6e8', '#3aa5c0'], [3100, '#b388ff', '#7c4dff'], [9999, null, '#e0a800']];
+function drawMedal(ctx, b, s) {
+  const cx = s / 2, cy = s * .56, r = s * .3, [, col, dark] = MEDAL_TIERS.find(t => b.need <= t[0]);
+  ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(cx - s * .22, 0); ctx.lineTo(cx - s * .06, 0); ctx.lineTo(cx + s * .04, cy - r * .7); ctx.lineTo(cx - s * .08, cy - r * .6); ctx.fill();
+  ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.moveTo(cx + s * .22, 0); ctx.lineTo(cx + s * .06, 0); ctx.lineTo(cx - s * .04, cy - r * .7); ctx.lineTo(cx + s * .08, cy - r * .6); ctx.fill();
+  let fill = col;
+  if (!col) { const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r); ['#ff6b6b', '#ffd93b', '#6bcb77', '#4d96ff', '#b388ff'].forEach((c, i) => g.addColorStop(i / 4, c)); fill = g; }
+  ctx.fillStyle = dark; ctx.beginPath();
+  for (let i = 0; i < 24; i++) { const a = i * Math.PI / 12, rr = i % 2 ? r * 1.08 : r * 1.16; ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+  ctx.fill();
+  ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.arc(cx - r * .3, cy - r * .35, r * .45, 0, 7); ctx.fill();
+  ctx.font = `${Math.round(r * 1.05)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#000'; ctx.fillText(b.emoji, cx, cy + r * .04);
+}
 function drawBadge(canvas, index, size) {
   const s = size, ctx = prep(canvas, s, s), cx = s / 2, cy = s / 2;
+  if (BADGES[index].emoji) { drawMedal(ctx, BADGES[index], s); return; }
   if (index === 0) {
     ctx.fillStyle = '#F4A460';
     ctx.beginPath(); ctx.moveTo(cx - s * .35, cy + s * .15); ctx.quadraticCurveTo(cx - s * .35, cy - s * .2, cx, cy - s * .25); ctx.quadraticCurveTo(cx + s * .35, cy - s * .2, cx + s * .35, cy + s * .15); ctx.closePath(); ctx.fill();
@@ -1663,7 +1686,7 @@ function thCatSVG(t, hat) {
    <g stroke="${whisk}" stroke-width="1.4" opacity=".75"><path d="M108 -98 L130 -102 M108 -95 L131 -94 M108 -92 L129 -86"/></g>
    <g id="tcMouthPt" transform="translate(108 -90)"/>
    <g id="tcHeadPt" transform="translate(86 -150)"/>
-   ${thHatSVG(hat)}
+   <g id="tcHat">${thHatSVG(hat)}</g>
   </g>
   <g id="tcButt" transform="translate(-72 -58)"/>
  </g>
@@ -2937,6 +2960,245 @@ async function thSceneSnowman() {
   d.jit = 0; thStopEmit(snow);
 }
 
+// ============================================================
+// THE LITTLE GENERAL — Dad's toy soldier (original design)
+// ============================================================
+const TH_GEN_BODY = `<g class="genBody">
+  <ellipse cx="0" cy="0" rx="17" ry="4" fill="#000" opacity=".18"/>
+  <rect x="-11" y="-17" width="9" height="17" rx="3" fill="#1d1d1d"/><rect x="2" y="-17" width="9" height="17" rx="3" fill="#1d1d1d"/>
+  <rect x="-10" y="-19" width="7" height="4" rx="1" fill="#3a3a3a"/><rect x="3" y="-19" width="7" height="4" rx="1" fill="#3a3a3a"/>
+  <rect x="-11" y="-34" width="22" height="18" rx="3" fill="#fbfbf7"/><path d="M0 -33 V-18" stroke="#d9d9d0" stroke-width="1.5"/>
+  <path d="M-15 -60 Q-17 -44 -15 -28 L-12 -26 L-6 -34 L6 -34 L12 -26 L15 -28 Q17 -44 15 -60 Z" fill="#23402e"/>
+  <path d="M-6 -60 L6 -60 L5 -35 L-5 -35 Z" fill="#fbfbf7"/>
+  <path d="M-14 -58 L12 -38 L9 -35 L-15 -54 Z" fill="#d6283a"/>
+  <g fill="#e2b13c"><circle cx="-8" cy="-53" r="1.3"/><circle cx="-8" cy="-47" r="1.3"/><circle cx="-8" cy="-41" r="1.3"/><circle cx="8" cy="-53" r="1.3"/><circle cx="8" cy="-47" r="1.3"/><circle cx="8" cy="-41" r="1.3"/></g>
+  <path d="M-3 -46 L1 -46 L-1 -42 Z" fill="#e2b13c"/>
+  <rect x="-20" y="-59" width="7" height="22" rx="3.5" fill="#23402e"/><rect x="13" y="-59" width="7" height="22" rx="3.5" fill="#23402e"/>
+  <rect x="-20" y="-40" width="7" height="5" rx="1.5" fill="#d6283a"/><rect x="13" y="-40" width="7" height="5" rx="1.5" fill="#d6283a"/>
+  <circle cx="-16.5" cy="-32" r="3.6" fill="#f3c9a0"/><circle cx="16.5" cy="-32" r="3.6" fill="#f3c9a0"/>
+  <ellipse cx="-15" cy="-60" rx="6" ry="3" fill="#e2b13c"/><ellipse cx="15" cy="-60" rx="6" ry="3" fill="#e2b13c"/>
+  <path d="M-15 -58 V-55 M-12 -58 V-55 M12 -58 V-55 M15 -58 V-55 M18 -58 V-55 M-18 -58 V-55" stroke="#e2b13c" stroke-width="1.2"/>
+  <rect x="-6" y="-64" width="12" height="5" rx="1.5" fill="#d6283a"/><rect x="-6" y="-60.5" width="12" height="1.5" fill="#e2b13c"/>
+  <circle cx="0" cy="-74" r="11" fill="#f3c9a0"/>
+  <path d="M-11 -76 Q-12 -86 0 -86 Q12 -86 11 -76 Q8 -81 0 -81 Q-8 -81 -11 -76 Z" fill="#6b4226"/>
+  <path d="M-3.5 -84 Q-2 -79 1 -80" stroke="#6b4226" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <g class="genEyes"><circle cx="-4" cy="-74" r="1.5" fill="#2b1d14"/><circle cx="4" cy="-74" r="1.5" fill="#2b1d14"/></g>
+  <g class="genX" display="none" stroke="#2b1d14" stroke-width="1.3" stroke-linecap="round"><path d="M-5.5 -75.5 L-2.5 -72.5 M-2.5 -75.5 L-5.5 -72.5 M2.5 -75.5 L5.5 -72.5 M5.5 -75.5 L2.5 -72.5"/></g>
+  <circle cx="-7" cy="-70" r="2" fill="#f19a8a" opacity=".55"/><circle cx="7" cy="-70" r="2" fill="#f19a8a" opacity=".55"/>
+  <path d="M-3 -69 Q0 -66.5 3 -69" stroke="#8a4a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <g class="genFluff" display="none" fill="#b9b2a6" opacity=".9"><circle cx="-12" cy="-66" r="6"/><circle cx="10" cy="-46" r="7"/><circle cx="-8" cy="-26" r="5"/><circle cx="13" cy="-78" r="5"/><circle cx="4" cy="-12" r="4"/><path d="M-14 -52 Q-24 -60 -18 -40" stroke="#9e978a" stroke-width="1.5" fill="none"/></g>
+</g>`;
+const TH_GEN_HAT = `<path d="M-27 0 Q-14 -18 0 -19 Q14 -18 27 0 Q14 -5 0 -5 Q-14 -5 -27 0 Z" fill="#141414"/><path d="M-20 -3 Q0 -9 20 -3" stroke="#2c2c2c" stroke-width="1.5" fill="none"/>
+  <circle cx="9" cy="-10" r="5" fill="#d6283a"/><circle cx="9" cy="-10" r="3.4" fill="#fff"/><circle cx="9" cy="-10" r="1.8" fill="#2a5db0"/>`;
+const TH_GEN_HAT_Y = -84;
+TD_PROPS.general = `<g transform="translate(6 10) scale(.6)">${TH_GEN_BODY}<g transform="translate(0 ${TH_GEN_HAT_Y})">${TH_GEN_HAT}</g></g>`;
+// a toy = body prop + hat prop that rides on the body until knocked off
+function thGeneral(x, y, layer, s) {
+  s = s || 1;
+  const hat = { on: true };
+  const body = thProp(TH_GEN_BODY, layer || 'thMidL', { x, y, s, draw: p => {
+    if (!hat.on) return; const a = p.r * Math.PI / 180, oy = TH_GEN_HAT_Y * p.s;
+    hat.p.x = p.x - Math.sin(a) * oy; hat.p.y = p.y + Math.cos(a) * oy; hat.p.r = p.r; hat.p.s = p.s; hat.p.o = p.o;
+    hat.p.el.setAttribute('transform', `translate(${thF(hat.p.x)} ${thF(hat.p.y)}) rotate(${thF(hat.p.r)}) scale(${p.s.toFixed(3)})`); hat.p.el.setAttribute('opacity', p.o);
+  } });
+  hat.p = thProp(TH_GEN_HAT, layer || 'thMidL', { x, y: y + TH_GEN_HAT_Y * s, s });
+  body.hat = hat;
+  body.face = k => { const q = s => body.el.querySelector(s); q('.genEyes').setAttribute('display', k === 'x' ? 'none' : 'inline'); q('.genX').setAttribute('display', k === 'x' ? 'inline' : 'none'); };
+  body.toLayer = l => { thE(l).appendChild(body.el); thE(l).appendChild(hat.p.el); };
+  return body;
+}
+function thGenWobble(g, amp, ms) { const w = { k: 0 }, r0 = g.r; return thTween(w, { k: 1 }, ms || 600, 'linear', () => { g.r = r0 + Math.sin(w.k * Math.PI * 4) * amp * (1 - w.k); }); }
+function thCatHat(show) { const e = thE('tcHat'); if (e) e.setAttribute('display', show ? 'inline' : 'none'); }
+
+// ---------- 16. General Kitty ----------
+async function thSceneGeneral() {
+  thStage(thLiving({ table: true }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 700, eyes: 'h', mouth: 'happy', lookX: -9, lookY: 4, head: -4 });
+  thStart(560, 380, 1.05);
+  const g = thGeneral(510, 424, 'thMidL', 1.1);
+  thSay("Dad's favorite toy: the Little General! 🎖️");
+  thDadSays(['Look at him.', 'So handsome!'], 'Look at him. So handsome!');
+  await thWait(1800); thBubble(null);
+  thDadProp('L', 'phone'); Object.assign(d, { aLU: 22, aLF: -98, tap: 1, eyes: 'o', mouth: 'smile', lookX: -2, lookY: 9, head: 0 });
+  thSay('Dad is busy on his phone… 📱'); await thWait(1100);
+  await thWalk(305, 2400);
+  thS('meow'); await thTween(c, { head: -22 }, 350);
+  thSay('Kitty has spotted the Little General… 👀'); await thWait(700);
+  c.wig = 1; await thWait(900); c.wig = 0;
+  await thJump(432, 424, 620, 150); await thLand();
+  c.walk = 1; c.speed = .8; await thTween(c, { x: 440, head: 0 }, 300); c.walk = 0;
+  thSay('sniff… sniff…'); await thTween(c, { head: 16 }, 300); await thTween(c, { head: 0 }, 300);
+  const tap = async (dx, amp) => { await thTween(c, { reach: 1 }, 240, 'out'); thS('tink'); thTween(g, { x: g.x + dx }, 200, 'out'); thGenWobble(g, amp, 600); await thWait(240); await thTween(c, { reach: 0 }, 280); };
+  thSay('Tap.'); await tap(4, 12); await thWait(700);
+  thSay('Tap… tap.'); await tap(6, 16); await thWait(300); await tap(6, 20);
+  d.tap = 0; Object.assign(d, { mouth: 'o', brow: 8, lookX: -10, lookY: 2, head: -6 });
+  thDadSays(['Kitty! Not', 'my GENERAL!'], 'Kitty! Not my general!');
+  await thWait(1700); thBubble(null);
+  await thTween(c, { tilt: -24, fold: 1, lid: .45, slit: 1 }, 300, 'out'); c.mouth = 'smirk';
+  thSay('…'); await thWait(900);
+  c.fold = 0; c.tilt = 0; c.lid = 0; c.slit = 0; c.mouth = null;
+  thSay('BOOP! 😼');
+  await thTween(c, { reach: 1 }, 200, 'out'); thS('whoosh');
+  await thTween(g, { x: g.x + 30, r: 35 }, 260, 'in');
+  thTween(c, { reach: 0 }, 300);
+  g.hat.on = false; g.phys = true; g.vx = .05; g.vy = -.25; g.vr = .5; g.floor = FLOOR - 4; g.bounce = .35; g.restR = 90;
+  g.onLand = () => { thS('thud'); thDust(g.x, FLOOR, 5); g.face('x'); };
+  const h = g.hat.p; thSlow(.3, 120);
+  Object.assign(d, { mouth: 'scream', pupil: .55, brow: 14, sweat: 1, lookX: -6, lookY: 9 });
+  thDadShock(true);
+  thSay('Noooooo! 😱');
+  const [cx, cy] = thPtSync('tcHeadPt');
+  await thArc(h, cx - 4, cy - 2, 1100, 170, 360, 1.7);
+  thSlow(1, 200);
+  h.r = 0; h.follow = 'tcHeadPt'; h.fx = -4; h.fy = 10; thCatHat(false); thS('chime');
+  for (let i = 0; i < 5; i++) thSparkle(cx + (Math.random() - .5) * 60, cy - 20 - Math.random() * 30);
+  await thWait(500);
+  await thTween(c, { tilt: -24, fold: 1, head: -6 }, 300); c.mouth = 'smirk';
+  thSay('GENERAL KITTY reporting for duty! 🫡');
+  await thWait(1200);
+  Object.assign(d, { mouth: 'flat', sweat: 0, pupil: 1, brow: -2, lid: .25, eyes: 'o' });
+  await thTween(d, { aLU: 8, aLF: -6, aRU: -8, aRF: 6 }, 400);
+  thDadSays(['…Yes,', 'General Kitty.'], 'Yes, General Kitty.');
+  await thWait(2300); thBubble(null);
+}
+
+// ---------- 17. Under the Couch ----------
+async function thSceneCouch() {
+  thStage(thLiving({ couch: true }));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 980, aLU: 30, aLF: -120, aRU: -30, aRF: 120, eyes: 'o', mouth: 'smile', lookX: -3, lookY: 8 });
+  thDadProp('L', 'paper');
+  thStart(560, 380, 1);
+  const g = thGeneral(470, FLOOR + 6, 'thMidL', 1.1);
+  thSay('The Little General is guarding the living room. 🎖️');
+  await thWait(1500);
+  thSay('Dad is reading the news… 📰'); await thWait(900);
+  await thWalk(300, 2200);
+  await thTween(c, { head: 12 }, 300); thS('meow');
+  thSay('Kitty wants to play hockey… 🏒'); await thWait(600);
+  c.wig = 1; await thWait(700); c.wig = 0;
+  await thJump(380, FLOOR, 360, 30);
+  const whack = async (dx, r, ms) => { await thTween(c, { reach: 1 }, 160, 'out'); thS('tink'); g.hat.on = g.hat.on && r === 0; await Promise.all([thTween(g, { x: g.x + dx, r }, ms, 'out'), thTween(c, { reach: 0 }, 220)]); };
+  await whack(60, -90, 380); g.face('x');
+  if (!g.hat.on) { const h = g.hat.p; thArc(h, 380, FLOOR - 4, 600, 80, 300).then(() => { h.r = -20; }); }
+  thSay('Whack!');
+  c.walk = 1; c.speed = 1.6; await thTween(c, { x: 450 }, 400); c.walk = 0;
+  await whack(90, -90, 350);
+  c.walk = 1; await thTween(c, { x: 540 }, 400); c.walk = 0;
+  thSay('Whack! Whack!'); await whack(70, -90, 300);
+  c.walk = 1; await thTween(c, { x: 600 }, 300); c.walk = 0;
+  await thTween(c, { head: -10 }, 200);
+  thSay('…and a SUPER whack! 💥');
+  c.face = -1; await thWait(150);
+  await thTween(c, { reach: 1 }, 160, 'out'); thS('whoosh');
+  thTween(c, { reach: 0 }, 220);
+  await thTween(g, { x: g.x - 120 }, 220, 'in');
+  g.toLayer('thSetL'); g.y = 606;
+  await thTween(g, { x: 430 }, 400, 'out'); thS('clack');
+  thSay('…under the couch. 🛋️');
+  await thTween(c, { head: 14 }, 300);
+  await thJump(680, 500, 600, 110); await thLand(false); c.surf = 500;
+  await thTween(c, { loaf: 1, lid: .4 }, 400); c.mouth = 'smirk';
+  thTween(d, { aLU: 8, aLF: -6, aRU: -8, aRF: 6 }, 300); d.propL = 0;
+  await thTween(d, { lookX: -9, lookY: 4, head: -6 }, 300);
+  Object.assign(d, { mouth: 'o', brow: 8 });
+  thDadSays(['Where is my', 'Little General?!'], 'Where is my Little General?!');
+  await thWait(1500); thBubble(null);
+  const w = { k: 0 }, sx0 = d.x;
+  await thTween(w, { k: 1 }, 1100, 'inOut', () => { d.x = thLerp(sx0, 470, w.k); d.lift = Math.abs(Math.sin(w.k * Math.PI * 3)) * 8; }); d.lift = 0;
+  thSay('Dad looks under the couch…');
+  await thTween(d, { crouch: .6, aLU: 50, aLF: -30, lookY: 12, head: -10 }, 600, 'inOut');
+  await thWait(400);
+  for (let i = 0; i < 2; i++) { await thTween(d, { aLU: 62 }, 260); await thTween(d, { aLU: 46 }, 260); }
+  const [hx, hy] = thPtSync('tdHandL');
+  g.toLayer('thPropsL'); g.r = 0; g.s = 1.1; g.x = hx; g.y = hy + 60;
+  g.el.querySelector('.genFluff').setAttribute('display', 'inline');
+  g.follow = 'tdHandL'; g.fx = 0; g.fy = 62;
+  thPuffs(hx, hy + 40, 10, '#b9b2a6');
+  await thTween(d, { crouch: 0, aLU: 58, aLF: -120, lookX: -6, lookY: -2, head: 0 }, 700, 'inOut');
+  thSay('Found him! …covered in dust bunnies. 🐰');
+  Object.assign(d, { mouth: 'gross', brow: -4, browIn: 10 });
+  await thWait(1300);
+  thSay('ah… ah…'); await thTween(d, { head: -8, lid: .6, brow: 10 }, 700);
+  thSay('AH-CHOOOO!! 🤧'); thS('crash'); thShake(8);
+  await thTween(d, { head: 10, lid: 1, mouth: 'scream' }, 120);
+  const [fx, fy] = thPtSync('tdFace');
+  thPuffs(fx - 40, fy + 10, 14, '#d8d2c6');
+  for (let i = 0; i < 8; i++) thPart({ t: 'drop', x: fx - 20, y: fy + 20, vx: -.15 - Math.random() * .25, vy: -.1 - Math.random() * .2, r: 2.5, life: 1400 });
+  await thWait(500);
+  Object.assign(d, { lid: 0, mouth: 'frown', head: 0, eyes: 'o' });
+  thDadSays(['He needs', 'a bath…'], 'He needs a bath.');
+  thSay('Kitty is very proud of this. 😼');
+  await thWait(2400); thBubble(null);
+}
+
+// ---------- 18. Cavalry Charge ----------
+async function thSceneCharge() {
+  thStage(thLiving({}));
+  const d = TH.dad, c = TH.cat;
+  Object.assign(d, { x: 790, aLU: 22, aLF: -98, aRU: -14, aRF: 70, eyes: 'h', mouth: 'happy', lookX: -9, lookY: 6, head: -4 });
+  thDadProp('L', 'general'); thDadProp('R', 'mug');
+  thStart(560, 380, 1);
+  Object.assign(c, { x: 520, y: FLOOR, surf: FLOOR, face: 1, loaf: 1, lid: 1, o: 1 });
+  const z = thCatZ();
+  thSay('Kitty is napping on the rug… 💤');
+  await thWait(1500);
+  thDadSays(['Every general', 'needs a HORSE!'], 'Every general needs a horse!');
+  await thWait(1600); thBubble(null);
+  const w = { k: 0 }, sx0 = d.x;
+  await thTween(w, { k: 1 }, 800, 'inOut', () => { d.x = thLerp(sx0, 680, w.k); d.lift = Math.abs(Math.sin(w.k * Math.PI * 2)) * 8; }); d.lift = 0;
+  await thTween(d, { crouch: .35, aLU: 52, aLF: -40, lookY: 12 }, 500, 'inOut');
+  d.propL = 0;
+  const g = thGeneral(0, 0, 'thPropsL', .8);
+  let ride = true, bounce = 0;
+  const seat = () => { g.x = c.x + 6 * c.face; g.y = c.y - (c.loaf > .5 ? 72 : 86) - Math.abs(Math.sin(bounce)) * 14; };
+  seat();
+  TH.sim = dt => { if (ride) { if (c.walk) bounce += dt * .02; seat(); } };
+  thS('pop');
+  await thTween(d, { crouch: 0, aLU: 8, aLF: -6, lookY: 6 }, 500, 'inOut');
+  thSay('The Little General is riding Kitty! 🐴🎖️');
+  thDadSays(['Hehehe…', 'CHARGE!'], 'Hehehe. Charge!');
+  await thWait(1400); thBubble(null);
+  thStopEmit(z);
+  c.lid = 0;
+  thTxt('!!', c.x + 60, c.y - 170, 40, '#e8743b', 900, -.05); thS('boing');
+  await thWait(400);
+  thSay('ZOOMIES!! 💨');
+  c.loaf = 0; c.walk = 1; c.speed = 3; c.tailUp = 30;
+  const run = async (x, ms) => { c.face = x > c.x ? 1 : -1; const sx = c.x, o = { k: 0 }; await thTween(o, { k: 1 }, ms, 'inOut', () => { c.x = thLerp(sx, x, o.k); if (Math.random() < .3) thDust(c.x - 50 * c.face, FLOOR, 1); }); };
+  Object.assign(d, { eyes: 'h', mouth: 'happy' });
+  await run(240, 700);
+  thTween(d, { aLU: 150, aLF: 10 }, 300, 'out');
+  thDadSays(['GO GO GO!'], 'Go go go!');
+  await run(560, 650); thBubble(null);
+  await run(300, 550);
+  thSay('Faster… FASTER…');
+  await run(640, 520);
+  thSay('SCREECH! 🛑'); thS('whoosh');
+  c.walk = 0; thDust(c.x + 40, FLOOR, 8);
+  await thTween(c, { tilt: 10 }, 120);
+  ride = false;
+  const [mx, my] = thPtSync('tdPropPt');
+  g.hat.on = false; const h = g.hat.p;
+  thArc(h, c.x - 120, FLOOR - 4, 900, 160, -400).then(() => { h.r = -18; thS('tink'); });
+  thSay('The Little General goes FLYING! 🚀');
+  await thArc(g, mx + 2, my + 8, 800, 200, 540, .8);
+  g.o = 0; thProp(`<g transform="scale(.8)"><rect x="-11" y="-18" width="22" height="18" rx="3" fill="#fbfbf7"/><rect x="-11" y="-36" width="9" height="19" rx="3" fill="#1d1d1d"/><rect x="2" y="-36" width="9" height="19" rx="3" fill="#1d1d1d"/></g>`, 'thPropsL', { follow: 'tdPropPt', fx: 0, fy: 4 });
+  thS('splash'); thSplash(mx, my - 4, 14, .55);
+  for (let i = 0; i < 10; i++) thPart({ t: 'drop', x: mx, y: my - 6, vx: (Math.random() - .5) * .5, vy: -.3 - Math.random() * .4, r: 3, life: 2000, col: '#6f4a2e' });
+  Object.assign(d, { eyes: 'o', mouth: 'o', brow: 10, pupil: .6, sweat: 1, lookX: 4, lookY: 6 });
+  thTween(d, { aLU: 8, aLF: -6 }, 300);
+  thTween(c, { tilt: 0 }, 200);
+  await thWait(700);
+  thSay('…right into Dad\'s coffee. ☕😂');
+  await thWait(800);
+  thDadSays(['Now THAT is', 'a strong coffee.'], 'Now that is a strong coffee.');
+  await thWait(1200);
+  c.face = -1; await thTween(c, { tilt: -24, fold: 1, head: -8, lid: .4 }, 300); c.mouth = 'smirk';
+  await thWait(1500); thBubble(null);
+}
+
 const PRANKS = [
   { id: 'poop', name: 'Poop Attack', emoji: '💩', run: thScenePoop },
   { id: 'keyboard', name: 'Keyboard Nap', emoji: '⌨️', run: thSceneKeyboard },
@@ -2952,7 +3214,10 @@ const PRANKS = [
   { id: 'wrap', name: 'Surprise Present', emoji: '🎁', run: thSceneGift2 },
   { id: 'lights', name: 'Twinkle Lights', emoji: '💡', run: thSceneLights },
   { id: 'stocking', name: 'Stocking Surprise', emoji: '🧦', run: thSceneStocking },
-  { id: 'snowman', name: 'Snowman', emoji: '⛄', run: thSceneSnowman }
+  { id: 'snowman', name: 'Snowman', emoji: '⛄', run: thSceneSnowman },
+  { id: 'general', name: 'General Kitty', emoji: '🎖️', run: thSceneGeneral },
+  { id: 'couch', name: 'Under the Couch', emoji: '🛋️', run: thSceneCouch },
+  { id: 'charge', name: 'Cavalry Charge', emoji: '🐎', run: thSceneCharge }
 ];
 function choosePrank() {
   const c = PRANKS.filter(p => p.id !== state.lastPrank);
@@ -3064,7 +3329,7 @@ function askName(catId) {
 async function showBadgeUnlock(i) {
   Sound.coin(); setTimeout(() => Sound.meow(), 300);
   const holder = document.createElement('div');
-  const p = openDialog(`<h3>🏅 NEW BADGE!</h3><div id="badgeBig" style="display:flex;justify-content:center;margin:6px 0"></div><p><b>${BADGES[i].name}</b><br>for collecting ${BADGES[i].need} cats!</p>`, [{ label: 'So cool!', cls: 'primary', value: true }]);
+  const p = openDialog(`<h3>🏅 NEW BADGE!</h3><div id="badgeBig" style="display:flex;justify-content:center;margin:6px 0"></div><p><b>${BADGES[i].name}</b><br>for collecting ${BADGES[i].need === TOTAL_CATS ? 'ALL ' + TOTAL_CATS.toLocaleString('en-US') : BADGES[i].need.toLocaleString('en-US')} cats!</p>`, [{ label: 'So cool!', cls: 'primary', value: true }]);
   const c = document.createElement('canvas'); drawBadge(c, i, 150); $('badgeBig').appendChild(c);
   await p;
 }
@@ -3089,7 +3354,8 @@ function renderCats() {
   const bs = document.createElement('div');
   bs.innerHTML = '<div class="section-title">🏅 Special Badges</div>';
   const shelf = document.createElement('div'); shelf.className = 'badge-shelf';
-  BADGES.forEach((b, i) => {
+  const firstLocked = BADGES.findIndex(b => n < b.need), shown = firstLocked < 0 ? BADGES.length : Math.min(BADGES.length, firstLocked + 4);
+  BADGES.slice(0, shown).forEach((b, i) => {
     const slot = document.createElement('div'); const got = n >= b.need;
     slot.className = 'badge-slot' + (got ? ' earned' : '');
     if (got) { const c = document.createElement('canvas'); drawBadge(c, i, 56); slot.appendChild(c); } else slot.textContent = '🔒';
@@ -3097,7 +3363,9 @@ function renderCats() {
     if (got) slot.addEventListener('click', () => showBadgeUnlockView(i));
     shelf.appendChild(slot);
   });
-  bs.appendChild(shelf); el.appendChild(bs);
+  bs.appendChild(shelf);
+  if (shown < BADGES.length) bs.insertAdjacentHTML('beforeend', `<div class="sub" style="text-align:center;margin-top:6px">…and ${BADGES.length - shown} more secret badges to discover! 🤫</div>`);
+  el.appendChild(bs);
 
   // grid
   const gs = document.createElement('div');
@@ -3121,7 +3389,7 @@ function renderCats() {
   el.appendChild(gs);
 }
 function showBadgeUnlockView(i) {
-  const p = openDialog(`<h3>${BADGES[i].name}</h3><div id="badgeBig" style="display:flex;justify-content:center;margin:6px 0"></div><p>Earned for collecting ${BADGES[i].need} cats.</p>`, [{ label: 'Nice', cls: 'primary', value: true }]);
+  const p = openDialog(`<h3>${BADGES[i].name}</h3><div id="badgeBig" style="display:flex;justify-content:center;margin:6px 0"></div><p>Earned for collecting ${BADGES[i].need === TOTAL_CATS ? 'ALL ' + TOTAL_CATS.toLocaleString('en-US') : BADGES[i].need.toLocaleString('en-US')} cats.</p>`, [{ label: 'Nice', cls: 'primary', value: true }]);
   const c = document.createElement('canvas'); drawBadge(c, i, 150); $('badgeBig').appendChild(c);
   return p;
 }
