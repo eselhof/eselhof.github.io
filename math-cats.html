@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.9';
+const APP_VERSION = 'v4.10';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -453,14 +453,58 @@ function loadState() {
   return defaultState();
 }
 let state = loadState();
-function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {} }
+const LOADED_SAVED_AT = state.savedAt || 0, LOCAL_HAD_STATE = (() => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } })();
+// Progress is saved twice: localStorage (sync, read at startup) and an IndexedDB mirror.
+// At startup the newer copy (by savedAt) wins, so losing either store alone loses nothing.
+const IDB = {
+  db: null,
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise(res => {
+      try {
+        const rq = indexedDB.open('mathcats', 1);
+        rq.onupgradeneeded = () => rq.result.createObjectStore('kv');
+        rq.onsuccess = () => { this.db = rq.result; res(this.db); };
+        rq.onerror = rq.onblocked = () => res(null);
+      } catch (e) { res(null); }
+    });
+  },
+  async get(k) { const db = await this.open(); if (!db) return undefined; return new Promise(res => { try { const r = db.transaction('kv').objectStore('kv').get(k); r.onsuccess = () => res(r.result); r.onerror = () => res(undefined); } catch (e) { res(undefined); } }); },
+  async set(k, v) { const db = await this.open(); if (!db) return false; return new Promise(res => { try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(true); tx.onerror = tx.onabort = () => res(false); } catch (e) { res(false); } }); }
+};
+let _idbT = null, idbReady = false;
+function save() {
+  state.savedAt = Date.now();
+  const json = JSON.stringify(state);
+  try { localStorage.setItem(SAVE_KEY, json); } catch (e) {}
+  if (!idbReady) return;
+  clearTimeout(_idbT); _idbT = setTimeout(() => IDB.set('state', json), 250);
+}
+window.addEventListener('pagehide', () => { if (idbReady && _idbT) { clearTimeout(_idbT); IDB.set('state', JSON.stringify(state)); } });
+let storageInfo = { persisted: null, standalone: !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)) };
+async function storageStartup() {
+  try { if (navigator.storage && navigator.storage.persist) storageInfo.persisted = (await navigator.storage.persisted()) || (await navigator.storage.persist()); } catch (e) {}
+  const raw = await IDB.get('state');
+  let s = null; try { s = raw ? JSON.parse(raw) : null; } catch (e) {}
+  if (s && s.version === 3 && Array.isArray(s.catsCollected) && (!LOCAL_HAD_STATE || (s.savedAt || 0) > LOADED_SAVED_AT)) {
+    state = Object.assign(defaultState(), s); collectedSet = new Set(state.catsCollected);
+    try { localStorage.setItem(SAVE_KEY, raw); } catch (e) {}
+    try { updateHUD(); placeKnockObj(); newProblem(); } catch (e) {}
+    toast('Progress restored 🐱');
+  }
+  idbReady = true; IDB.set('state', JSON.stringify(state));
+  const cl = await IDB.get('clips');
+  if (Array.isArray(cl) && !localStorage.getItem(Clips.KEY)) { Clips._mem = cl; try { localStorage.setItem(Clips.KEY, JSON.stringify(cl)); } catch (e) {} }
+  else if (localStorage.getItem(Clips.KEY)) IDB.set('clips', Clips.list());
+}
 let collectedSet = new Set(state.catsCollected);
 
 // Dad audio clips are stored separately (they are larger)
 const Clips = {
   KEY: 'mathcats_clips',
-  list() { try { const l = JSON.parse(localStorage.getItem(this.KEY) || 'null'); return Array.isArray(l) ? l.concat([null, null, null]).slice(0, 3) : [null, null, null]; } catch (e) { return [null, null, null]; } },
-  set(i, url) { const l = this.list(); l[i] = url; try { localStorage.setItem(this.KEY, JSON.stringify(l)); return true; } catch (e) { return false; } }
+  _mem: null,
+  list() { try { const l = JSON.parse(localStorage.getItem(this.KEY) || 'null') || this._mem; return Array.isArray(l) ? l.concat([null, null, null]).slice(0, 3) : [null, null, null]; } catch (e) { return [null, null, null]; } },
+  set(i, url) { const l = this.list(); l[i] = url; this._mem = l; IDB.set('clips', l); try { localStorage.setItem(this.KEY, JSON.stringify(l)); return true; } catch (e) { return true; } }
 };
 function dataUrlToBuf(u) {
   const bin = atob(u.split(',')[1]); const a = new Uint8Array(bin.length);
@@ -2990,7 +3034,7 @@ const TH_GEN_BODY = `<g class="genBody">
 </g>`;
 const TH_GEN_HAT = `<path d="M-27 0 Q-14 -18 0 -19 Q14 -18 27 0 Q14 -5 0 -5 Q-14 -5 -27 0 Z" fill="#141414"/><path d="M-20 -3 Q0 -9 20 -3" stroke="#2c2c2c" stroke-width="1.5" fill="none"/>
   <circle cx="9" cy="-10" r="5" fill="#d6283a"/><circle cx="9" cy="-10" r="3.4" fill="#fff"/><circle cx="9" cy="-10" r="1.8" fill="#2a5db0"/>`;
-const TH_GEN_HAT_Y = -84;
+const TH_GEN_HAT_Y = -79;
 TD_PROPS.general = `<g transform="translate(6 10) scale(.6)">${TH_GEN_BODY}<g transform="translate(0 ${TH_GEN_HAT_Y})">${TH_GEN_HAT}</g></g>`;
 // a toy = body prop + hat prop that rides on the body until knocked off
 function thGeneral(x, y, layer, s) {
@@ -3049,9 +3093,9 @@ async function thSceneGeneral() {
   thDadShock(true);
   thSay('Noooooo! 😱');
   const [cx, cy] = thPtSync('tcHeadPt');
-  await thArc(h, cx - 4, cy - 2, 1100, 170, 360, 1.7);
+  await thArc(h, cx - 4, cy + 24, 1100, 170, 360, 1.7);
   thSlow(1, 200);
-  h.r = 0; h.follow = 'tcHeadPt'; h.fx = -4; h.fy = 10; thCatHat(false); thS('chime');
+  h.r = 0; h.follow = 'tcHeadPt'; h.fx = 8; h.fy = 26; thE('thPropsL').appendChild(h.el); thCatHat(false); thS('chime');
   for (let i = 0; i < 5; i++) thSparkle(cx + (Math.random() - .5) * 60, cy - 20 - Math.random() * 30);
   await thWait(500);
   await thTween(c, { tilt: -24, fold: 1, head: -6 }, 300); c.mouth = 'smirk';
@@ -3895,7 +3939,32 @@ function openParent() {
         state = Object.assign(defaultState(), s); collectedSet = new Set(state.catsCollected); save(); updateHUD(); placeKnockObj(); newProblem(); closeModal(); toast('Restored!');
       }
     };
-    r1.appendChild(cb); r1.appendChild(rb); bk.appendChild(ta); bk.appendChild(r1); box.appendChild(bk);
+    r1.appendChild(cb); r1.appendChild(rb); bk.appendChild(ta); bk.appendChild(r1);
+    const r2 = document.createElement('div'); r2.className = 'row'; r2.style.marginTop = '6px';
+    const fb = document.createElement('button'); fb.className = 'btn small'; fb.textContent = '⬇️ Save backup file';
+    fb.onclick = () => {
+      const blob = new Blob([JSON.stringify({ app: 'mathcats', savedAt: new Date().toISOString(), state, clips: Clips.list() })], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `mathcats-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    };
+    const fi = document.createElement('input'); fi.type = 'file'; fi.accept = '.json,application/json'; fi.style.display = 'none';
+    const fr = document.createElement('button'); fr.className = 'btn small'; fr.textContent = '⬆️ Restore from file'; fr.onclick = () => fi.click();
+    fi.onchange = async () => {
+      const f = fi.files && fi.files[0]; if (!f) return; let o;
+      try { o = JSON.parse(await f.text()); } catch (e) { uiAlert('Hmm', "That file doesn't look right."); return; }
+      const s = o && o.state;
+      if (!s || s.version !== 3 || !Array.isArray(s.catsCollected)) { uiAlert('Hmm', "That file doesn't look right."); return; }
+      if (await uiConfirm('Restore?', `This replaces current progress with a backup that has ${s.catsCollected.length} cats.`, 'Restore')) {
+        state = Object.assign(defaultState(), s); collectedSet = new Set(state.catsCollected); save();
+        if (Array.isArray(o.clips)) o.clips.forEach((u, i) => { if (u) Clips.set(i, u); });
+        updateHUD(); placeKnockObj(); newProblem(); closeModal(); toast('Restored!');
+      }
+    };
+    r2.appendChild(fb); r2.appendChild(fr); bk.appendChild(r2); bk.appendChild(fi);
+    const st = document.createElement('div'); st.className = 'p-note'; st.style.marginTop = '6px';
+    st.textContent = `Saved in 2 places on this device. Storage protection: ${storageInfo.persisted ? 'ON ✅' : 'not granted'}. Opened from Home Screen: ${storageInfo.standalone ? 'yes ✅' : 'no'}.`;
+    bk.appendChild(st);
+    box.appendChild(bk);
 
     // reset
     const rs = document.createElement('div'); rs.className = 'p-section';
@@ -3989,6 +4058,7 @@ layout();
 placeKnockObj();
 updateHUD();
 newProblem();
+storageStartup();
 if (!state.welcomed) {
   state.welcomed = true; save();
   uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry kitty, a hat shop, playful puppies, ⚡ Zoomies… and something VERY silly happens to Dad when your kitty eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
