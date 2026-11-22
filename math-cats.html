@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.10';
+const APP_VERSION = 'v4.11';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -4059,6 +4059,40 @@ placeKnockObj();
 updateHUD();
 newProblem();
 storageStartup();
+// ---- update check: the Home Screen app's HTTP cache can serve an old copy (GitHub Pages: max-age=600),
+// so fetch the page fresh, compare APP_VERSION, and offer a one-tap update.
+const Updater = {
+  last: 0, shown: false,
+  url() { return location.href.split('#')[0].split('?')[0]; },
+  async check() {
+    if (location.protocol === 'file:' || this.shown || Date.now() - this.last < 60000) return;
+    this.last = Date.now();
+    try {
+      const r = await fetch(this.url() + '?check=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) return;
+      const m = (await r.text()).match(/const APP_VERSION = '([^']+)'/);
+      if (m && m[1] !== APP_VERSION) this.show(m[1]);
+    } catch (e) {}
+  },
+  show(v) {
+    this.shown = true;
+    const b = document.createElement('button'); b.id = 'updBanner';
+    b.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:99999;border:none;border-radius:999px;padding:12px 20px;font:700 16px Fredoka,system-ui,sans-serif;color:#fff;background:#7c4dff;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer';
+    b.textContent = `✨ New version ${v}! Tap to update`;
+    b.onclick = () => this.apply(v);
+    document.body.appendChild(b);
+  },
+  async apply(v) {
+    save();
+    try { sessionStorage.setItem('mc_upd', v); } catch (e) {}
+    try { await fetch(this.url(), { cache: 'reload' }); } catch (e) {}  // refreshes the HTTP cache entry itself
+    location.reload();
+  }
+};
+// if a reload still came up old, bypass the cache with a fresh URL
+try { const want = sessionStorage.getItem('mc_upd'); if (want) { sessionStorage.removeItem('mc_upd'); if (want !== APP_VERSION && !location.search.includes('v=')) location.replace(Updater.url() + '?v=' + encodeURIComponent(want)); } } catch (e) {}
+setTimeout(() => Updater.check(), 2500);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Updater.check(); });
 if (!state.welcomed) {
   state.welcomed = true; save();
   uiAlert('😺 New Math Cats!', `Your ${state.catsCollected.length} cats came with you!<br><br>New stuff: tables up to 12, a hungry kitty, a hat shop, playful puppies, ⚡ Zoomies… and something VERY silly happens to Dad when your kitty eats too much.<br><br>Here's <b>${state.fish} 🐟</b> to spend in the Shop!`);
