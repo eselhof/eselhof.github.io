@@ -369,7 +369,7 @@ body.big .cat-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
 
 <script>
 'use strict';
-const APP_VERSION = 'v4.11';
+const APP_VERSION = 'v4.12';
 // ============================================================
 // UTILITIES
 // ============================================================
@@ -419,7 +419,7 @@ const SAVE_KEY = 'mathcats_v3';
 const OLD_KEY = 'mathcats_v2';
 function defaultState() {
   return {
-    version: 3, maxTable: 5, mode: 'multiply', sound: true,
+    version: 3, maxTable: 12, mode: 'multiply', sound: true,
     streak: 0, bestStreak: 0,
     correctMul: 0, totalMul: 0, correctDiv: 0, totalDiv: 0,
     catsCollected: [], names: {}, buddy: 0,
@@ -453,6 +453,7 @@ function loadState() {
   return defaultState();
 }
 let state = loadState();
+state.maxTable = MAXN; // stopgap: table range is fixed at 12
 const LOADED_SAVED_AT = state.savedAt || 0, LOCAL_HAD_STATE = (() => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } })();
 // Progress is saved twice: localStorage (sync, read at startup) and an IndexedDB mirror.
 // At startup the newer copy (by savedAt) wins, so losing either store alone loses nothing.
@@ -997,7 +998,7 @@ function factStatus(f) { if (!f || !f.n) return 'new'; if (f.s >= 3) return 'tri
 function chooseOp() { if (state.mode === 'multiply') return 'm'; if (state.mode === 'divide') return 'd'; return Math.random() < 0.5 ? 'm' : 'd'; }
 function generateProblem() {
   const op = chooseOp(), cands = []; let tot = 0;
-  for (let x = 1; x <= state.maxTable; x++) for (let y = 1; y <= MAXN; y++) {
+  for (let x = 1; x <= MAXN; x++) for (let y = 1; y <= MAXN; y++) { // stopgap: always all tables to 12
     const k = factKey(op, x, y); if (k === lastKey) continue;
     const f = state.facts[k]; const w = !f ? 1.4 : 1 + f.s * 2 + (f.c < 2 ? 0.4 : 0);
     cands.push([x, y, k, w]); tot += w;
@@ -3878,16 +3879,7 @@ function openParent() {
       h.addEventListener('pointerdown', () => { stop(); ht = setTimeout(() => { ht = null; secretTheater = true; addSecretTheater(box); }, 2000); });
       ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => h.addEventListener(e, stop));
       h.addEventListener('contextmenu', e => e.preventDefault()); }
-    // tables
-    const t = document.createElement('div'); t.className = 'p-section';
-    t.innerHTML = `<div class="p-title">Times tables up to</div><div class="p-note">Problems use tables 1–N, times 1–12.</div>`;
-    const tg = document.createElement('div'); tg.className = 'table-grid';
-    for (let i = 1; i <= MAXN; i++) {
-      const b = document.createElement('button'); b.className = 'table-btn' + (i === state.maxTable ? ' active' : ''); b.textContent = i;
-      b.onclick = () => { state.maxTable = i; save(); tg.querySelectorAll('.table-btn').forEach(x => x.classList.toggle('active', +x.textContent === i)); if (!zoom) newProblem(true); };
-      tg.appendChild(b);
-    }
-    t.appendChild(tg); box.appendChild(t);
+    // tables: range fixed at 1–12 (stopgap; the setting was being used to farm fish on the 1s)
 
     // dad clips
     const d = document.createElement('div'); d.className = 'p-section';
@@ -3936,7 +3928,7 @@ function openParent() {
       try { s = JSON.parse(decodeURIComponent(escape(atob(ta.value.trim())))); } catch (e) { uiAlert('Hmm', "That code doesn't look right."); return; }
       if (!s || s.version !== 3 || !Array.isArray(s.catsCollected)) { uiAlert('Hmm', "That code doesn't look right."); return; }
       if (await uiConfirm('Restore?', `This replaces current progress with a backup that has ${s.catsCollected.length} cats.`, 'Restore')) {
-        state = Object.assign(defaultState(), s); collectedSet = new Set(state.catsCollected); save(); updateHUD(); placeKnockObj(); newProblem(); closeModal(); toast('Restored!');
+        state = Object.assign(defaultState(), s); state.maxTable = MAXN; collectedSet = new Set(state.catsCollected); save(); updateHUD(); placeKnockObj(); newProblem(); closeModal(); toast('Restored!');
       }
     };
     r1.appendChild(cb); r1.appendChild(rb); bk.appendChild(ta); bk.appendChild(r1);
